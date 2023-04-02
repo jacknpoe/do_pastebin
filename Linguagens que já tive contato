@@ -1,0 +1,53 @@
+LINGUAGENS EM QUE PROGRAMEI (MAIS OU MENOS NA SEQUÊNCIA CORRETA, EXCETO DIALETOS)
+
+- com * as que foram pra só pra trabalhos de faculdade COMO O tcc
+- com @ as em que desenvolvi profissionalmente nos últimos anos
+
+BASIC (Apple II, TRS-80, CP-200, MSX, BASICA, GW-BASIC, QuickBasic, Visual BASIC)
+xBase (III, IV, ...)@
+binário (sim, binário, não assembly) Z-80
+Clipper
+Pascal (original e turbo)
+assembly x86
+C@
+COBOL*
+C++@
+Fortran*
+LISP*
+LOGO*
+Ada*
+Object Pascal@
+SQL@
+pSQL@
+Super Pascal* (exemplo no TCC)
+Super Fortran* (exemplo no TCC)
+ML* (exemplo no TCC)
+VFP@
+Visual Basic for Applications (hard, documentação ISO-DOC)@
+C#@
+Java
+JavaScript@
+php@
+brainfuck (uma vez só, e nunca mais)
+
+Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
+
+Nem incluo os conversores de scripts ou linguagens de marcação que eu mesmo tive que criar, como:
+
+# MSX
+banco de dados (ex.: INC CLIENTE ...)
+descritora de fontes (ex.: C 180 20 C -90 10 = semi-círculos: 180° esq raio 20px + 90° dir raio 10px)
+
+# x86
+geração de sons (ex: T,31,O,2,D,1,C,N,D,N,B,N = tempo 31 com 1 de silêncio na 2ª oitava, toca dó ré si)
+gráficos vetoriais (Ex.: cor 0 255 0 linha 100 100 200 200)
+
+# Descritoras para ERPs (via script intermediário)
+geração de NF-es
+geração de etiquetas para grades
+geração de relatórios dinâmicos em HTML
+geração de relatórios dinâmicos em ISO-DOC
+geração de códigos de escape para TELNET
+
+# Editores de Texto (linguagem em duas dimensões)
+descrição de sintaxe
