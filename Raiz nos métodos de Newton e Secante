@@ -1,0 +1,79 @@
+// Raiz nos métodos de Newton e Secante
+#include <cmath>
+#include <cstdio>
+#include <locale>
+
+ double funcao( double x)
+{
+//    return pow( x, 3) - 9 * x + 3;
+//    return pow( x + 1, 2) * pow( EULER, pow( x, 2) - 2) - 1;
+    return 1000 * pow( x, 5) - 3 * x + 9.04;
+}
+
+ double derivada( double x)
+{
+//    return 3 * pow( x, 2) - 9;
+//    return 2 * ( x + 1 ) * pow( EULER, pow( x, 2) - 2) +
+//           2 * x * pow( x + 1, 2) * pow( EULER, pow( x, 2) - 2);
+    return 5000 * pow( x, 4) - 3;
+}
+
+double newton( double xk)
+{
+    double xk_1;
+    int iteracoes = 0;
+
+    xk_1 = 0;
+    while( true )
+    {
+        xk_1 = xk - ( funcao( xk) / derivada( xk) );
+        iteracoes ++;
+        if( std::abs( ( xk_1 - xk ) / xk_1 ) < 0.0000000001 ) break;
+        xk = xk_1;
+    }
+    printf( "iterações : %i\n", iteracoes );
+    return ( xk + xk_1) / 2;
+}
+
+double secante( double xk_1, double xk)
+{
+    double fxk, fxk_1, temp;
+    int iteracoes = 0;
+
+    while( true )
+    {
+        fxk = funcao( xk);
+        fxk_1 = funcao( xk_1);
+        temp = xk - ( fxk / ( ( fxk - fxk_1) / ( xk - xk_1) ) );
+        iteracoes ++;
+        if( std::abs( ( temp - xk ) / temp ) < 0.0000000001 ) break;
+        xk_1 = xk;
+        xk = temp;
+    }
+    printf( "iterações : %i\n", iteracoes );
+    return ( temp + xk ) / 2;
+}
+
+
+int main( void)
+{
+    double x1, x2;
+    int i;
+
+    setlocale( LC_ALL, "");
+
+    x1 = funcao( -3);
+    printf( "%i : %2.17f\n", -3, x1 );
+    for( i = -2; i <= 3; i++)
+    {
+        x2 = funcao( i);
+        printf( "%i : %2.17f\n", i, x2 );
+        if( ( x1 * x2) < 0 )
+        {
+            printf( "Newton : %2.17f\n", newton( i-0.5 ));
+            printf( "Secante: %2.17f\n", secante( i-2, i-1) );
+        }
+        x1 = x2;
+    }
+    return 0;
+}
