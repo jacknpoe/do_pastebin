@@ -1,0 +1,66 @@
+#include<iostream>
+#include<cstdlib>
+#include<cstring>
+
+void int_base_2_a_10( unsigned long valor, int base, char* buffer);
+char tam_base_2_a_10( unsigned long valor, int base);
+
+int main( void){
+	char resultado[50];
+	unsigned int valor = 0;
+	int base = 2;
+
+	std::cout << "Entre com o valor: ";
+	std::cin >> valor;
+
+	std::cout << "Entre com a base: ";
+	std::cin >> base;
+
+	int_base_2_a_10( valor, base, resultado);
+
+	std::cout << "\nResultado: " << resultado << "\n";
+}
+
+void int_base_2_a_10( unsigned long valor, int base, char* buffer){
+	char temp, tam;
+
+	if( base < 2){
+		strcpy( buffer, (char*) "a base nao pode ser menor que 2");
+		return;
+	}
+	
+	if( base > 10){
+		strcpy( buffer, (char*) "a base nao pode ser maior que 10");
+		return;
+	}
+
+	tam = tam_base_2_a_10( valor, base);
+
+	if( tam == 0) {
+		buffer[0] = '0';
+		buffer[1] = 0;
+		return;
+	}
+
+	buffer[ tam] = 0;
+
+	while( valor > 0){
+		temp = valor % base;
+		valor /= base;
+		tam -= 1;
+		buffer[tam] = temp + '0';
+	}
+
+	return;
+}
+
+char tam_base_2_a_10( unsigned long valor, int base){
+	char temp = 0;
+
+	while( valor > 0){
+		temp++;
+		valor /= base;
+	}
+
+	return temp;
+}
