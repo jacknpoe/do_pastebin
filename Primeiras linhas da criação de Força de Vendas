@@ -1,0 +1,52 @@
+# Cria um banco de dados de nome Representante e seleciona
+CREATE DATABASE IF NOT EXISTS Representante CHARACTER SET utf8 COLLATE utf8_swedish_ci;
+USE Representante;
+
+###### TABELA DE PREÇOS
+create TABLE IF NOT EXISTS TabelaPrecos
+(
+    CD_Codigo int PRIMARY KEY,
+    DS_Nome varchar( 50) NOT NULL DEFAULT "",
+    DS_Descricao varchar( 500) NOT NULL DEFAULT "",
+    DT_Inicio date NOT NULL DEFAULT "2000-01-01",
+    DT_Fim date NOT NULL DEFAULT "2100-12-31",
+    LG_Inativo tinyint NOT NULL DEFAULT 0
+);
+
+###### ESTOQUE
+create TABLE IF NOT EXISTS Estoque
+(
+    CD_Codigo int PRIMARY KEY,
+    DS_Nome varchar( 50) NOT NULL DEFAULT "",
+    DS_Descricao varchar( 500) NOT NULL DEFAULT "",
+    LG_Inativo tinyint NOT NULL DEFAULT 0
+);
+
+INSERT INTO TabelaPrecos ( CD_Codigo, DS_Nome, DS_Descricao )
+VALUES ( 1, "Tabela de Precos Comum", "Tabela para vendas em qualquer data, preços não promocionais, sem desconto" );
+
+INSERT INTO TabelaPrecos ( CD_Codigo, DS_Nome, DS_Descricao, DT_Inicio, DT_Fim)
+VALUES ( 2, "tabela de Preços Natal 2016", "Tabela para vendas com desconto de 10% até o Natal de 2016",
+         "2016-01-01", "2016-12-25" );
+
+INSERT INTO TabelaPrecos ( CD_Codigo, DS_Nome, DS_Descricao, DT_Inicio, DT_Fim)
+VALUES ( 3, "Tabela de Precos 1o Semestre 2016", "Tabela para vendas com desconto de 15% durante o primeiro semestre de 2016",
+         "2016-01-01", "2016-06-30" );
+
+INSERT INTO TabelaPrecos ( CD_Codigo, DS_Nome, DS_Descricao, LG_Inativo)
+VALUES ( 4, "Tabela de preços Inativa", "Tabela inativa apenas para poder aparecer em listagens, póstuma", 1 );
+
+INSERT INTO TabelaPrecos ( CD_Codigo, DS_Nome, DS_Descricao, LG_Inativo)
+VALUES ( 5, "Tabela de preços do Textão", "Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão. Tabela apenas para testar um textão.", 1 );
+
+INSERT INTO Estoque ( CD_Codigo, DS_Nome, DS_Descricao )
+VALUES ( 1, "Estoque Matriz", "Pedidos deste estoque sairão da matriz em Florianópolis-SC");
+
+INSERT INTO Estoque ( CD_Codigo, DS_Nome, DS_Descricao )
+VALUES ( 2, "Estoque Filial Itajaí", "Pedidos deste estoque sairão da filial de Itajaí-SC");
+
+INSERT INTO Estoque ( CD_Codigo, DS_Nome, DS_Descricao )
+VALUES ( 3, "Estoque filial Curitiba", "Pedidos deste estoque sairão da filial de Curitiba-PR");
+
+INSERT INTO Estoque ( CD_Codigo, DS_Nome, DS_Descricao, LG_Inativo)
+VALUES ( 4, "estoque Fechado", "Este estoque nao poderá mais utilizado, constando para listagens", 1 );
