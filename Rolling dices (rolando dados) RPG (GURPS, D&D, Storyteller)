@@ -1,0 +1,376 @@
+/*########################### RPG DICE ROLLER (VERSION 0.1 2014-07-01)
+/
+*/
+
+#include <cstdlib>
+#include <iostream>
+#include <ctime>
+
+namespace dices {
+
+/* ########################### DUNGEONS AND DRAGONS
+*/
+	class DungeonsAndDragons {
+	protected:
+		unsigned short DicesSize;		// d4, d6, d8, d10, d100, d12, d20, dX
+		unsigned short QuantDices;		// number of (DicesSize) to roll
+		short Modifier;		// modifier 
+		unsigned short *Dices;		// dices after roll
+	public:
+		DungeonsAndDragons( unsigned short size = 20, unsigned short quant = 1, short mod = 0);
+		~DungeonsAndDragons();
+
+		bool setDicesSize( unsigned short size);
+		unsigned short getDicesSize( void);
+
+		bool setQuantDices( unsigned short quant);
+		unsigned short getQuantDices( void);
+
+		bool setModifier( short mod);
+		short getModifier( void);
+
+		unsigned short getDice( unsigned short dice);
+
+		bool rollDices( void);
+
+		short getTotal( void);
+	};
+
+	DungeonsAndDragons::DungeonsAndDragons( unsigned short size, unsigned short quant, short mod){
+		if( quant < 0 ) quant = 0;
+		Dices = ( unsigned short *) std::malloc( sizeof( unsigned short) * quant);
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		DicesSize = size;
+		Modifier = mod;
+		for( unsigned short index = 0; index < quant; index++) Dices[ index] = 0;
+	}
+
+	bool DungeonsAndDragons::setDicesSize( unsigned short size){
+		if( size < 2) return false;
+		DicesSize = size; return true;
+	}
+	unsigned short DungeonsAndDragons::getDicesSize( void){ return DicesSize; }
+
+	bool DungeonsAndDragons::setQuantDices( unsigned short quant){
+		if( quant < 0) return false;
+		Dices = ( unsigned short *) std::realloc( Dices, sizeof( unsigned short) * quant);
+		for( short index = QuantDices; index < quant; index++) Dices[ index] = 0;
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		return true;
+	}
+	unsigned short DungeonsAndDragons::getQuantDices( void){ return QuantDices; }
+
+	bool DungeonsAndDragons::setModifier( short mod){
+		Modifier = mod; return true;
+	}
+	short DungeonsAndDragons::getModifier( void){ return Modifier; }
+
+	unsigned short DungeonsAndDragons::getDice( unsigned short dice){
+		if( ( dice < 0) or ( dice >= QuantDices) ) return 0;
+		return Dices[ dice];
+	}
+
+	bool DungeonsAndDragons::rollDices( void){
+		if( ( QuantDices < 1) or ( DicesSize < 2)) return false;
+		for( unsigned short index = 0; index < QuantDices; index++) Dices[ index] = std::rand() % DicesSize + 1;
+		return true;
+	}
+
+	short DungeonsAndDragons::getTotal( void){
+		short temp = 0;
+		for( unsigned short index = 0; index < QuantDices; index++) temp += Dices[ index];
+		temp += Modifier;
+		return temp;
+	}
+
+	DungeonsAndDragons::~DungeonsAndDragons(){ std::free( Dices); }
+
+
+/* ########################### GURPS
+*/
+	class GURPS {
+	protected:
+		unsigned short QuantDices;		// number of D6 to roll
+		short Modifier;		// modifier 
+		unsigned short *Dices;		// dices after roll
+	public:
+		GURPS( unsigned short quant = 1, short mod = 0);
+		~GURPS();
+
+		bool setQuantDices( unsigned short quant);
+		unsigned short getQuantDices( void);
+
+		bool setModifier( short mod);
+		short getModifier( void);
+
+		unsigned short getDice( unsigned short dice);
+
+		bool rollDices( void);
+
+		short getTotal( void);
+	};
+
+	GURPS::GURPS( unsigned short quant, short mod){
+		if( quant < 0 ) quant = 0;
+		Dices = ( unsigned short *) std::malloc( sizeof( unsigned short) * quant);
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		Modifier = mod;
+		for( unsigned short index = 0; index < quant; index++) Dices[ index] = 0;
+	}
+
+	bool GURPS::setQuantDices( unsigned short quant){
+		if( quant < 0) return false;
+		Dices = ( unsigned short *) std::realloc( Dices, sizeof( unsigned short) * quant);
+		for( short index = QuantDices; index < quant; index++) Dices[ index] = 0;
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		return true;
+	}
+	unsigned short GURPS::getQuantDices( void){ return QuantDices; }
+
+	bool GURPS::setModifier( short mod){
+		Modifier = mod; return true;
+	}
+	short GURPS::getModifier( void){ return Modifier; }
+
+	unsigned short GURPS::getDice( unsigned short dice){
+		if( ( dice < 0) or ( dice >= QuantDices) ) return 0;
+		return Dices[ dice];
+	}
+
+	bool GURPS::rollDices( void){
+		if( QuantDices < 1) return false;
+		for( unsigned short index = 0; index < QuantDices; index++) Dices[ index] = std::rand() % 6 + 1;
+		return true;
+	}
+
+	short GURPS::getTotal( void){
+		short temp = 0;
+		for( unsigned short index = 0; index < QuantDices; index++) temp += Dices[ index];
+		temp += Modifier;
+		return temp;
+	}
+
+	GURPS::~GURPS(){ std::free( Dices); }
+
+
+/* ########################### STORYTELLER
+*/
+	class Storyteller {
+	protected:
+		unsigned short QuantDices;		// number of D10 to roll
+		short Difficulty;		// difficulty 
+		unsigned short *Dices;		// dices after roll
+	public:
+		Storyteller( unsigned short quant = 1, short dif = 0);
+		~Storyteller();
+
+		bool setQuantDices( unsigned short quant);
+		unsigned short getQuantDices( void);
+
+		bool setDifficulty( short dif);
+		short getDifficulty( void);
+
+		unsigned short getDice( unsigned short dice);
+
+		bool rollDices( void);
+
+		short getTotal( void);
+	};
+
+	Storyteller::Storyteller( unsigned short quant, short dif){
+		if( quant < 0 ) quant = 0;
+		Dices = ( unsigned short *) std::malloc( sizeof( unsigned short) * quant);
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		Difficulty = dif;
+		for( unsigned short index = 0; index < quant; index++) Dices[ index] = 0;
+	}
+
+	bool Storyteller::setQuantDices( unsigned short quant){
+		if( quant < 0) return false;
+		Dices = ( unsigned short *) std::realloc( Dices, sizeof( unsigned short) * quant);
+		for( short index = QuantDices; index < quant; index++) Dices[ index] = 0;
+		QuantDices = ( Dices == NULL ? 0 : quant);
+		return true;
+	}
+	unsigned short Storyteller::getQuantDices( void){ return QuantDices; }
+
+	bool Storyteller::setDifficulty( short dif){
+		if( ( dif < 2) or ( dif > 10)) return false;
+		Difficulty = dif; return true;
+	}
+	short Storyteller::getDifficulty( void){ return Difficulty; }
+
+	unsigned short Storyteller::getDice( unsigned short dice){
+		if( ( dice < 0) or ( dice >= QuantDices) ) return 0;
+		return Dices[ dice];
+	}
+
+	bool Storyteller::rollDices( void){
+		if( (QuantDices < 1) or ( Difficulty < 2) or ( Difficulty > 10)) return false;
+		for( unsigned short index = 0; index < QuantDices; index++) Dices[ index] = std::rand() % 10 + 1;
+		return true;
+	}
+
+	short Storyteller::getTotal( void){
+		short temp = 0;
+		for( unsigned short index = 0; index < QuantDices; index++)
+		{
+			if( Dices[ index] == 1) temp -= 1;
+			if( Dices[ index] >= Difficulty) temp += 1;
+		}
+		return temp;
+	}
+
+	Storyteller::~Storyteller(){ std::free( Dices); }
+
+
+/* ########################### INTERFACE
+*/
+	class Interface {
+	protected:
+		void ExecuteDungeonsAndDragons( void);		// Execute D&D interface
+		void ExecuteGURPS( void);		// Execute GURPS interface
+		void ExecuteStoryteller( void);		// Execute Storyteller interface
+	public:
+		void Execute( void);
+	};
+
+	void Interface::Execute( void){
+		unsigned short choice;
+
+		while( true)
+		{
+			std::cout << "=====================" << std::endl;
+			std::cout << "PLEASE, SELECT A GAME" << std::endl;
+			std::cout << "=====================" << std::endl;
+			std::cout << "1. Dungeon & Dragons" << std::endl;
+			std::cout << "2. GURPS" << std::endl;
+			std::cout << "3. Storyteller" << std::endl;
+			std::cout << "OTHER. Exit" << std::endl;
+			std::cout << "=====================" << std::endl;
+			std::cout << "Choice: ";
+	
+			std::cin >> choice;
+
+			switch( choice){
+				case 1:
+					ExecuteDungeonsAndDragons();
+					break;
+				case 2:
+					ExecuteGURPS();
+					break;
+				case 3:
+					ExecuteStoryteller();
+					break;
+				default:
+					return;
+			}
+			std::cout << std::endl;
+		}
+	}
+
+	void Interface::ExecuteDungeonsAndDragons( void){
+		unsigned short size, quant;
+		short modifier;
+		DungeonsAndDragons dice( 1, 1, 1);
+		
+		while( true)
+		{
+			std::cout << "---------------------" << std::endl;
+			std::cout << "Size: ";
+			std::cin >> size;
+	
+			if( size < 2) { std::cout << "Size lower than two." << std::endl; break; }
+	
+			std::cout << "Quantity: ";
+			std::cin >> quant;
+	
+			if( quant < 1) { std::cout << "Quantity lower than one." << std::endl; break; }
+	
+			std::cout << "Modifier: ";
+			std::cin >> modifier;
+		
+			dice.setDicesSize( size);
+			dice.setQuantDices( quant);
+			dice.setModifier( modifier);
+	
+			if( ! dice.rollDices()) { std::cout << "Fail rolling dices." << std::endl; break; }
+		
+			std::cout << std::endl << "Dices:";
+			for( unsigned short index = 0; index < dice.getQuantDices(); index++)
+				std::cout << " " << dice.getDice( index);
+			std::cout << std::endl << "Result: " << dice.getTotal() << std::endl;
+		}
+	}
+
+	void Interface::ExecuteGURPS( void){
+		unsigned short quant;
+		short modifier;
+		GURPS dice( 1, 1);
+		
+		while( true)
+		{
+			std::cout << "---------------------" << std::endl;
+			std::cout << "Quantity: ";
+			std::cin >> quant;
+	
+			if( quant < 1) { std::cout << "Quantity lower than one." << std::endl; break; }
+	
+			std::cout << "Modifier: ";
+			std::cin >> modifier;
+		
+			dice.setQuantDices( quant);
+			dice.setModifier( modifier);
+	
+			if( ! dice.rollDices()) { std::cout << "Fail rolling dices." << std::endl; break; }
+		
+			std::cout << std::endl << "Dices:";
+			for( unsigned short index = 0; index < dice.getQuantDices(); index++)
+				std::cout << " " << dice.getDice( index);
+			std::cout << std::endl << "Result: " << dice.getTotal() << std::endl;
+		}
+	}
+
+	void Interface::ExecuteStoryteller( void){
+		unsigned short quant, difficulty;
+		Storyteller dice( 1, 1);
+		
+		while( true)
+		{
+			std::cout << "---------------------" << std::endl;
+			std::cout << "Quantity: ";
+			std::cin >> quant;
+	
+			if( quant < 1) { std::cout << "Quantity lower than one." << std::endl; break; }
+	
+			std::cout << "Difficulty: ";
+			std::cin >> difficulty;
+
+			if( difficulty < 2) { std::cout << "Difficulty lower than two." << std::endl; break; }
+
+			if( difficulty > 10) { std::cout << "Difficulty bigger than ten." << std::endl; break; }
+		
+			dice.setQuantDices( quant);
+			dice.setDifficulty( difficulty);
+	
+			if( ! dice.rollDices()) { std::cout << "Fail rolling dices." << std::endl; break; }
+		
+			std::cout << std::endl << "Dices:";
+			for( unsigned short index = 0; index < dice.getQuantDices(); index++)
+				std::cout << " " << dice.getDice( index);
+			std::cout << std::endl << "Result: " << dice.getTotal() << std::endl;
+		}
+	}
+}
+
+//using namespace dices;
+   
+int main( void){
+	dices::Interface myInterface;
+
+	std::srand( std::time(0));		// GLOBAL. TODO: seed in the classes
+
+	myInterface.Execute();
+
+	return 0;
+}
