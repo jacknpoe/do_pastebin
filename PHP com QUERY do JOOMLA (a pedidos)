@@ -1,0 +1,26 @@
+// conectando
+$db = JFactory::getDbo();
+ 
+// criando query (obj)
+$query = $db->getQuery(true);
+ 
+// selecionando
+$query->select( "produto, marca, dono");
+$query->from( $db->quoteName( '#__produtos'));
+$query->where( $db->quoteName( 'id') . ' = ' . $this->item->idproduto);
+$query->order( $db->quoteName( 'id'));
+ 
+// executa
+$db->setQuery($query);
+$results = $db->loadAssoc();
+
+// coloca resultado nas variáveis
+$produto = $results[ 'produto'];
+$marca = $results[ 'marca'];
+$dono = $results[ 'dono'];
+
+// testando
+echo( "|produto " . $produto . "|");
+echo( "|marca " . $marca . "|");
+echo( "|dono " . $dono . "|");
+print_r( $results);
