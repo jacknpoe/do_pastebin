@@ -1,0 +1,177 @@
+/*
+Resolve conjunto de equações (matriz)
+
+Para entender, entre com os seguintes dados:
+
+Exemplo 1:
+2 (quantidade de variáveis)
+2, 1, 3  (primeira linha, equivale a  2x + y = 3
+4, 5, 9  (segunda linha, equivale a 4x + 5y = 9
+Os resultados serão próximos de x=1 e y=1
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <locale.h>
+#include <string.h>
+
+using namespace std;
+
+double absoluto( double valor)
+{
+    if( valor >= 0)
+    {
+        return valor;
+    }
+    else
+    {
+        return valor * -1;
+    }
+}
+
+class TMatriz {
+	double *Matriz, *Resultado, *Anterior;
+    long Tamanho; bool Prolixo;
+public:
+	TMatriz( long tam, bool pro);
+	TMatriz( long tam);
+	TMatriz( bool pro);
+	TMatriz( void);
+	~TMatriz( void);
+	double *matriz( long lin, long col);
+	double *resultado( long col);
+	double *anterior( long col);
+	long tamanho( void);
+	bool resolva( void);
+};
+
+// * Implementação da Classe
+// Classe TMatriz
+
+TMatriz::TMatriz( long tam, bool pro) {
+	Prolixo = pro;
+	Tamanho = tam;
+	Matriz = (double*) malloc( sizeof( double) * ( tam * tam + tam));
+	Resultado = (double*) malloc( sizeof( double) * tam );
+	Anterior = (double*) malloc( sizeof( double) * tam );
+}
+
+TMatriz::TMatriz( long tam){ TMatriz( tam, false); }
+
+TMatriz::TMatriz( bool pro){ TMatriz( 2, pro); }
+
+TMatriz::TMatriz( void){ TMatriz( 2, false); }
+
+TMatriz::~TMatriz( void)
+{
+	free( Matriz);
+	free( Resultado);
+	free( Anterior);
+}
+
+double *TMatriz::matriz( long lin, long col) {	return( &Matriz[ (lin-1) + (col-1) * Tamanho] ); }
+
+double *TMatriz::resultado( long col) { return( &Resultado[ col-1] ); }
+
+double *TMatriz::anterior( long col) { return( &Anterior[ col-1] ); }
+
+long TMatriz::tamanho( void) { return( Tamanho); }
+
+bool TMatriz::resolva( void) {
+    int i, j, iteracao;
+    double maior_d, maior_v, acum;
+    // calcula os valores iniciais
+	for( i = 1; i <= Tamanho; i++)
+    {
+        (*anterior( i)) = (*matriz( i, Tamanho + 1)) / (*matriz( i, i));
+        (*resultado( i)) = (*anterior( i));
+        cout << "Valor inicial de x" << i << ": " << (*resultado( i)) << endl ;
+    }
+
+    // looping principal (infinito)
+    iteracao = 1;
+    while( true)
+    {
+        // itera as linhas
+        for( i = 1; i <= Tamanho; i++)
+        {   // começamos com o valor de bn
+            acum = (*matriz( i, Tamanho + 1));
+            // itera as colunas
+            for( j = 1; j <= Tamanho; j++)
+            {
+                if( j != i )
+                    acum = acum - (*matriz( i, j)) * (*anterior( j));
+            }
+            (*resultado( i)) = acum / (*matriz( i, i));
+            cout << "Valor de x" << i << "(" << iteracao << "): " << (*resultado( i)) << endl ;
+        }
+
+        // calcula o erro
+        maior_d = 0;
+        maior_v = 0;
+        for( i = 1; i <= Tamanho; i++)
+        {
+            if( absoluto( (*resultado( i))) > maior_v )
+                maior_v = absoluto( (*resultado( i)));
+            if( absoluto( (*resultado( i)) - (*anterior( i)) ) > maior_d )
+                maior_d = absoluto( (*resultado( i)) - (*anterior( i)) );
+//            cout << "Erro: " <<  maior_d << " / " << maior_v << endl ;
+        }
+        cout << "Erro: " << ( maior_d / maior_v ) << endl ;
+        if( ( maior_d / maior_v ) < 0.0001) break;
+
+        // copia os resultados
+        for( i = 1; i <= Tamanho; i++)
+        {
+            (*anterior( i)) = (*resultado( i));
+        }
+        // incrementa a interação
+        iteracao += 1;
+    }
+	return true;
+}
+
+// Corpo do Programa
+
+int main( void)
+{
+	TMatriz *matriz;
+
+	setlocale( LC_ALL, "");		// equal caracters in prompt
+
+	matriz = new TMatriz( 4, true);
+
+	(*(*matriz).matriz( 1, 1)) = 4;
+	(*(*matriz).matriz( 1, 2)) = -1;
+	(*(*matriz).matriz( 1, 3)) = 0;
+	(*(*matriz).matriz( 1, 4)) = 0;
+	(*(*matriz).matriz( 1, 5)) = 1;
+
+	(*(*matriz).matriz( 2, 1)) = -1;
+	(*(*matriz).matriz( 2, 2)) = 4;
+	(*(*matriz).matriz( 2, 3)) = -1;
+	(*(*matriz).matriz( 2, 4)) = 0;
+	(*(*matriz).matriz( 2, 5)) = 1;
+
+	(*(*matriz).matriz( 3, 1)) = 0;
+	(*(*matriz).matriz( 3, 2)) = -1;
+	(*(*matriz).matriz( 3, 3)) = 4;
+	(*(*matriz).matriz( 3, 4)) = -1;
+	(*(*matriz).matriz( 3, 5)) = 1;
+
+	(*(*matriz).matriz( 4, 1)) = 0;
+	(*(*matriz).matriz( 4, 2)) = 0;
+	(*(*matriz).matriz( 4, 3)) = -1;
+	(*(*matriz).matriz( 4, 4)) = 4;
+	(*(*matriz).matriz( 4, 5)) = 1;
+
+// resultados: 0,36364 0,45455 0,45455 0,36364
+
+	if( ! ( (*matriz).resolva() )) {
+		cout << "\n\n\nAlgum erro (a implementar)!\n\n";
+		return 2;
+	}
+
+	return 0;
+}
