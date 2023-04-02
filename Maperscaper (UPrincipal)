@@ -1,0 +1,279 @@
+unit UPrincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, Buttons, ComCtrls, Tabnotbk, UVisualizar, Spin;
+
+type
+  TFPrincipal = class(TForm)
+    Image1: TImage;
+    Bevel1: TBevel;
+    Image2: TImage;
+    Bevel2: TBevel;
+    Label1: TLabel;
+    Label2: TLabel;
+    bbAbrir: TBitBtn;
+    OpenDialog1: TOpenDialog;
+    rgImpressora: TRadioGroup;
+    cbResolucao: TComboBox;
+    GroupBox1: TGroupBox;
+    LabelLarg: TLabel;
+    lLargura: TLabel;
+    lAltura: TLabel;
+    LabelAlt: TLabel;
+    lTamanho: TLabel;
+    LabelTam: TLabel;
+    LabelBytes: TLabel;
+    Bevel4: TBevel;
+    Bevel5: TBevel;
+    Bevel6: TBevel;
+    Image3: TImage;
+    Image4: TImage;
+    bver: TButton;
+    bverori: TButton;
+    chkDifuso: TCheckBox;
+    GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    cbQuebra: TComboBox;
+    chkEscA180: TCheckBox;
+    GroupBox4: TGroupBox;
+    GroupBox5: TGroupBox;
+    sePontos: TSpinEdit;
+    Label3: TLabel;
+    eNome: TEdit;
+    bbProcurar: TBitBtn;
+    Label4: TLabel;
+    sPonto: TShape;
+    SaveDialog1: TSaveDialog;
+    bbGerar: TBitBtn;
+    bbSair: TBitBtn;
+    Label5: TLabel;
+    procedure bbAbrirClick(Sender: TObject);
+    procedure bverClick(Sender: TObject);
+    procedure bveroriClick(Sender: TObject);
+    procedure chkDifusoClick(Sender: TObject);
+    procedure Converte;
+    procedure bbSairClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure cbResolucaoChange(Sender: TObject);
+    procedure bbProcurarClick(Sender: TObject);
+    procedure bbGerarClick(Sender: TObject);
+  private
+    Arquivo: file;
+  public
+    { Public declarations }
+  end;
+
+const
+  esc0 = #27+'K';
+  esc1 = #27+'L';
+  esc2 = #27+'Y';
+  esc3 = #27+'Z';
+
+  esc4 = #27+'A'+#180;
+
+  esc5 = #10;
+  esc6 = #13;
+  esc7 = #13#10;
+  esc8 = #13#27+'J'+#15;
+
+var
+  FPrincipal: TFPrincipal;
+
+implementation
+
+{$R *.DFM}
+
+procedure TFPrincipal.bbAbrirClick(Sender: TObject);
+var
+  xy: real;
+  y_8: integer;
+begin
+  if OpenDialog1.Execute then begin try
+    LabelLarg.Enabled := false;
+    lLargura.Enabled := false;
+    lAltura.Enabled := false;
+    LabelAlt.Enabled := false;
+    lTamanho.Enabled := false;
+    LabelTam.Enabled := false;
+    LabelBytes.Enabled := false;
+    chkDifuso.Enabled := false;
+    rgImpressora.Enabled := false;
+    cbResolucao.Enabled := false;
+    bverori.Enabled := false;
+    bver.Enabled := false;
+    chkEscA180.Enabled := false;
+    sePontos.Enabled := false;
+    cbQuebra.Enabled := false;
+    eNome.Enabled := false;
+    bbProcurar.Enabled := false;
+    bbGerar.Enabled := false;
+    Image1.Visible := false;
+    Image2.Visible := false;
+    Image3.Visible := true;
+    Image4.Visible := true;
+    Image1.Picture.LoadFromFile( OpenDialog1.FileName);
+    Image2.Picture.LoadFromFile( OpenDialog1.FileName);
+  except
+    ShowMessage( 'Não foi possível abrir este arquivo!'); exit;
+  end; end else exit;
+
+  Cursor := crHourGlass;
+
+  Converte;
+
+  LabelLarg.Enabled := true;
+  lLargura.Enabled := true;
+  lAltura.Enabled := true;
+  LabelAlt.Enabled := true;
+  lTamanho.Enabled := true;
+  LabelTam.Enabled := true;
+  LabelBytes.Enabled := true;
+  chkDifuso.Enabled := true;
+  rgImpressora.Enabled := true;
+  cbResolucao.Enabled := true;
+  bverori.Enabled := true;
+  bver.Enabled := true;
+  chkEscA180.Enabled := true;
+  sePontos.Enabled := true;
+  cbQuebra.Enabled := true;
+  eNome.Enabled := true;
+  bbProcurar.Enabled := true;
+  bbGerar.Enabled := true;
+
+  lLargura.Caption := inttostr(image2.picture.Width);
+  lAltura.Caption := inttostr(image2.picture.Height);
+
+  y_8 := image2.picture.Height div 8;
+  if image2.picture.Height mod 8 > 1 then inc(y_8);
+  lTamanho.Caption := inttostr(image2.picture.Width*y_8);
+
+  if image1.picture.height = 0 then begin
+    ShowMessage( 'Erro:'+chr(13)+'Bitmap com altura zero!'); Cursor := crDefault; exit; end;
+  xy := image1.picture.Width / image1.picture.Height;
+  if xy > 2 then begin
+    image1.Left := 9;
+    image1.Height := trunc (400 / xy);
+    image1.Top := trunc ((200-image1.height)/2)+24;
+    image1.Width := 400;
+    image2.Left := 9;
+    image2.Height := trunc (400 / xy);
+    image2.Top := trunc ((200-image2.height)/2)+248;
+    image2.Width := 400;
+  end else begin
+    image1.Top := 24;
+    image1.Width := trunc (200 * xy);
+    image1.Left := trunc ((400-image1.width)/2)+9;
+    image1.Height := 200;
+    image2.Top := 248;
+    image2.Width := trunc (200 * xy);
+    image2.Left := trunc ((400-image2.width)/2)+9;
+    image2.Height := 200;
+  end;
+  Image3.Visible := false;
+  Image4.Visible := false;
+  Image1.Visible := true;
+  Image2.Visible := true;
+  Cursor := crDefault;
+end;
+
+procedure TFPrincipal.bverClick(Sender: TObject);
+begin
+  FVisualiza.Image1.Picture := Image2.Picture;
+  FVisualiza.ShowModal;
+end;
+
+procedure TFPrincipal.bveroriClick(Sender: TObject);
+begin
+  FVisualiza.Image1.Picture := Image1.Picture;
+  FVisualiza.ShowModal;
+end;
+
+procedure TFPrincipal.chkDifusoClick(Sender: TObject);
+begin
+  Cursor := crHourGlass;
+  Converte;
+  Cursor := crDefault;
+end;
+
+procedure TFPrincipal.Converte;
+var
+  xtemp, ytemp, x2temp, cor_temp, rtemp1, rtemp2, rtemp3, rtemp4: integer;
+  linha: PByteArray;
+begin
+  try
+    rtemp1 := 32; rtemp2 := 96; rtemp3 := 160; rtemp4 := 224;
+    Image2.Picture := Image1.Picture;
+    Image2.Picture.Bitmap.PixelFormat := pf24bit;
+    for ytemp := 0 to image2.picture.Height-1 do begin
+      linha := Image2.Picture.Bitmap.ScanLine[ ytemp];
+      for xtemp := 0 to image2.picture.Width-1 do begin
+        cor_temp := (linha[xtemp*3]*2+linha[xtemp*3+1]*6+linha[xtemp*3+2]*2) div 10;
+        if chkDifuso.Checked then begin rtemp1 := random( 58) + 6; rtemp2 := random(64) + 64;
+          rtemp3 := random(64) + 128; rtemp4 := random(56) + 192; end;
+        for x2temp := 0 to 2 do
+          if ytemp mod 2 = 1 then
+            if (xtemp mod 2 + (ytemp div 2) mod 2) = 1 then
+              if cor_temp > rtemp1 then linha[ xtemp*3+x2temp] := 255 else linha[ xtemp*3+x2temp] := 64
+            else
+              if cor_temp > rtemp3 then linha[ xtemp*3+x2temp] := 255 else linha[ xtemp*3+x2temp] := 64
+          else
+            if (xtemp mod 2 + (ytemp div 2) mod 2) = 1 then
+              if cor_temp > rtemp4 then linha[ xtemp*3+x2temp] := 255 else linha[ xtemp*3+x2temp] := 64
+            else
+              if cor_temp > rtemp2 then linha[ xtemp*3+x2temp] := 255 else linha[ xtemp*3+x2temp] := 64
+  end; end; except
+    ShowMessage( 'Não foi possível converter este Bitmap em monocromático!'); Cursor := crDefault; exit; end;
+end;
+
+procedure TFPrincipal.bbSairClick(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TFPrincipal.FormCreate(Sender: TObject);
+begin
+  cbResolucao.ItemIndex := 2;
+  cbQuebra.ItemIndex := 3;
+end;
+
+procedure TFPrincipal.cbResolucaoChange(Sender: TObject);
+begin
+  case cbResolucao.ItemIndex of
+    0:    SPonto.Width := 60;
+    1..2: SPonto.Width := 30;
+    3:    SPonto.Width := 15;
+  else
+    SPonto.Width := 0;
+  end;
+end;
+
+procedure TFPrincipal.bbProcurarClick(Sender: TObject);
+begin
+  if SaveDialog1.Execute then eNome.Text := SaveDialog1.FileName;
+end;
+
+procedure TFPrincipal.bbGerarClick(Sender: TObject);
+begin
+  if eNome.Text = '' then begin ShowMessage( 'Escolha um nome para o arquivo a gerar!'); exit; end;
+  AssignFile( Arquivo, eNome.Text);
+  Rewrite( Arquivo, 1);
+
+  if chkEscA180.Checked then BlockWrite( Arquivo, esc4, 3);
+
+{ esc0 = #27+'K';
+  esc1 = #27+'L';
+  esc2 = #27+'Y';
+  esc3 = #27+'Z';
+
+  esc4 = #27+'A'+#180;
+
+  esc5 = #10;
+  esc6 = #13;
+  esc7 = #13#10;
+  esc8 = #13#27+'J'+#15; }
+end;
+
+end.
