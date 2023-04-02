@@ -1,0 +1,73 @@
+/*
+
+Objeto para Contagem Global (com método de classe via static)
+
+Exemplo de como criar um objeto global para todos, via método de classe
+(definido com a palavra-chave static).   Dentro  deste  método  há  uma
+variável do tipo static que será global.
+
+Toda chamada para o método de classe contagem::get_contagem() retorna o
+mesmo objeto (a não ser que ele não exista, então é criado).
+
+*/
+
+#include <iostream>
+#include <stdio.h>
+#include <locale.h>
+
+using namespace std;
+
+class contagem {
+   private:
+      int contador;
+   public:
+      contagem();
+      ~contagem();
+      static contagem * get_contagem();
+      int get_contador();
+      void set_contador( int valor);
+      void inc_contador( int valor);
+      void inc_contador();
+      void dec_contador( int valor);
+      void dec_contador();
+};
+     contagem::contagem() { contador = 0; }  // abaixo, destrutor com depuração
+     contagem::~contagem() { cerr << "deletando contador: " << contador << "\n" ; }
+int  contagem::get_contador() { return contador; }
+void contagem::set_contador( int valor) { contador = valor; }
+void contagem::inc_contador( int valor) { contador += valor; }
+void contagem::inc_contador() { contador++; }
+void contagem::dec_contador( int valor) { contador -= valor; }
+void contagem::dec_contador() { contador--; }
+
+contagem * contagem::get_contagem() {     // retorna um objeto contagem global
+   static contagem * _contagem;	// esta variável é estática de um método de classe (global)
+   if( _contagem == NULL ) _contagem = new contagem;
+   return _contagem; }
+
+int main( void) {  // para testes (nos comentários, os resultados esperados)
+   int foo;
+   contagem * Contagem1, * Contagem2;     // serão aliases, de facto
+
+	setlocale( LC_ALL, "");		// equal caracters in prompt
+
+   Contagem1 = contagem::get_contagem();
+   Contagem2 = contagem::get_contagem();
+   cout << Contagem1->get_contador() << "\n";      // 0
+   Contagem1->inc_contador();
+   cout << Contagem1->get_contador() << "\n";      // 1
+   Contagem2->inc_contador( 40);
+   cout << Contagem2->get_contador() << "\n";      // 41
+   Contagem2->dec_contador( 10);
+   cout << Contagem1->get_contador() << "\n";      // 31
+   Contagem1->dec_contador( );
+   cout << Contagem2->get_contador() << "\n";      // 30
+   Contagem2->set_contador( 1138);
+   cout << Contagem2->get_contador() << "\n";      // 1138
+   cout << "Compare os endereços dos objetos: " 
+		<< std::hex << Contagem2 << " " << Contagem1 << "\n" << std::dec ; // ?
+   delete Contagem1;		// cuidado com os aliases que vão restar aqui
+
+   cout << "\nPressione enter para sair.";
+   scanf( "%c", &foo);
+}
