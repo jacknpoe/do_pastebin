@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+#define LARG 3
+
+int main( void) {
+	char a, b, c, d;
+	int temp = 0;
+	int m[ LARG][ LARG][ LARG][ LARG] = {};
+
+	printf( "-1 cancela a primeira coluna.\n");
+	printf( "-2 cancela a segunda coluna.\n");
+	printf( "-3 cancela a terceira coluna.\n");
+	printf( "-4 cancela a quarta coluna.\n");
+	printf( "-5 cancela as entradas.\n");
+	printf( "-6 sai do programa.\n\n");
+
+	for( a = 0, temp = 0; (a < LARG) & (temp > -5); a ++ ) {	// FOR a
+		for( b = 0, temp = 0; (b < LARG) & (temp > -4); b++ ) {		// FOR b
+			for( c = 0, temp = 0; (c < LARG) & (temp > -3); c++ ) {		// FOR c
+				for( d = 0, temp = 0; (d < LARG) & (temp > -2); d++ ) {		// FOR d
+					printf( "M[%d][%d][%d][%d]: ", a, b, c, d);
+					scanf( "%d", &temp);
+					if( temp < 0) continue;		// desnecessário GOTO (cancela atual FOR d)
+					m[ a][ b][ c][d] = temp;
+				}	// FOR d
+			}	// FOR c
+		}	// FOR b
+	}	// FOR a
+	if( temp > -6) {	// desnecessário GOTO (sai do programa sem "imprimir")
+		printf( "\n\n");
+	
+		for( a = 0; a < LARG; a ++ )
+			for( b = 0; b < LARG; b++ )
+				for( c = 0; c < LARG; c++ )
+					for( d = 0; d < LARG; d++ )
+						printf( "M[%d][%d][%d][%d]: %d\n", a, b, c, d, m[ a][ b][ c][d]);
+	}
+}
