@@ -1,0 +1,27 @@
+#include <iostream>
+#include <ostream>
+
+class base {
+	public:
+	virtual ~base( ) {}
+};
+
+class derived : public base {};
+class most_derived : public derived {};
+class other : public base {};
+
+int main( )
+{
+	base* b = new derived;
+	std::cout << "A " << b << "\n";
+	std::cout << "B " << dynamic_cast<most_derived*>(b) << "\n"; // Null pointer
+	dynamic_cast<derived&>(*b); // OK
+	std::cout << "C " << b << "\n";
+	std::cout << "D " << dynamic_cast<other*>(b) << "\n"; // Null pointer
+	derived* d = new most_derived;
+	std::cout << "E " << d << "\n";
+	b = d;
+	std::cout << "F " << b << "\n";
+	b = dynamic_cast<base*>(d); // OK, but dynamic_cast<> is unnecessary.
+	std::cout << "G " << b << "\n";
+}
