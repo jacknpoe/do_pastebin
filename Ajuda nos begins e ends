@@ -1,0 +1,58 @@
+Program Pzim ;
+var
+  idade,sexo,escolaridade,cont_escolaridade_f,cont_escolaridade_m,cont_qtd,cont_mu,cont_h,soma_idade:integer;
+  media_idade,porcent_mu,porcent_h:real;
+  resp:string;
+Begin
+   cont_qtd:=0;
+   cont_mu:=0;
+   cont_h:=0;
+   soma_idade:=0;
+
+  repeat
+    writeln ('Qual sua idade?');
+    read(idade);
+    writeln('Qual seu sexo ? [1] Masculino [2] Feminino');
+    read(sexo);
+    writeln('Qual sua escolaridade? [0] analfabeto [1] funtamental [2] medio [3] superior');
+    read(escolaridade);
+     
+    cont_qtd:=cont_qtd+1;
+    soma_idade:=soma_idade+idade;
+    
+  // inicia o camando da mulher
+    if (sexo = 2) then
+    begin
+      cont_mu:=cont_mu+1;
+      if ( escolaridade = 3) then
+      begin
+        cont_escolaridade_f:=cont_escolaridade_f+1;
+      end;
+      porcent_mu:=(cont_escolaridade_f*100)/cont_mu;
+    end;
+         
+    if (sexo = 1) and (idade >= 18) then
+    begin
+      cont_h:=cont_h+1;
+      if (escolaridade = 0) then
+      begin
+        cont_escolaridade_m:=cont_escolaridade_m+1;
+      end;
+      porcent_h:=(cont_escolaridade_m*100)/cont_h;
+    end;
+  
+    writeln('Deseja continuar a entrevista ? [S] sim [N] não.');
+    read(resp);
+  until (resp= 'n');
+
+  media_idade:=soma_idade/cont_qtd;
+
+  clrscr;
+  textcolor(yellow);
+  writeln('=======================RELATÓRIO DA ENTREVISTA=======================');
+  writeln;
+  writeln('A quantidade de pessoas entrevistas é ',cont_qtd);
+  writeln('A media das idades é',media_idade:8:2);
+  writeln('A porcentagem de mulheres que tem nível universitário é',porcent_mu:8:2);
+  writeln('A porcentagem de homens adultos analfabetos é',porcent_h:8:2);
+End.
