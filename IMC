@@ -1,0 +1,23 @@
+#include <iostream>
+
+int main( void) {
+	float peso, altura, imc;
+	std::cout << "Informe o peso: "; std::cin >> peso;
+	std::cout << "Informe a altura: "; std::cin >> altura;
+	if( 
+	    imc = peso / (altura*altura),
+		 std::cout << "Resultado: ",
+		 std::cout << ( imc < 17.0 ? "voce esta muito abaixo do peso" : ""),
+		 std::cout << ( imc >= 17.0 and imc < 18.5 ? "voce esta abaixo do peso" : ""),
+		 std::cout << ( imc >= 18.5 and imc < 25.0 ? "seu peso esta normal" : ""),
+		 std::cout << ( imc >= 25.0 and imc < 30.0 ? "voce esta acima do peso" : ""),
+		 std::cout << ( imc >= 30.0 and imc < 35.0 ? "voce esta obeso" : ""),
+		 std::cout << ( imc >= 35.0 and imc < 40.0 ? "voce esta com obesidade severa" : ""),
+		 std::cout << ( imc >= 40.0 ? "voce esta com obesidade morbida" : ""),
+		 imc > 30
+	  )
+		std::cout << "!";
+	else
+		std::cout << ".";
+	return 0;
+}
