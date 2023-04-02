@@ -1,0 +1,409 @@
+<?php
+	//***********************************************************************************************
+	// Ricardo Erick Rebêlo
+	// Objetivo: conversões em geral
+	// Versão Original: 02/07/2014 - 
+	// Alterações:
+
+	// namespace jacknpoe::nf_e; (usar quando for possível editar em 5.3.0 ou posterior)
+
+	//* CONSTANTES **********************************************************************************
+	// constante indefinida para todos os tipos
+	define( "INDEFINIDO", 0);
+
+// TIPOS DE CONVERSÕES COMUNS (HTML, ASCII, ETC)
+	define( "TIPO_CONV_PARA_HTML", 1);
+	define( "TIPO_CONV_DE_HTML", 2);
+	define( "TIPO_CONV_SO_ASCII", 3);
+
+// TIPOS DE CONVERSÕES NUMÉRICAS
+	define( "TIPO_CONV_NUMERO", 100);
+	define( "TIPO_CONV_VALOR", 101);
+	define( "TIPO_CONV_ALIQUOTA", 102);
+
+// TIPOS DE CONVERSÕES TÉCNICO-NUMÉRICAS
+	define( "TIPO_CONV_TECN_NUMERO", 200);
+	define( "TIPO_CONV_TECN_VALOR", 201);
+	define( "TIPO_CONV_TECN_ALIQUOTA", 202);
+
+// TIPOS DE CONVERSÕES PARA NFS-e
+	define( "TIPO_CONV_NFSE_NUMEROLOTE", 3001);		// N 10
+	define( "TIPO_CONV_NFSE_STATUS", 3002);		// 0 Normal 1 Cancelado
+	define( "TIPO_CONV_NFSE_NATUREZAOPERACAO", 3003);		// N 3 (101, 111, 121, 201, 301, 501, 511, 541, 551, 601, 701)
+	define( "TIPO_CONV_NFSE_SIMNAO", 3004);		// 1 Sim 2 Não
+	define( "TIPO_CONV_NFSE_QUANTIDADERPS", 3005);		// N 4
+	define( "TIPO_CONV_NFSE_NUMERORPS", 3006);		// N 15
+	define( "TIPO_CONV_NFSE_SERIERPS", 3007);		// N 5
+	define( "TIPO_CONV_NFSE_TIPORPS", 3008);		// N 1 (1 RPS, 2 NF Conjugada (Mista), 3 Cupom)
+	define( "TIPO_CONV_NFSE_VALOR", 3009);		// N 15 2 (13.2)
+	define( "TIPO_CONV_NFSE_ITEMLISTASERVICO", 3010);		// C 5 (ex.: 14.01 = 1401, 7.02 = 702)
+	define( "TIPO_CONV_NFSE_ALIQUOTA", 3011);		// 5, 4 (1.4)
+	define( "TIPO_CONV_NFSE_DISCRIMINACAO", 3012);		// C 2000
+	define( "TIPO_CONV_NFSE_CODIGOMUNICIPIOIBGE", 3013);		// N 7
+	define( "TIPO_CONV_NFSE_CODIGOPAISBACEN", 3014);		// N 4
+	define( "TIPO_CONV_NFSE_RAZAOSOCIAL", 3015);		// C 115
+	define( "TIPO_CONV_NFSE_CNPJ", 3016);		// C 14 (N?)
+	define( "TIPO_CONV_NFSE_ENDERECO", 3017);		// C 125
+	define( "TIPO_CONV_NFSE_NUMEROENDERECO", 3018);		// C 10
+	define( "TIPO_CONV_NFSE_COMPLEMENTOENDERECO", 3019);		// C 60
+	define( "TIPO_CONV_NFSE_BAIRRO", 3020);		// C 60
+	define( "TIPO_CONV_NFSE_UF", 3021);		// C 2
+	define( "TIPO_CONV_NFSE_CEP", 3022);		// N 8
+	define( "TIPO_CONV_NFSE_EMAIL", 3023);		// C 80
+	define( "TIPO_CONV_NFSE_TELEFONE", 3024);		// C 11 (N?)
+	define( "TIPO_CONV_NFSE_CPF", 3025);		// C 11 (N?)
+	define( "TIPO_CONV_NFSE_IDTAG", 3026);		// C 255
+	define( "TIPO_CONV_NFSE_INSCRICAOMUNICIPAL", 3027);		// N 15
+	define( "TIPO_CONV_NFSE_NUMERONFSE", 3028);		// N 15 (4+11)
+	define( "TIPO_CONV_NFSE_CODIGOVERIFICACAO", 3029);		// N 9
+	define( "TIPO_CONV_NFSE_OUTRASINFORMACOES", 3030);		// C 255
+	define( "TIPO_CONV_NFSE_SITUACAOLOTERPS", 3031);	// N 1 (1 não recebido; 2 processado; 3 processado erro; 4 processado sucesso)
+	define( "TIPO_CONV_NFSE_CODIGOCANCELAMENTONFSE", 3032);		// C 4 (tabela)
+	define( "TIPO_CONV_NFSE_MOTIVOCANCELAMENTONFSE", 3033);		// C 255
+
+//* CLASSE E MÉTODOS PÚBLICOS *******************************************************************
+
+	class JacknpoeConversor
+	{
+		// CONSTANTES
+		const VERSAO = '1.0';		// versão atual da classe
+
+		function __construct()
+		{
+			// NULO
+		}
+
+	// TODAS as conversões que aceitam apenas um parâmetro podem ser generalizadas neste método
+		function converter( $entrada, $tipo)		// generalizador de conversão
+		{
+
+			switch( $tipo)
+			{
+			// CONVERSÕES COMUNS (HTML, ASCII, ETC.)
+				case TIPO_CONV_PARA_HTML:
+					return $this->converter_para_html( $entrada);
+				case TIPO_CONV_DE_HTML :
+					return $this->converter_de_html( $entrada);
+				case TIPO_CONV_SO_ASCII :
+					return $this->converter_so_ascii( $entrada);
+
+			// CONVERSÕES NUMÉRICAS
+				case TIPO_CONV_NUMERO :
+					return $this->converter_numero( $entrada);
+				case TIPO_CONV_VALOR :
+					return $this->converter_valor( $entrada);
+				case TIPO_CONV_ALIQUOTA :
+					return $this->converter_aliquota( $entrada);
+
+			// CONVERSÕES NFS-e
+				case TIPO_CONV_NFSE_NUMEROLOTE :
+					return $this->converter_nfse_numero( $entrada, 10);
+				case TIPO_CONV_NFSE_STATUS :
+					return $this->converter_nfse_numero( $entrada, 1);
+				case TIPO_CONV_NFSE_NATUREZAOPERACAO :
+					return $this->converter_nfse_numero( $entrada, 3);
+				case TIPO_CONV_NFSE_SIMNAO :
+					return $this->converter_nfse_numero( $entrada, 1);
+				case TIPO_CONV_NFSE_QUANTIDADERPS :
+					return $this->converter_nfse_numero( $entrada, 4);
+				case TIPO_CONV_NFSE_NUMERORPS :
+					return $this->converter_nfse_numero( $entrada, 15);
+				case TIPO_CONV_NFSE_SERIERPS :
+					return $this->converter_nfse_numero( $entrada, 5);
+				case TIPO_CONV_NFSE_TIPORPS :
+					return $this->converter_nfse_numero( $entrada, 1);
+				case TIPO_CONV_NFSE_VALOR :
+					return $this->converter_nfse_valor( $entrada, 15, 2);
+				case TIPO_CONV_NFSE_ITEMLISTASERVICO :
+					return $this->converter_nfse_numero( $entrada, 5);
+				case TIPO_CONV_NFSE_ALIQUOTA :
+					return $this->converter_nfse_valor( $entrada, 5, 4);
+				case TIPO_CONV_NFSE_DISCRIMINACAO :
+					return $this->converter_nfse_texto( $entrada, 2000);
+				case TIPO_CONV_NFSE_CODIGOMUNICIPIOIBGE :
+					return $this->converter_nfse_numero( $entrada, 7);
+				case TIPO_CONV_NFSE_CODIGOPAISBACEN :
+					return $this->converter_nfse_numero( $entrada, 4);
+				case TIPO_CONV_NFSE_RAZAOSOCIAL :
+					return $this->converter_nfse_texto( $entrada, 115);
+				case TIPO_CONV_NFSE_CNPJ :
+					return $this->converter_nfse_numero( $entrada, 14);
+				case TIPO_CONV_NFSE_ENDERECO :
+					return $this->converter_nfse_texto( $entrada, 125);
+				case TIPO_CONV_NFSE_NUMEROENDERECO :
+					return $this->converter_nfse_texto( $entrada, 10);
+				case TIPO_CONV_NFSE_COMPLEMENTOENDERECO :
+					return $this->converter_nfse_texto( $entrada, 60);
+				case TIPO_CONV_NFSE_BAIRRO :
+					return $this->converter_nfse_texto( $entrada, 60);
+				case TIPO_CONV_NFSE_UF :
+					return $this->converter_nfse_texto( $entrada, 2);
+				case TIPO_CONV_NFSE_CEP :
+					return $this->converter_nfse_numero( $entrada, 8);
+				case TIPO_CONV_NFSE_EMAIL :
+					return $this->converter_nfse_texto( $entrada, 80);
+				case TIPO_CONV_NFSE_TELEFONE :
+					return $this->converter_nfse_numero( $entrada, 11);
+				case TIPO_CONV_NFSE_CPF :
+					return $this->converter_nfse_numero( $entrada, 11);
+				case TIPO_CONV_NFSE_IDTAG :
+					return $this->converter_nfse_texto( $entrada, 255);
+				case TIPO_CONV_NFSE_INSCRICAOMUNICIPAL :
+					return $this->converter_nfse_numero( $entrada, 15);
+				case TIPO_CONV_NFSE_NUMERONFSE :
+					return $this->converter_nfse_numero( $entrada, 15);
+				case TIPO_CONV_NFSE_CODIGOVERIFICACAO :
+					return $this->converter_nfse_numero( $entrada, 9);
+				case TIPO_CONV_NFSE_OUTRASINFORMACOES :
+					return $this->converter_nfse_texto( $entrada, 255);
+				case TIPO_CONV_NFSE_SITUACAOLOTERPS :
+					return $this->converter_nfse_numero( $entrada, 1);
+				case TIPO_CONV_NFSE_CODIGOCANCELAMENTONFSE :
+					return $this->converter_nfse_texto( $entrada, 4);
+				case TIPO_CONV_NFSE_MOTIVOCANCELAMENTONFSE :
+					return $this->converter_nfse_texto( $entrada, 255);
+			// ERRO(S)
+				default:
+					return( 'Erro');
+			}
+		}
+
+	// CONVERSÕES COMUNS (HTML, ASCII, ETC.)
+		function converter_para_html( $entrada)
+		{
+			return htmlentities( $entrada, ENT_QUOTES | ENT_HTML401, "ISO-8859-1");
+		}
+
+		function converter_de_html( $entrada)
+		{
+			return html_entity_decode( $entrada, ENT_QUOTES | ENT_HTML401, "ISO-8859-1");
+		}
+
+		function converter_so_ascii( $entrada)
+		{
+			return $this->apenasASCII( $entrada, TRUE);
+		}
+
+	// CONVERSÕES NUMÉRICAS
+		function converter_numero( $entrada, $decimais = 2, $pontodecimal = ",", $pontomilhar = ".")
+		{
+			return number_format( (float)$entrada , $decimais, $pontodecimal, $pontomilhar);
+		}
+
+		function converter_valor( $entrada)
+		{
+			return number_format( (float)$entrada , 2, ",", "");
+		}
+
+		function converter_aliquota( $entrada)
+		{
+			return number_format( (float)$entrada , 4, ",", "");
+		}
+
+	// CONVERSÕES BASE PARA NF-e
+		// conversão para números SEM ponto decimal (inclui aceitar apenas números de uma string)
+		function converter_nfse_numero( $entrada, $tamanho)
+		{
+			$temp = $this->apenasNumeros( $entrada, FALSE);	// aceita apenas números da string ou o que seja
+			return substr( (string)$temp, $tamanho * -1, $tamanho);		// e limita o tamanho pelo final da string
+		}
+
+		// conversão para números COM ponto decimal (inclui aceitar apenas números, +, -, pontos e vírgulas de uma string)
+		function converter_nfse_valor( $entrada, $tamanho, $decimais)
+		{
+			$temp = $this->apenasNumerosEPontuacao( $entrada, FALSE);	// aceita apenas números, pontos, vírgulas, + e -
+			$temp = number_format( (float)$temp, $decimais, ".", "");	// converte o número em em string com o format XX.XX
+			$temp = substr( (string)$temp, ($tamanho + 1) * -1, $tamanho + 1);		// limita o tamanho pelo final da string
+
+			// retira zeros no final e ponto desnecessários
+			while( strlen( $temp) > 0)
+			{
+				if( $temp[ strlen( $temp) - 1 ] == '.' ) {	$temp = substr( $temp, 0, -1); break; }
+
+				if( $temp[ strlen( $temp) - 1 ] == '0' ) {	$temp = substr( $temp, 0, -1); }
+					else { break; }
+			}
+
+			return $temp;
+		}
+
+		// conversão de texto apenas ASCII mas convertido o que é possível com limite de tamanho
+		function converter_nfse_texto( $entrada, $tamanho)
+		{
+			$temp = $this->apenasASCII( $entrada, TRUE);	// aceita apenas ASCII mas converte o que for possível
+			return substr( (string)$temp, 0, $tamanho);		// e limita o tamanho pelo início da string
+		}
+
+//* MÉTODOS INTERNOS (PRIVATE) *****************************************************************
+
+	// NÃO USADO ATÉ O MOMENTO
+		private function retornarSemSimbolos( $texto)	// retira espaços e símbolos (ver abaixo) do início e do final de um texto
+		{
+			$antiga = '';
+			$texto = trim( $texto);
+
+			while( $antiga != $texto)
+			{
+				$antiga = $texto;
+
+				if( strpos( '!@"#$%-=*&,.;:/?´^~_§°', $texto[ strlen( $texto)-1 ]) !== FALSE)
+					$texto = substr( $texto, 0, -1);  	//	$texto = substr( $texto, 0, strlen( $texto)-1);
+
+				$texto = trim( $texto);
+			}
+			return $texto;
+		}
+
+	// TABELA PARA CONVERSÃO (FUNÇÃO LOGO ABAIXO)
+		private $_tabela_conversao = array(
+			'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'AE', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+			'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+			'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+			'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'ae', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+			'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+			'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ý'=>'y', 'ý'=>'y', 
+			'þ'=>'b', 'ÿ'=>'y', '°'=>'o', 'º'=>'o', 'ª'=>'a'
+    	); // retirado do manual do PHP (allixsenos at gmail dot com)
+
+	// CONVERTE CARACTERES PARA SEM ACENTOS
+    	private function converterAcentosEEspeciais( $texto)
+    	{
+    		return strtr( $texto, $this->_tabela_conversao);	// retirado do manual do PHP (allixsenos at gmail dot com)
+    	}
+
+	// TABELA PARA CONVERSÃO DE VÍRGULA PRA PONTO (FUNÇÃO LOGO ABAIXO)
+		private $_tabela_conversao_vp = array( ','=>'.');
+
+	// CONVERTE VÍRGULA PARA PONTO
+    	private function converterVirgulaEmPonto( $texto)
+    	{
+    		return strtr( $texto, $this->_tabela_conversao_vp);
+    	}
+
+	// NÃO USADO ATÉ O MOMENTO
+		private function apenasLetrasENumeros( $texto, $converter)
+		{
+			if( $converter)
+			{
+				$texto = $this->converterAcentosEEspeciais( $texto);
+			}
+
+			$texto_temp = '';
+
+			for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+			{
+				$ascii = ord( $texto[$contador]);
+
+				if ( ( $ascii >= 97 and $ascii <= 122 )
+				  or ( $ascii >= 65 and $ascii <= 90 )
+				  or ( $ascii >= 48 and $ascii <= 57 ) )
+				{
+					$texto_temp .= $texto[$contador];
+				}
+			}
+		 
+		        return $texto_temp;
+		}
+
+	// NÃO USADO ATÉ O MOMENTO
+		private function apenasLetras( $texto, $converter)
+		{
+			if( $converter)
+			{
+				$texto = $this->converterAcentosEEspeciais( $texto);
+			}
+
+			$texto_temp = '';
+
+			for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+			{
+				$ascii = ord( $texto[$contador]);
+
+				if ( ( $ascii >= 97 and $ascii <= 122 )
+				  or ( $ascii >= 65 and $ascii <= 90 ) )
+				{
+					$texto_temp .= $texto[$contador];
+				}
+			}
+
+			return $texto_temp;
+		}
+
+	// CONVERTE CARACTERES PARA SEM ACENTOS (OPCIONAL) E PEGA APENAS NÚMEROS
+		private function apenasNumeros( $texto, $converter)
+		{
+			if( ! is_string( $texto)) return $texto;
+
+			if( $converter)
+			{
+				$texto = $this->converterAcentosEEspeciais( $texto);
+			}
+
+			$texto_temp = '';
+
+			for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+			{
+				$ascii = ord( $texto[$contador]);
+
+				if ( $ascii >= 48 and $ascii <= 57 )
+				{
+					$texto_temp .= $texto[$contador];
+				}
+			}
+
+			return $texto_temp;
+		}
+
+	// CONVERTE CARACTERES PARA SEM ACENTOS (OPCIONAL) E PEGA APENAS NÚMEROS E PONTUAÇÃO
+		private function apenasNumerosEPontuacao( $texto, $converter)
+		{
+			if( ! is_string( $texto)) return $texto;
+
+			if( $converter)
+			{
+				$texto = $this->converterAcentosEEspeciais( $texto);
+			}
+
+			$texto_temp = '';
+
+			for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+			{
+				$ascii = ord( $texto[$contador]);
+
+				if ( $ascii >= 43 and $ascii <= 57 and $ascii != 47 )
+				{
+					$texto_temp .= $texto[$contador];
+				}
+			}
+
+			return $texto_temp;
+		}
+
+	// CONVERTE CARACTERES PARA SEM ACENTOS (OPCIONAL) E ESPECIAIS EM ESPAÇOS
+		private function apenasASCII( $texto, $converter)
+		{
+			if( $converter)
+			{
+				$texto = $this->converterAcentosEEspeciais( $texto);
+			}
+
+			$texto_temp = '';
+
+			for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+			{
+				$ascii = ord( $texto[$contador]);
+
+				if ( $ascii >= 32 and $ascii <= 126)
+				{
+					$texto_temp .= $texto[$contador];
+				}
+				else
+				{
+					$texto_temp .= ' ';
+				}
+			}
+
+			return $texto_temp;
+		}		
+	}		// CLASSE JacknpoeConversor
+?>
