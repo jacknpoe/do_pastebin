@@ -1,0 +1,27 @@
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
+using namespace std;
+
+class cGuerreiros{
+public:
+	string nome;
+	static cGuerreiros combater( cGuerreiros guerreiro1, cGuerreiros guerreiro2);
+};
+
+cGuerreiros cGuerreiros::combater( cGuerreiros guerreiro1, cGuerreiros guerreiro2)
+{
+  return ( ( rand() % 2) == 1) ? guerreiro1 : guerreiro2;
+}
+
+int main( void){
+	cGuerreiros g1, g2;
+
+	srand ( time( NULL));
+
+	g1.nome = "Ricardo";
+	g2.nome = "Rodrigo";
+	cout << (cGuerreiros::combater( g1, g2)).nome;
+}
