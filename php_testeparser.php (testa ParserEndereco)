@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>Teste de Classe \jacknpoe\ParserEndereco (para fisco em NF-e)</title>
+	</head>
+	<body>
+		<?php
+			header( "Content-Type: text/html; charset=ISO-8859-1", true);
+
+			define( "EST_NENHUM",  'Nenhum endereço enviado até o momento!');
+			define( "EST_VAZIO",   'O endereço enviado está vazio!');
+			define( "EST_ENVIADO", 'Endereço enviado e processado.');
+			define( "RESULTADO",   'Resultado');
+			define( "LOGRADOURO",  'Logradouro');
+			define( "NUMERO",      'Número');
+			define( "COMPLEMENTO", 'Complemento');
+			define( "PROCESSAR",   'Processar');
+			define( "ENDERECO",    'Endereço');
+
+			$endereco = '';
+			$resultado = '';
+			$estado = EST_NENHUM;
+
+			if( isset( $_POST[ 'processar']))
+			{
+				$endereco = trim( $_POST[ 'endereco']);
+
+				if( strlen( $endereco) > 0)
+				{
+					require_once( 'ParserEndereco.php'); // salve o código de http://pastebin.com/ypLiC6Nv com esse nome.
+					$parser = new \jacknpoe\ParserEndereco();
+					$parser->reconhecerEndereco( $endereco);
+
+					$resultado = RESULTADO . ': <br><br>' . 
+						LOGRADOURO . ': '  . $parser->logradouro  . '<br>' .
+						NUMERO . ': '      . $parser->numero      . '<br>' .
+						COMPLEMENTO . ': ' . $parser->complemento . '<br>';
+					$estado = EST_ENVIADO;
+				}
+				else
+				{
+					$estado = EST_VAZIO;
+				}
+			}
+		?>
+		<br><?php echo $estado; ?><br><br>
+
+		<form action="php_testeparser.php" method="POST" style="border: 0px">
+			<?php echo ENDERECO; ?> <input type="text" name="endereco" value="<?php echo $endereco; ?>" size="160 px"><br><br>
+			<input type="submit" name="processar" value="<?php echo PROCESSAR; ?>">
+		</form>
+
+		<br><?php echo $resultado; ?><br><br>
+	</body>
+</html>
