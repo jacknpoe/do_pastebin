@@ -1,0 +1,12 @@
+	mov	ax,0013	; B81300
+	int	10	; CD10
+	mov	ax,a000	; B800A0
+	push	ax	; 50
+	pop	ds	; 1F
+end_a	mov	cx,fa01	; B901FA
+end_b	push	cx	; 51
+	pop	bx	; 5B
+	mov	[bx],al	; 8807
+	inc	al	; FEC0
+	loop	end_b	; E2F8
+	jmp	end_a	; EBF3
