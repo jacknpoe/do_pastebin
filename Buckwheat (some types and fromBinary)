@@ -1,0 +1,126 @@
+// Nodes( index) is a macro to protect the access to a array of struct not published
+
+( . . . )
+
+	typedef enum {
+		SNT_NONE,
+		SNT_PT_CHAR, SNT_PT_WCHAR, SNT_STRUCT,		// sized
+		SNT_STRING, SNT_WSTRING,		// sized
+		SNT_CHAR, SNT_WCHAR, SNT_SHORT, SNT_LONG,
+		SNT_LONG_LONG, SNT_FLOAT, SNT_DOUBLE, SNT_LONG_DOUBLE,
+		SNT_PT_CHAR16, SNT_PT_CHAR32,   // sized  ]
+		SNT_U16STRING, SNT_U32STRING,   // sized  |-- enum types don't have version restraints.
+		SNT_CHAR16, SNT_CHAR32,         //        ]
+		SNT_MAX = SNT_CHAR32
+	} SerializableNodeType;
+
+( . . . )
+
+	typedef enum {
+		SNST_NONE,
+		SNST_POINTER,
+		SNST_CHAR_POINTER,
+		SNST_CLASS,
+		SNST_PRIMITIVE
+	} SerializableNodeSuperType;
+
+( . . . )
+
+	SerializableNodeSuperType SNSTofNodes[] = {
+		SNST_NONE,
+		SNST_CHAR_POINTER, SNST_CHAR_POINTER, SNST_POINTER,
+		SNST_CLASS, SNST_CLASS,
+		SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE,
+		SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE,
+		SNST_CHAR_POINTER, SNST_CHAR_POINTER,
+		SNST_CLASS, SNST_CLASS,
+		SNST_PRIMITIVE, SNST_PRIMITIVE
+	};
+
+//--------------------------- Size of primitive types of serializable data (Buckwheat)
+	char SizeofNodes[] = {
+		0, 0, 0, 0, 0, 0,
+		sizeof( char), sizeof( wchar_t), sizeof( short), sizeof( long),
+		sizeof( JACKNPOE_LONGLONG), sizeof( float), sizeof( double), sizeof( long double),
+		0, 0, 0, 0,
+		sizeof( char16_t), sizeof( char32_t)
+	};
+
+//--------------------------- Extra size of pointer types of serializable data (Buckwheat)
+	char ExtraSizeofPointers[] = {
+		0, sizeof( char), sizeof( wchar_t), 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		sizeof( char16_t), sizeof( char32_t), 0, 0,
+		0, 0
+	};
+
+( . . . )
+
+	bool Serializable::allocPointer( JS_QuantNodesType index) {
+		JS_NodeSizeType ExtraBytes; char *ptemp;
+		ExtraBytes = ExtraSizeofPointers[ Nodes( index).type];
+		Nodes( index).data.Struct = ( void *) std::malloc( Nodes( index).size + ExtraBytes);		// try to alloc
+		if( Nodes( index).data.Struct == NULL) {		// failed to alloc
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		ptemp = (char *) Nodes( index).data.Struct;		// ptemp pointer simplify the inclusion of terminate zeros
+		for( JS_NodeSizeType i = 0; i < ExtraBytes; i++) ptemp[ Nodes( index).size + i] = 0;	// terminate zeros
+		return true;
+	}
+
+	bool Serializable::fromBinary( void* data, JS_BinarySizeType size) {
+		JS_NodeTypeType nodeType;
+		SerializableNodeSuperType SNST; void *ptemp;
+		JS_BinarySizeType offset = 0;
+
+		for( JS_QuantNodesType index = 0; index < Quant; index++) {		// iterate the nodes
+			if( offset + sizeof( JS_NodeTypeType) > size ) { Error = ERROR_MEMORY_OVERFLOW; Errors++; return false; }
+			memcpy( &nodeType, &((char*)data)[ offset], sizeof( JS_NodeTypeType));		// get the type
+			if( nodeType > SNT_MAX) { Error = ERROR_VERSION; Errors++; return false; }
+			Nodes( index).type = (SerializableNodeType) nodeType;
+			SNST = SNSTofNodes[ nodeType];
+			offset += sizeof( JS_NodeTypeType);
+
+			if( SNST == SNST_PRIMITIVE or SNST == SNST_NONE) {		// primitive nodes don't need they sizes stored in binary
+				Nodes( index).size = SizeofNodes[ nodeType];		// but in SizeofNodes array
+				if( offset + Nodes( index).size > size ) { Error = ERROR_MEMORY_OVERFLOW; Errors++; return false; }
+				memcpy( &(Nodes( index)).data.Char, &((char*)data)[ offset], Nodes( index).size);
+				offset += Nodes( index).size;
+			} else {
+				if( offset + sizeof( JS_NodeSizeType) > size ) { Error = ERROR_MEMORY_OVERFLOW; Errors++; return false; }
+				memcpy( &(Nodes( index)).size, &((char*)data)[ offset], sizeof( JS_NodeSizeType));
+				offset += sizeof( JS_NodeSizeType);
+				if( offset + Nodes( index).size > size ) { Error = ERROR_MEMORY_OVERFLOW; Errors++; return false; }
+
+				if( ( SNST == SNST_CHAR_POINTER ) or ( SNST == SNST_POINTER) )
+				{		// pointer types only need their content copied from binary
+					if( ! allocPointer( index)) return false;	// may add ExtraSize to terminate zeros
+					memcpy( Nodes( index).data.Struct, &((char*)data)[ offset], Nodes( index).size);
+				} else {
+					switch( nodeType) {		// "strange code" to create and assign class values
+						case SNT_STRING:
+							Nodes( index).data.String = new std::string( (long) Nodes( index).size / sizeof( char), ' ' );
+							ptemp = (void *) Nodes( index).data.String->data(); break;
+						case SNT_WSTRING:
+							Nodes( index).data.WString = new std::wstring( (long) Nodes( index).size / sizeof( wchar_t), L' ' );
+							ptemp = (void *) Nodes( index).data.WString->data(); break;
+#ifdef JACKNPOE_CPP11
+						case SNT_U16STRING:
+							Nodes( index).data.U16String = new std::u16string( (long) Nodes( index).size / sizeof( char16_t), L' ');
+							ptemp = (void *) Nodes( index).data.U16String->data(); break;
+						case SNT_U32STRING:
+							Nodes( index).data.U32String = new std::u32string( (long) Nodes( index).size / sizeof( char32_t), L' ');
+							ptemp = (void *) Nodes( index).data.U32String->data(); break;
+#endif
+						default:
+							Error = ERROR_VERSION; Errors++; return false;
+					}		// switch
+					memcpy( ptemp, &((char*)data)[ offset], Nodes( index).size);
+				}		// non-pointer and non-char-pointer
+				offset += Nodes( index).size;		// generic pointer arithmetic (size is abstract)
+			}		// non-primitive
+		}		// iterate nodes
+		return true;		// return success
+	}		// function fromBinary
