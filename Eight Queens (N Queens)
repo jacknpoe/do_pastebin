@@ -1,0 +1,248 @@
+#include <cstdlib>
+#include <iostream>
+
+namespace jacknpoe {
+	namespace games {
+		typedef enum {
+			EQR_Success,
+			EQR_Fail,
+			EQR_TooMuchQueens,
+			EQR_LackOfQueens,
+			EQR_NoChessboard,
+			EQR_ErrorAlloc
+		} EQ_Result;
+
+		char* EQ_ResultDescription[] = {
+			(char *) "Success",
+			(char *) "Fail",
+			(char *) "Too much queens",
+			(char *) "Lack of queens",
+			(char *) "No chessboard",
+			(char *) "Allocation fail"
+		};
+
+		typedef enum {
+			EQA_Vertical,    // (—) 
+			EQA_Horizontal,  // (|)
+			EQA_Backslash,   // (\)
+			EQA_Slash        // (/)
+		} EQ_AttackAngle;
+
+		char* EQ_AttackAngleDescription[] = {
+			(char *) "Vertical",
+			(char *) "Horizontal",
+			(char *) "Backslash",
+			(char *) "Slash"
+		};
+
+		typedef struct EQ_Square {
+			char x, y;
+		} EQ_Square;
+		
+		typedef struct EQ_Attack {
+			EQ_Square a, b;
+			EQ_AttackAngle atackangle;
+			EQ_Attack *next;
+		} EQ_Attack;
+		
+		class EightQueens {
+		private:
+			bool *Chessboard;
+			char Size;
+			EQ_Attack *First;
+
+			void freeAttackNode( EQ_Attack *node);
+			void freeAllAttackNodes( void);
+			bool insertAttackNode( EQ_Attack **node, char x1, char y1, char x2, char y2, EQ_AttackAngle a);
+		public:
+			EightQueens( char size = 8);
+			~EightQueens( void);
+			bool setSize( char size);
+			char getSize( void);
+			bool setSquare( char x, char y, bool queen);
+			bool getSquare( char x, char y);
+			int getNQueens( void);
+			EQ_Square* getQueens( void);
+			void resetChessboard( void);
+			EQ_Attack* getFirstAttack( void);
+			EQ_Result check( void);
+		};
+
+		void EightQueens::freeAttackNode( EQ_Attack *node){
+			if( node->next != NULL) freeAttackNode( node->next);
+			std::free( node);
+		}
+
+		void EightQueens::freeAllAttackNodes( void) {
+			if ( First != NULL) freeAttackNode( First);
+			First = NULL;
+		}
+
+		EightQueens::EightQueens( char size) {
+			Size = 0; Chessboard = NULL; First = NULL;
+			setSize( size); resetChessboard();
+		}
+		
+		EightQueens::~EightQueens( void) { free( Chessboard); freeAllAttackNodes(); }
+
+		bool EightQueens::setSize( char size) {
+			if( size < 4) return false;
+			Chessboard = (bool *) std::realloc( Chessboard, sizeof( bool) * size * size);
+			if( Chessboard == NULL) { Size = 0; return false; }
+			Size = size; return true;
+		}
+
+		char EightQueens::getSize( void) { return Size; }
+
+		bool EightQueens::setSquare( char x, char y, bool queen) {
+			if( x < 0 or y < 0 or x >= Size or y >= Size) return false;
+			Chessboard[ x * Size + y] = queen; return true;
+		}
+		
+		bool EightQueens::getSquare( char x, char y){
+			if( x < 0 or y < 0 or x >= Size or y >= Size) return false;
+			return Chessboard[ x * Size + y];
+		}
+
+		int EightQueens::getNQueens( void){
+			int accumulator = 0;
+			for( int i = 0; i < Size * Size; i++ ) accumulator += ( Chessboard[ i] ? 1 : 0);
+			return accumulator;
+		}
+		
+		void EightQueens::resetChessboard( void){
+			for( int i = 0; i < Size * Size; i++ ) Chessboard[ i] = false;
+		}
+
+		EQ_Attack* EightQueens::getFirstAttack( void) { return First; }
+
+		EQ_Square* EightQueens::getQueens( void) {
+			int nQueens, current = 0; EQ_Square *buffer;
+			nQueens = getNQueens();
+			buffer = (EQ_Square *) malloc( sizeof( EQ_Square) * nQueens);
+			if( buffer == NULL) return NULL;
+			for( char y = 0; y < Size; y++)
+				for( char x = 0; x < Size; x++)
+					if( getSquare( x, y)) {
+						buffer[ current].x = x;
+						buffer[ current].y = y;
+						current++;
+					}
+			return buffer;
+		}
+
+		bool EightQueens::insertAttackNode( EQ_Attack **node, char x1, char y1, char x2, char y2, EQ_AttackAngle a){
+			EQ_Attack *temp;
+			temp = (EQ_Attack *) malloc( sizeof( EQ_Attack));
+			*node = temp;
+			if( temp == NULL) return false;
+			temp->a.x = x1; temp->a.y = y1;
+			temp->b.x = x2; temp->b.y = y2;
+			temp->atackangle = a; temp->next = NULL;
+		}
+
+		EQ_Result EightQueens::check( void) {
+			int nQueens; EQ_Attack **next, *current; EQ_Square *queens;
+
+			if( Size < 4) return EQR_NoChessboard;
+
+			nQueens = getNQueens();
+			if( nQueens < Size) return EQR_LackOfQueens;
+			if( nQueens > Size) return EQR_TooMuchQueens;
+			
+			freeAllAttackNodes(); next = &First;
+			queens = getQueens();
+			for( int a = 0; a < Size; a++)
+				for( int b = a+1; b < Size; b++)	{
+					if( queens[a].x == queens[b].x) {
+						insertAttackNode( next, queens[a].x, queens[a].y, queens[b].x, queens[b].y, EQA_Vertical);
+						if( *next == NULL) return EQR_ErrorAlloc;
+						next = &((*next)->next);
+					}
+
+					if( queens[a].y == queens[b].y) {
+						insertAttackNode( next, queens[a].x, queens[a].y, queens[b].x, queens[b].y, EQA_Horizontal);
+						if( *next == NULL) return EQR_ErrorAlloc;
+						next = &((*next)->next);
+					}
+
+					if( ( queens[a].x - queens[b].x) == ( queens[a].y - queens[b].y) ) {
+						insertAttackNode( next, queens[a].x, queens[a].y, queens[b].x, queens[b].y, EQA_Backslash);
+						if( *next == NULL) return EQR_ErrorAlloc;
+						next = &((*next)->next);
+					}
+
+					if( ( queens[a].x - queens[b].x) == ( queens[b].y - queens[a].y) ) {
+						insertAttackNode( next, queens[a].x, queens[a].y, queens[b].x, queens[b].y, EQA_Slash);
+						if( *next == NULL) return EQR_ErrorAlloc;
+						next = &((*next)->next);
+					}
+			}
+			return ( next == &First ? EQR_Success : EQR_Fail);
+		}
+	}
+}
+
+using namespace jacknpoe::games;
+
+int main( void) {
+	EightQueens myGame;
+	EQ_Result result;
+
+	for( char n = 0; n < 2; n++) {
+		myGame.resetChessboard();
+
+		if( n == 0) {
+			myGame.setSquare( 5, 0, true);
+			myGame.setSquare( 5, 1, true);
+			myGame.setSquare( 2, 2, true);
+			myGame.setSquare( 4, 4, true);
+			myGame.setSquare( 7, 4, true);
+			myGame.setSquare( 1, 5, true);
+			myGame.setSquare( 4, 6, true);
+			myGame.setSquare( 2, 7, true);
+		} else {
+			myGame.setSquare( 5, 0, true);
+			myGame.setSquare( 3, 1, true);
+			myGame.setSquare( 6, 2, true);
+			myGame.setSquare( 0, 3, true);
+			myGame.setSquare( 7, 4, true);
+			myGame.setSquare( 1, 5, true);
+			myGame.setSquare( 4, 6, true);
+			myGame.setSquare( 2, 7, true);
+		}
+
+		std::cout << std::endl;
+
+		std::cout << " 01234567" << std::endl;
+		for( char y = 0; y < 8; y ++)
+		{
+			std::cout << (int) y;
+			for( char x = 0; x < 8; x++)
+				std::cout << ( myGame.getSquare( x, y) ? (char) 219 : (char) 176);	// Windows
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	
+		result = myGame.check();
+		std::cout << "Result: " << EQ_ResultDescription[ result ] << std::endl << std::endl;
+	
+		if( result == EQR_Fail)
+		{
+			EQ_Attack *attack;
+			attack = myGame.getFirstAttack();
+	
+			while( attack != NULL) {
+				std::cout << "[" << (int) attack->a.x << "." << (int) attack->a.y << "] - ["
+				          << (int) attack->b.x << "." << (int) attack->b.y << "] - " 
+							 << EQ_AttackAngleDescription[ attack->atackangle] << std::endl;
+				attack = attack->next;
+			}
+			std::cout << std::endl;
+		}
+	
+		system( "PAUSE");
+	}
+
+	return 0;
+}
