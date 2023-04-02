@@ -1,0 +1,20 @@
+#include <iostream>
+
+#define TAMANHO 10
+
+int main( void) {
+   int vetor[ TAMANHO] = { 1, 0, 3, 0, 56, 1, 0, 23, 0, 0 };
+	int destino = 0, origem = 0;
+
+	while( origem < TAMANHO) {
+		if( vetor[ origem] == 0) {
+			origem++;
+			continue;
+		}
+		vetor[ destino] = vetor[ origem];
+		origem++;
+		destino++;
+	}
+	for( int i = destino; i < TAMANHO; i++) vetor[ i] = 0;
+	for( int i = 0; i < TAMANHO; i++) std::cout << vetor[ i] << "\n";
+}
