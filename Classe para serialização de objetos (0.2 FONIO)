@@ -1,0 +1,707 @@
+	TJACKNPOE.H
+
+//########################### TJACKNPOE COMMON TYPES DEFINITIONS (DEVELOPMENT VERSION 2013-10-26)
+// Low level alone header. Please, avoid changes. The description header is djacknpoe.h.
+// Versions:
+// First: 2013-10-25: JACKNPOE_CPP11, JACKNPOE_LONGLONG, CommonError (to serializable.h, Fonio)
+
+#ifndef _JACKNPOE_TYPES_H_
+#define _JACKNPOE_TYPES_H_
+
+#if __cplusplus >= 201103
+	#define JACKNPOE_LONGLONG long long
+	#ifndef JACKNPOE_CPP11
+		#define JACKNPOE_CPP11
+	#endif
+#else
+	#define JACKNPOE_LONGLONG __int64
+	#ifdef JACKNPOE_CPP11
+		#undef JACKNPOE_CPP11
+	#endif
+#endif
+
+namespace jacknpoe {
+//--------------------------- Common Errors
+// Uses: Quinoa
+	typedef enum {
+		ERROR_NONE,
+		ERROR_NEGATIVE,
+		ERROR_ZERO,
+		ERROR_INDEX,
+		ERROR_ALLOC,
+		ERROR_TYPE_MISMATCH,
+		ERROR_VERSION
+	} CommonError;
+}
+
+#endif
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+	DJACKNPOE.H
+
+//########################### DJACKNPOE COMMON TYPES DESCRIPTIONS (DEVELOPMENT VERSION 2013-10-26)
+// Medium level alone header.
+// Versions:
+// First: 2013-10-26: CommonErrorDescription (to tjacknpoe.h)
+
+#ifndef _JACKNPOE_DESCRIPTIONS_H_
+#define _JACKNPOE_DESCRIPTIONS_H_
+
+namespace jacknpoe {
+//--------------------------- Common Errors Description (debug depth)
+	char* CommonErrorDescription[] = {
+		"None",
+		"Unexpected negative number",
+		"Unexpected zero",
+		"Index out of range",
+		"Allocation fail",
+		"Data type mismatch",
+		"Version error"
+	};
+}
+
+#endif
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+	SERIALIZABLE.H
+
+/*########################### SERIALIZABLE (DEVELOPMENT VERSION 0.1 2013-10-26)
+/ Version: 0.2 Fonio (Painço)
+*/
+
+#ifndef _JACKNPOE_SERIALIZABLE_H_
+#define _JACKNPOE_SERIALIZABLE_H_
+
+#include "../../../include/tjacknpoe.h"	// just definitions
+#include <string>
+//#include <fstream>
+//#include <cstdlib>
+//#include <cstring>
+//#include <cwchar>
+
+namespace jacknpoe {
+//--------------------------- Types of serializable data
+	typedef enum {
+		SNT_NONE,
+		SNT_PT_CHAR, SNT_PT_WCHAR, SNT_STRUCT,		// sized
+		SNT_STRING, SNT_WSTRING,		// sized
+		SNT_CHAR, SNT_WCHAR, SNT_SHORT, SNT_LONG,
+		SNT_LONG_LONG, SNT_FLOAT, SNT_DOUBLE, SNT_LONG_DOUBLE,
+		SNT_PT_CHAR16, SNT_PT_CHAR32,   // sized  ]
+		SNT_U16STRING, SNT_U32STRING,   // sized  |-- enum types don't have version restraints.
+		SNT_CHAR16, SNT_CHAR32          //        ]
+	} SerializableNodeType;
+
+//--------------------------- Serializable array
+	class Serializable {
+	protected:
+		short Quant = 0, Errors = 0;
+		CommonError Error = ERROR_NONE;
+		void* voidNodes = NULL;
+		bool checkIndex( short index);
+		bool checkType( short index, SerializableNodeType type);
+		bool freeNode( short index);
+
+	public:
+		Serializable( short quant);
+		Serializable( void);
+		~Serializable( void);
+
+		bool setQuant( short quant);
+		short getQuant( void);
+		CommonError getError( void);
+		short getErrors( void);
+		bool free( short index);
+		bool freeAll( void);
+		short resetErrors( void);
+		SerializableNodeType getNodeType( short index);
+
+		bool setPChar( short index, char* data);
+		bool setPWChar( short index, wchar_t* data);
+		bool setStruct( short index, void* data, short size);
+		bool setString( short index, std::string data);
+		bool setWString( short index, std::wstring data);
+		bool setChar( short index, char data);
+		bool setWChar( short index, wchar_t data);
+		bool setShort( short index, short data);
+		bool setLong( short index, long data);
+		bool setLongLong( short index, JACKNPOE_LONGLONG data);
+		bool setFloat( short index, float data);
+		bool setDouble( short index, double data);
+		bool setLongDouble( short index, long double data);
+#ifdef JACKNPOE_CPP11
+		bool setPChar16( short index, char16_t* data);
+		bool setPChar32( short index, char32_t* data);
+		bool setU16String( short index, std::u16string data);
+		bool setU32String( short index, std::u32string data);
+		bool setChar16( short index, char16_t data);
+		bool setChar32( short index, char32_t data);
+#endif
+
+		long getSize( short index);
+		char* getPChar( short index);
+		wchar_t* getPWChar( short index);
+		void* getStruct( short index);
+		std::string* getString( short index);
+		std::wstring* getWString( short index);
+		char getChar( short index);
+		wchar_t getWChar( short index);
+		short getShort( short index);
+		long getLong( short index);
+		JACKNPOE_LONGLONG getLongLong( short index);
+		float getFloat( short index);
+		double getDouble( short index);
+		long double getLongDouble( short index);
+#ifdef JACKNPOE_CPP11
+		char16_t* getPChar16( short index);
+		char32_t* getPChar32( short index);
+		std::u16string* getU16String( short index);
+		std::u32string* getU32String( short index);
+		char16_t getChar16( short index);
+		char32_t getChar32( short index);
+#endif
+
+		void fromBinary( void* data);
+		void toBinary( void* data);
+		void fromFile( std::istream &file);
+		void toFile( std::istream &file);
+	};
+}
+#endif
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+/*########################### SERIALIZABLE (DEVELOPMENT VERSION 0.1 2013-10-26)
+/ Version: 0.2 Fonio (Painço)
+/
+/ Old Versions:
+/ Version: 0.1 Quinoa (pseudocereal) 2013-10-25
+*/
+
+#include "../../../include/tjacknpoe.h"	// just definitions
+#include "serializable.h"
+#include <cstdlib>
+#include <cstring>
+
+#define Nodes( index) ( (SerializableNode *) voidNodes) [ index]
+
+//#include <string>
+//#include <fstream>
+//#include <cwchar>
+//#include <istream>
+//#include <iostream>
+
+namespace jacknpoe {
+//--------------------------- Supertypes of serializable data
+	typedef enum {
+		SNST_NONE,
+		SNST_POINTER,
+		SNST_CLASS,
+		SNST_PRIMITIVE
+	} SerializableNodeSuperType;
+
+//--------------------------- Classification of types of serializable data
+	SerializableNodeSuperType SLSTofNodes[] = {
+		SNST_NONE,
+		SNST_POINTER, SNST_POINTER, SNST_POINTER,
+		SNST_CLASS, SNST_CLASS,
+		SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE,
+		SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE, SNST_PRIMITIVE,
+		SNST_POINTER, SNST_POINTER,
+		SNST_CLASS, SNST_CLASS,
+		SNST_PRIMITIVE, SNST_PRIMITIVE
+	};
+
+//--------------------------- Struct to serializable nodes
+	typedef struct  {
+		SerializableNodeType type = SNT_NONE;
+		long size = 0;
+		union {
+			char* PChar;
+			wchar_t* PWChar;
+			void *Struct;
+			std::string* String;
+			std::wstring* WString;
+			char Char;
+			wchar_t WChar;
+			short Short;
+			long Long;
+			JACKNPOE_LONGLONG LongLong;
+			float Float;
+			double Double;
+			long double LongDouble;
+#ifdef JACKNPOE_CPP11
+			char16_t* PChar16;
+			char32_t* PChar32;
+			std::u16string* U16String;
+			std::u32string* U32String;
+			char16_t Char16;
+			char32_t Char32;
+#endif
+		} data;
+	} SerializableNode;
+
+//--------------------------- Serializable array
+	bool Serializable::checkIndex( short index) {
+		if( index < 0) { Error = ERROR_NEGATIVE; Errors++; return false; }
+		if( index >= Quant) { Error = ERROR_INDEX; Errors++; return false; }
+		Error = ERROR_NONE; return true;		// economic code
+	}
+
+	bool Serializable::checkType( short index, SerializableNodeType type) {
+		if( Nodes( index).type != type) { Error = ERROR_TYPE_MISMATCH; Errors++; return false; }
+		return true;
+	}
+
+	bool Serializable::freeNode( short index) {
+		switch( SLSTofNodes[ Nodes( index).type]) {
+			case SNST_PRIMITIVE: case SNST_NONE: return true;
+			case SNST_POINTER:
+				if( Nodes( index).data.Struct != NULL) std::free( Nodes( index).data.Struct );
+				break;
+			case SNST_CLASS:
+				if( Nodes( index).data.Struct != NULL)
+				{
+					if( Nodes( index).type == SNT_STRING) delete Nodes( index).data.String;
+					if( Nodes( index).type == SNT_WSTRING) delete Nodes( index).data.WString;
+#ifdef JACKNPOE_CPP11
+					if( Nodes( index).type == SNT_U16STRING) delete Nodes( index).data.U16String;
+					if( Nodes( index).type == SNT_U32STRING) delete Nodes( index).data.U32String;
+#endif
+				}
+				break;
+			default:
+				Error = ERROR_VERSION; Errors++; return false;
+		}
+		Nodes( index).data.Struct = NULL; return true;
+	}
+
+	Serializable::Serializable( short quant) { setQuant( quant); }
+	Serializable::Serializable( void) {}
+	Serializable::~Serializable( void) { freeAll(); std::free( voidNodes); }
+
+
+	bool Serializable::setQuant( short quant) {
+		void* temp;
+		if( quant < 0 ) { Error = ERROR_NEGATIVE; Errors++; return false; }
+		if( quant == Quant) { Error = ERROR_NONE; return true; }
+		if( quant == 0 ) { Error = ERROR_NONE; std::free( voidNodes); return true; }
+		temp = (void *) std::realloc( voidNodes, sizeof( SerializableNode) * quant );
+		if( temp == NULL) { Error = ERROR_ALLOC; Errors++; return false; }
+		Error = ERROR_NONE; voidNodes = temp; Quant = quant; return true;
+	}
+
+	inline short Serializable::getQuant( void) { return Quant; }
+	inline CommonError Serializable::getError( void) { return Error; }
+	inline short Serializable::getErrors( void) { return Errors; }
+
+	bool Serializable::free( short index){
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).type = SNT_NONE;
+		Error = ERROR_NONE; return true;
+	}
+
+	inline short Serializable::resetErrors( void) { Errors = 0; Error = ERROR_NONE; }
+	
+	bool Serializable::freeAll( void){
+		if( voidNodes != NULL) {
+			for( int index = 0; index < Quant; index++ ) {
+				if( ! freeNode( index)) return false;
+				Nodes( index).type = SNT_NONE;
+		}	}
+		Error = ERROR_NONE; return true;
+	}
+
+	SerializableNodeType Serializable::getNodeType( short index){
+		if( checkIndex( index)) return Nodes( index).type;
+		return SNT_NONE;
+	}
+
+	bool Serializable::setPChar( short index, char* data) {
+		long size;
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		size = ( strlen( data) + 1) * sizeof( char);
+		Nodes( index).data.PChar = ( char *) std::malloc( size);
+		if( Nodes( index).data.PChar == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		} 
+		Nodes( index).type = SNT_PT_CHAR;
+		strcpy( Nodes( index).data.PChar, data);
+		Nodes( index).size = size; return true;
+	}
+
+	bool Serializable::setPWChar( short index, wchar_t* data) {
+		long size;
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		size = ( wcslen( data) + 1 ) * sizeof( wchar_t);
+		Nodes( index).data.PWChar = ( wchar_t *) std::malloc( size);
+		if( Nodes( index).data.PWChar == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_PT_WCHAR;
+		wcscpy( Nodes( index).data.PWChar, data);
+		Nodes( index).size = size; return true;
+	}
+
+	bool Serializable::setStruct( short index, void* data, short size) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Struct = ( void *) std::malloc( size);
+		if( Nodes( index).data.Struct == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_STRUCT;
+		memcpy( Nodes( index).data.Struct, data, size);
+		Nodes( index).size = size; return true;
+	}
+
+	bool Serializable::setString( short index, std::string data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.String = new std::string( data);
+		if( Nodes( index).data.String == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_STRING ;
+		Nodes( index).size = data.size() * sizeof( char);
+		return true;
+	}
+
+	bool Serializable::setWString( short index, std::wstring data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.WString = new std::wstring( data);
+		if( Nodes( index).data.WString == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_WSTRING ;
+		Nodes( index).size = data.size() * sizeof( wchar_t);
+		return true;
+	}
+
+	bool Serializable::setChar( short index, char data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Char = data;
+		Nodes( index).type = SNT_CHAR;
+		Nodes( index).size = sizeof( char);
+		return true;
+	}
+
+	bool Serializable::setWChar( short index, wchar_t data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.WChar = data;
+		Nodes( index).type = SNT_WCHAR;
+		Nodes( index).size = sizeof( wchar_t);
+		return true;
+	}
+
+	bool Serializable::setShort( short index, short data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Short = data;
+		Nodes( index).type = SNT_SHORT;
+		Nodes( index).size = sizeof( short);
+		return true;
+	}
+
+	bool Serializable::setLong( short index, long data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Long = data;
+		Nodes( index).type = SNT_LONG;
+		Nodes( index).size = sizeof( long);
+		return true;
+	}
+
+	bool Serializable::setLongLong( short index, JACKNPOE_LONGLONG data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.LongLong = data;
+		Nodes( index).type = SNT_LONG_LONG;
+		Nodes( index).size = sizeof( JACKNPOE_LONGLONG);
+		return true;
+	}
+
+	bool Serializable::setFloat( short index, float data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Float = data;
+		Nodes( index).type = SNT_FLOAT;
+		Nodes( index).size = sizeof( float);
+		return true;
+	}
+
+	bool Serializable::setDouble( short index, double data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Double = data;
+		Nodes( index).type = SNT_DOUBLE;
+		Nodes( index).size = sizeof( double);
+		return true;
+	}
+
+	bool Serializable::setLongDouble( short index, long double data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.LongDouble = data;
+		Nodes( index).type = SNT_LONG_DOUBLE;
+		Nodes( index).size = sizeof( long double);
+		return true;
+	}
+
+#ifdef JACKNPOE_CPP11
+	bool Serializable::setPChar16( short index, char16_t* data) {
+		long size;
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		size = std::char_traits<char16_t>::length( data);
+		Nodes( index).data.PChar16 = ( char16_t *) std::malloc( ( size + 1 ) * sizeof( char16_t));
+		if( Nodes( index).data.PChar16 == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		} else
+		Nodes( index).type = SNT_PT_CHAR16;
+		std::char_traits< char16_t>::copy( Nodes( index).data.PChar16, data, size);
+		Nodes( index).size = size; return true;
+	}
+
+	bool Serializable::setPChar32( short index, char32_t* data) {
+		long size;
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		size = std::char_traits<char32_t>::length( data);
+		Nodes( index).data.PChar32 = ( char32_t *) std::malloc( ( size + 1 ) * sizeof( char32_t));
+		if( Nodes( index).data.PChar32 == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		} else
+		Nodes( index).type = SNT_PT_CHAR32;
+		std::char_traits< char32_t>::copy( Nodes( index).data.PChar32, data, size);
+		Nodes( index).size = size; return true;
+	}
+
+	bool Serializable::setU16String( short index, std::u16string data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.U16String = new std::u16string( data);
+		if( Nodes( index).data.U16String == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_U16STRING;
+		Nodes( index).size = data.size() * sizeof( char16_t);
+		return true;
+	}
+
+	bool Serializable::setU32String( short index, std::u32string data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.U32String = new std::u32string( data);
+		if( Nodes( index).data.U32String == NULL) {
+			Nodes( index).type = SNT_NONE;
+			Error = ERROR_ALLOC; Errors++; return false;
+		}
+		Nodes( index).type = SNT_U32STRING;
+		Nodes( index).size = data.size() * sizeof( char32_t);
+		return true;
+	}
+
+	bool Serializable::setChar16( short index, char16_t data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Char16 = data;
+		Nodes( index).type = SNT_CHAR16;
+		Nodes( index).size = sizeof( char16_t);
+		return true;
+	}
+
+	bool Serializable::setChar32( short index, char32_t data) {
+		if( ! checkIndex( index)) return false;
+		if( ! freeNode( index)) return false;
+		Nodes( index).data.Char32 = data;
+		Nodes( index).type = SNT_CHAR32;
+		Nodes( index).size = sizeof( char32_t);
+		return true;
+	}
+#endif
+
+	char* Serializable::getPChar( short index) {
+		char* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_PT_CHAR) ) ) return NULL;
+		buffer = ( char *) std::malloc( ( strlen( Nodes( index).data.PChar) + 1 ) * sizeof( char));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; return NULL; }
+		strcpy( buffer, Nodes( index).data.PChar);
+		return buffer;
+	}
+
+	wchar_t* Serializable::getPWChar( short index) {
+		wchar_t* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_PT_WCHAR) ) ) return NULL;
+		buffer = ( wchar_t *) std::malloc( ( wcslen( Nodes( index).data.PWChar) + 1 ) * sizeof( wchar_t));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; return NULL; }
+		wcscpy( buffer, Nodes( index).data.PWChar);
+		return buffer;
+	}
+
+	void* Serializable::getStruct( short index) {
+		void* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_STRUCT) ) ) return NULL;
+		buffer = ( void *) std::malloc( Nodes( index).size);
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; return NULL; }
+		memcpy( buffer, Nodes( index).data.Struct, Nodes( index).size);
+		return buffer;
+	}
+
+	long Serializable::getSize( short index) {
+		if( ( ! checkIndex( index) ) or ( checkType( index, SNT_NONE) ) ) return 0;
+		return Nodes( index).size;
+	}
+
+	std::string* Serializable::getString( short index) {
+		std::string* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_STRING) ) ) return NULL;
+		buffer = new std::string( * ( Nodes( index).data.String));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; }
+		return buffer;
+	}
+
+	std::wstring* Serializable::getWString( short index) {
+		std::wstring* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_WSTRING) ) ) return NULL;
+		buffer = new std::wstring( * ( Nodes( index).data.WString));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; }
+		return buffer;
+	}
+
+	char Serializable::getChar( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_CHAR) ) ) return 0;
+		return Nodes( index).data.Char;
+	}
+
+	wchar_t Serializable::getWChar( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_WCHAR) ) ) return 0;
+		return Nodes( index).data.WChar;
+	}
+
+	short Serializable::getShort( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_SHORT) ) ) return 0;
+		return Nodes( index).data.Short;
+	}
+
+	long Serializable::getLong( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_LONG) ) ) return 0;
+		return Nodes( index).data.Long;
+	}
+
+	JACKNPOE_LONGLONG Serializable::getLongLong( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_LONG_LONG) ) ) return 0;
+		return Nodes( index).data.LongLong;
+	}
+
+	float Serializable::getFloat( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_FLOAT) ) ) return 0;
+		return Nodes( index).data.Float;
+	}
+
+	double Serializable::getDouble( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_DOUBLE) ) ) return 0;
+		return Nodes( index).data.Double;
+	}
+
+	long double Serializable::getLongDouble( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_LONG_DOUBLE) ) ) return 0;
+		return Nodes( index).data.LongDouble;
+	}
+
+#ifdef JACKNPOE_CPP11
+	char16_t* Serializable::getPChar16( short index) {
+		long size;
+		char16_t* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_PT_CHAR16) ) ) return NULL;
+		size = std::char_traits<char16_t>::length( Nodes( index).data.PChar16);
+		buffer = ( char16_t *) std::malloc( ( size + 1 ) * sizeof( char16_t));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; return NULL; }
+		std::char_traits< char16_t>::copy( buffer, Nodes( index).data.PChar16, size);
+		return buffer;
+	}
+
+	char32_t* Serializable::getPChar32( short index) {
+		long size;
+		char32_t* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_PT_CHAR32) ) ) return NULL;
+		size = std::char_traits<char32_t>::length( Nodes( index).data.PChar32);
+		buffer = ( char32_t *) std::malloc( ( size + 1 ) * sizeof( char32_t));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; return NULL; }
+		std::char_traits< char32_t>::copy( buffer, Nodes( index).data.PChar32, size);
+		return buffer;
+	}
+
+	std::u16string* Serializable::getU16String( short index) {
+		std::u16string* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_U16STRING) ) ) return NULL;
+		buffer = new std::u16string( * ( Nodes( index).data.U16String));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; }
+		return buffer;
+	}
+
+	std::u32string* Serializable::getU32String( short index) {
+		std::u32string* buffer;
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_U32STRING) ) ) return NULL;
+		buffer = new std::u32string( * ( Nodes( index).data.U32String));
+		if( buffer == NULL) { Error = ERROR_ALLOC; Errors++; }
+		return buffer;
+	}
+
+	char16_t Serializable::getChar16( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_CHAR16) ) ) return 0;
+		return Nodes( index).data.Char16;
+	}
+
+	char32_t Serializable::getChar32( short index) {
+		if( ( ! checkIndex( index) ) or
+		    ( ! checkType( index, SNT_CHAR32) ) ) return 0;
+		return Nodes( index).data.Char32;
+	}
+#endif
+
+// ########### LAST LINE OF IMPLEMENTATION OF FONIO
+// ########### TODO: BUCKWHEAT
+
+	void Serializable::fromBinary( void* data) {}
+	void Serializable::toBinary( void* data) {}
+	void Serializable::fromFile( std::istream &file) {}
+	void Serializable::toFile( std::istream &file) {}
+}
