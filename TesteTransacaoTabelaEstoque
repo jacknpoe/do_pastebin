@@ -1,0 +1,42 @@
+# Dependência: criar banco (banco.txt) e tabelas (tabelas.txt)
+# De preferência rodar com registros criados (insert_teste.txt)
+#
+
+###### SELECIONA O DATABASE CORRETO ANTES DE CRIAR A PROCEDURE
+USE Representante;
+
+###### DELIMITADOR PARA O BANCO DE DADOS INCLUIR A PROCEDURE CORRETAMENTE
+DELIMITER |
+CREATE OR REPLACE PROCEDURE TesteTransacaoTabelaEstoque(quant INT) MODIFIES SQL DATA
+BEGIN
+	###### VARIÁVEIS CÓDIGO TEMPORÁRIO E CONTADOR DO LOOPINT
+	DECLARE CodigoEstoque INT DEFAULT 0;
+	DECLARE loopcont INT DEFAULT 0;
+
+	###### COMEÇA A TRANSAÇÃO (E O CÓDIGO REAL) AQUI
+	START TRANSACTION;
+
+	###### ENCONTRA O PRIMEIRO PRÓXIMO CÓDIGO USADO PARA INCLUIR REGISTROS
+	SELECT MAX( CD_Codigo) INTO CodigoEstoque FROM Estoque;
+	SET CodigoEstoque := CodigoEstoque + 1;
+
+	###### LOOPING QUE SERÁ REPETIDO quant VEZES
+	REPEAT
+		###### INSERE UM ESTOQUE COM O NOVO CÓDIGO
+		INSERT INTO Estoque ( CD_Codigo, DS_Nome, DS_Descricao) VALUES
+		( CodigoEstoque,
+		  CONCAT( "Estoque Nº ", CodigoEstoque ),
+		  CONCAT( "Descrição do Estoque Nº ", CodigoEstoque, " gerado por transação em stored procedure") );
+
+		###### INCREMENTA O CONTADOR DO LOOPING E DO CÓDIGO
+		SET loopcont := loopcont + 1;
+		SET CodigoEstoque := CodigoEstoque + 1;
+	UNTIL loopcont = quant END REPEAT;
+
+	###### O CÓDIGO REAL TERMINA AQUI, ENTÃO COMMITAMOS A TRANSAÇÃO
+	COMMIT;
+
+	###### PARA LISTAR O QUE FOI INCLUÍDO, DECREMENTAMOS QUANT+1 E FAZEMOS SELECT
+	SET CodigoEstoque := CodigoEstoque - ( quant + 1);
+	SELECT * FROM Estoque WHERE CD_Codigo > CodigoEstoque;
+END |
