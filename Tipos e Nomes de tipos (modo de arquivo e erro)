@@ -1,0 +1,76 @@
+{
+—————————————————————————————————————————————————————————————————————————————————
+    UTIPOS
+
+    Autor: Ricardo Erick Rebelo
+    Versão: 1.1 (primeira versão da primeira implementação)
+    Última Modificação: 13/03/05 por Ricardo Erick Rebêlo
+    Documentação: desnecessária
+    Finalidade: possibilita o uso de tipos em parâmetros e retornos de função
+                entre unidades diferentes, sem replicação de código
+
+	Alterações:
+		• exclusão de tipos obsoletos em 12/03/05 (UArquivoLog 1.2)
+
+    AVISO: Mensagens de texto dos tipos podem ser encontradas em UNomesTipos.pas
+}
+
+unit UTipos;
+
+interface
+
+{uses}
+
+type
+
+  TEModoArquivo = ( TMFechado, TMLeitura, TMGravacao, TMInclusao);
+  TEErroArquivo = ( TENenhum, TEErroIO, TEArquivoAberto, TEArquivoFechado,
+                    TESemNome, TEModoDiferente, TEMemoria, TEFormato,
+                    TELimite, TENumero);
+
+implementation
+
+end.
+
+
+{—————————————————————————————————————————————————————————————————————————————————
+    UNOMESTIPOS
+    Autor: Ricardo Erick Rebelo
+    Versão: 1.0 (primeira implementação)
+    Última Modificação: 13/03/05 por Ricardo Erick Rebêlo
+    Documentação: desnecessária
+    Finalidade: Possibilita transformar em mensagens de texto os tipos
+                contidos em UTipos.pas
+
+    AVISO: As mensagens não têm pontuação final para permitir a construção
+           livre de todo o tipo de expressão necessária    
+}
+
+unit UNomesTipos;
+
+interface
+
+{uses}
+
+const
+  NModoArquivo: array[0..3] of shortstring =
+    ( 'Arquivo fechado',
+      'Arquivo aberto para leitura',
+      'Arquivo aberto para gravação',
+      'Arquivo aberto para inclusão' );
+
+  NErroArquivo: array[0..9] of shortstring =
+    ( 'Nenhum erro detectado',
+      'Erro de leitura ou escrita',
+      'Arquivo já aberto',
+      'Arquivo fechado',
+      'Arquivo sem nome',
+      'Arquivo em modo diferente',
+      'Falta de memória',
+      'Formato diferente do esperado',
+      'Parâmetro fora dos limites',
+      'Erro de disparidade numérica' );
+
+implementation
+
+end.
