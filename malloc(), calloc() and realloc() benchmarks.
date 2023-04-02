@@ -1,0 +1,82 @@
+#include <iostream>
+#include <cstdlib>
+#include <time.h>
+
+#define ITERATIONS 800000
+
+int main() {
+	clock_t clock1, clock2;
+	char *buffer;
+
+	std::cout.precision(15);
+
+	std::cout << "Resolution: " << CLOCKS_PER_SEC << " ticks per second." << std::endl;
+
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) malloc( index+1);
+		buffer[index] = index;
+		free( buffer);
+	}
+	clock2 = clock();
+
+	std::cout << "Malloc: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) calloc( index+1, 1);
+		buffer[index] = index;
+		free( buffer);
+	}
+	clock2 = clock();
+
+	std::cout << "Calloc: " << double( ( clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	buffer = (char *) malloc( 1);
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) realloc( buffer, index+1);
+		buffer[index] = index;
+	}
+	free( buffer);
+	clock2 = clock();
+
+	std::cout << "Realloc: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) malloc( ( index+1) * sizeof(long) );
+		buffer[index] = index;
+		free( buffer);
+	}
+	clock2 = clock();
+
+	std::cout << "Malloc 2: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) calloc( index+1, sizeof(long));
+		buffer[index] = index;
+		free( buffer);
+	}
+	clock2 = clock();
+
+	std::cout << "Calloc 2: " << double( ( clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	buffer = (char *) malloc( sizeof(long));
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+	{
+		buffer = (char *) realloc( buffer, (index+1) * sizeof(long));
+		buffer[index] = index;
+	}
+	free( buffer);
+	clock2 = clock();
+
+	std::cout << "Realloc 2: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+}
