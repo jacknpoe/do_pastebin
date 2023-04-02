@@ -1,0 +1,13 @@
+DELPHI OBJECT PASCAL (DOP)
+
+DOP é dialeto (sim, o dialeto se chama DOP e NÃO é o mesmo que Object Pascal, muito menos Pascal, a semântica é mais próxima ao C++ que a do Object Pascal do Lisa, onde o Object Pascal foi criado, DOP também acrescenta o paradigma funcional e componentes). Inclusive, DOP é menos compatível com o Pascal que o C++ com o C.
+
+Lazarus não é DOP, mas um RAD de Free Pascal, que é uma colagem de clones de vários dialetos de Pascal em maior ou menor grau de compatibilidade, mas que exclui boa parte do que faz DOP uma linguagem em separado (é como se cortasse fora o 11 do C++11 ou o J# do .net). Basicamente, espelho da confusão que é tentar fazer do Pascal algo que "preste", por que o padrão ISO não satisfaz o mercado.
+
+NÃO, LAZARUS NÃO É DOP, E AFIRMAR QUE DOP É LINGUAGEM E AO MESMO TEMPO AFIRMAR QUE LAZARUS É OPÇÃO FREE DE DOP É UMA PIADA, É COMO DIZER QUE PASCAL VEIO DO DOP. LAZARUS COMPILA PASCAL, SEU PRÓPRIO DIALETO, PARTE DO ORIGINAL DO LISA, BOA PARTE DO TURBO PASCAL E BOA PARTE DO DOP.
+
+Eu diria que só o Lazarus tem alguma chance de ter futuro, mas não vejo motivo algum pra ficar nele e não em .net, Java, C, C++, que realmente são padronizadas e estáveis (como linguagem, não estou falando de implementação).
+
+Agora, eu tenho uma gigantesca dúvida, sim, não é retórica: que soluções existem em DOP pra desenvolvimento de framework e grandes equipes de desenvolvimento, como controle de versão? Porque qualquer linguagem tosca da Microsoft tem isso em versões em conta para grupos grandes (eu sei que vale a pena pagar porque já desenvolvi soluções pra controle de versão e custa mais caro do que pegar pronto, também tive que escrever framework em startups e o controle do projeto é vital).
+
+Em tempos, eu mesmo programo em DOP, principalmente porque é rápido (embora não pra automação) e é ótimo pra "bombar" o raramente usado super-poder do cérebro em conseguir programar em qualquer linguagem, desde que se entenda o suficiente de linguagens de programação. E a versão .net de "Delphi" é ótima pra aproveitar mão-de-obra do DOP pra fazer wizards, telas complexas que não se baseiam demais em componentes de C# e C++, ou seja, o que não entra na "linha de montagem" banco, controle e GUI de um ERP grande, que necessariamente precisa da produção em massa.
