@@ -1,0 +1,230 @@
+unit UCampo;
+
+interface
+
+type
+
+  TCampo = class
+  private
+    cvisivel: array of boolean;
+    cbandeira: array of boolean;
+    cmina: array of boolean;
+    cbusca: array of boolean;
+    x_max, y_max, n_minas: integer;
+    morreu: boolean;
+    function  GetBusca( x, y: integer): boolean;
+    procedure SetBusca( x, y: integer; valor: boolean);
+    procedure AbreRedor( x, y: integer);
+  public
+    constructor Cria( x, y, minas: integer);
+    procedure Novo( x, y, minas: integer);
+    function  GetVisivel( x, y: integer): boolean;
+    function  GetBandeira( x, y: integer): boolean;
+    function  GetMina( x, y: integer): boolean;
+    function  GetNMinas( x, y: integer): integer;
+    function  GetBitMap( x, y: integer): integer;
+    function  FaltaMina: integer;
+    function  LimpaBandeiras: integer; 
+    procedure Morre;
+    procedure AbreAoRedor( x, y: integer);
+    procedure SetVisivel( x, y: integer; valor: boolean);
+    procedure SetBandeira( x, y: integer; valor: boolean);
+    procedure SetMina( x, y: integer; valor: boolean);
+    destructor Destroi;
+  published
+    property X: integer read x_max write x_max;
+    property Y: integer read y_max write y_max;
+    property Minas: integer read n_minas write n_minas;
+  end;
+
+implementation
+
+{uses System;}
+
+{ TCampo }
+
+procedure TCampo.AbreAoRedor(x, y: integer);
+var
+  tx, ty: integer;
+begin
+  for tx := 0 to x_max-1 do
+    for ty := 0 to y_max-1 do
+      SetBusca( tx, ty, False);
+  AbreRedor( x, y);
+end;
+
+procedure TCampo.AbreRedor(x, y: integer);
+var
+  tx, ty: integer;
+begin
+  SetBusca( x, y, True);
+  for tx := x-1 to x+1 do
+  begin
+    for ty := y-1 to y+1 do
+    begin
+      if ( tx >= 0) AND ( ty >= 0) AND ( tx < x_max) AND ( ty < y_max) then
+      begin
+        SetVisivel( tx, ty, True);
+        if ( GetBusca( tx, ty) = False) AND ( GetNMinas( tx, ty) = 0) then AbreRedor( tx, ty);
+      end;
+    end;
+  end;
+end;
+
+constructor TCampo.Cria(x, y, minas: integer);
+begin
+  Novo( x, y, minas);
+end;
+
+destructor TCampo.Destroi;
+begin
+  SetLength( cvisivel, 0);
+  SetLength( cbandeira, 0);
+  SetLength( cmina, 0);
+  SetLength( cbusca, 0);
+end;
+
+function TCampo.FaltaMina: integer;
+var
+  tx, ty, total: integer;
+begin
+  total := 0;
+  for tx := 0 to x_max - 1 do
+    for ty := 0 to y_max - 1 do
+      if GetVisivel( tx, ty) then Inc( total);
+  Result := x_max * y_max - total - n_minas;
+end;
+
+function TCampo.GetBandeira(x, y: integer): boolean;
+begin
+  Result := cbandeira[ x + y * x_max];
+end;
+
+function TCampo.GetBitMap(x, y: integer): integer;
+var
+  temp: integer;
+begin
+  if morreu AND GetMina( x,y) then
+  begin
+    Result := 3;
+    exit;
+  end;
+  if GetVisivel( x, y) then
+  begin
+    temp := GetNMinas( x, y) + 4;
+  end else begin
+    if GetBandeira( x, y) then temp := 2
+      else temp := 1;
+  end;
+  Result := temp;
+end;
+
+function TCampo.GetBusca(x, y: integer): boolean;
+begin
+  Result := cbusca[ x + y * x_max];
+end;
+
+function TCampo.GetMina(x, y: integer): boolean;
+begin
+  Result := cmina[ x + y * x_max];
+end;
+
+function TCampo.GetNMinas(x, y: integer): integer;
+var
+  tx, ty, temp: integer;
+begin
+  temp := 0;
+  for tx := x-1 to x+1 do
+  begin
+    for ty := y-1 to y+1 do
+    begin
+      if ( tx >= 0) AND ( ty >= 0) AND ( tx < x_max) AND ( ty < y_max) then
+        if GetMina( tx, ty) then Inc(temp);
+    end;
+  end;
+  Result := temp;
+end;
+
+function TCampo.GetVisivel(x, y: integer): boolean;
+begin
+  Result := cvisivel[ x + y * x_max];
+end;
+
+function TCampo.LimpaBandeiras: integer;
+var
+  tx, ty, total: integer;
+begin
+  total := 0;
+  for tx := 0 to x_max - 1 do
+    for ty := 0 to y_max - 1 do
+      if GetBandeira( tx, ty) AND GetVisivel( tx, ty) then
+      begin
+        Inc( total);
+        SetBandeira( tx, ty, False);
+      end;
+  Result := total;
+end;
+
+procedure TCampo.Morre;
+begin
+  morreu := True;
+end;
+
+procedure TCampo.Novo(x, y, minas: integer);
+var
+  tx, ty, temp: integer;
+begin
+  if x < 1 then x := 1;
+  if y < 1 then y := 1;
+  if minas > x * y div 3 then minas := x * y div 3;
+  SetLength( cvisivel, x*y);
+  SetLength( cbandeira, x*y);
+  SetLength( cmina, x*y);
+  SetLength( cbusca, x*y);
+  x_max := x;
+  y_max := y;
+  n_minas := minas;
+  morreu := false;
+  for tx := 0 to x_max-1 do
+  begin
+    for ty := 0 to y_max-1 do
+    begin
+      SetVisivel( tx, ty, False);
+      SetBandeira( tx, ty, False);
+      SetMina( tx, ty, False);
+    end;
+  end;
+  temp := minas;
+  while temp > 0 do
+  begin
+    tx := Random( x_max);
+    ty := Random( y_max);
+    if not GetMina( tx, ty) then
+    begin
+      SetMina( tx, ty, True);
+      Dec( temp);
+    end;
+  end;
+end;
+
+procedure TCampo.SetBandeira(x, y: integer; valor: boolean);
+begin
+  cbandeira[ x + y * x_max] := valor;
+end;
+
+procedure TCampo.SetBusca(x, y: integer; valor: boolean);
+begin
+  cbusca[ x + y * x_max] := valor;
+end;
+
+procedure TCampo.SetMina(x, y: integer; valor: boolean);
+begin
+  cmina[ x + y * x_max] := valor;
+end;
+
+procedure TCampo.SetVisivel(x, y: integer; valor: boolean);
+begin
+  cvisivel[ x + y * x_max] := valor;
+end;
+
+end.
