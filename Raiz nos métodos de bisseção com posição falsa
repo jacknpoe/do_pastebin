@@ -1,0 +1,89 @@
+// Raiz nos métodos de bisseção com posição falsa
+#include <cmath>
+#include <cstdio>
+#include <locale>
+
+ double funcao( double x)
+{
+//    return pow( x, 3) - 9 * x + 3;
+    return ( x - 0.2 * sin( x) - 0.5);
+}
+
+ double bissecao( double a,  double b)
+{
+    double xk, xk_1;
+    int iteracoes = 0;
+
+    xk_1 = 0;
+    while( true )
+    {
+        xk = ( a + b) / 2;
+        if( ( funcao( a) * funcao( xk) ) < 0 )
+        {
+            b = xk;
+        }
+        else
+        {
+            a = xk;
+        }
+        iteracoes ++;
+        if( std::abs( ( xk - xk_1 ) / xk ) < 0.00001 ) break;
+        xk_1 = xk;
+    }
+    printf( "iterações : %i\n", iteracoes );
+    return ( a + b) / 2;
+}
+
+ double posicao( double a,  double b)
+{
+    double xk, xk_1, fa, fb, fx;
+    int iteracoes = 0;
+
+    fa = funcao( a);
+    fb = funcao( b);
+    xk_1 = 0;
+    while( true )
+    {
+        xk = ( a * fb - b * fa) / ( fb - fa);
+        fx = funcao( xk);
+        if( ( fa * fx ) < 0 )
+        {
+            b = xk;
+            fb = fx;
+        }
+        else
+        {
+            a = xk;
+            fa = fx;
+        }
+        iteracoes ++;
+        if( std::abs( ( xk - xk_1 ) / xk ) < 0.00001 ) break;
+        xk_1 = xk;
+    }
+    printf( "iterações : %i\n", iteracoes );
+    return xk;
+}
+
+
+int main( void)
+{
+    double x1, x2;
+    int i;
+
+    setlocale( LC_ALL, "");
+
+    x1 = funcao( -3);
+    printf( "%i : %2.17f\n", -3, x1 );
+    for( i = -2; i <= 3; i++)
+    {
+        x2 = funcao( i);
+        printf( "%i : %2.17f\n", i, x2 );
+        if( ( x1 * x2) < 0 )
+        {
+            printf( "Bisseção: %2.17f\n", bissecao( i-1, i) );
+            printf( "Posição : %2.17f\n", posicao( i-1, i) );
+        }
+        x1 = x2;
+    }
+    return 0;
+}
