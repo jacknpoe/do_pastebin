@@ -1,0 +1,180 @@
+// ESTE ARQUIVO É A PARTE MAIS BAIXO NÍVEL DE UMA BIBLIOTECA DE BASE PARA BORLAND C++ RODANDO EM MS-DOS NO ANO DE 1997
+// ALGUMAS PECULIARIDADES DO CÓDIGO SE DEVEM AOS PADRÕES DO C++ DA ÉPOCA, À BIBLIOTECA BORLAND E À OTIMIZAÇÕES ESPERADAS
+// NÃO ACONSELHO COMPILAR OU RODAR, EXCETO EM UMA CÓPIA DE UMA VIRTUAL MACHINE RODANDO MS-DOS
+// LHE FALTAM OS #INCLUDES NECESSÁRIOS E UMA MAIN()
+// PODE SER QUE SEJA NECESSÁRIO COMPILAR EM UMA VIRTUAL MACHINE MAS RODAR EM UM EMULADOR
+// RICARDO ERICK REBÊLO (JACKNPOE), 24/07/2015
+
+
+// verificar os #includes para:
+// union REGS e int86() (se utilizar ini_tela() ou pisca())
+// delay (se você não retirar a opção de animação em "cortina")
+
+
+// verifique seu compilador e defina BYTE como um tipo de 8 bits
+#define BYTE unsigned char
+
+// localização do buffer da placa de vídeo (apenas no modo 0x3 (texto 80x25 16 cores))
+BYTE *buf_tela = (BYTE *) 0xb8000000L;
+
+// estrutura usada para uso dos registros do processador
+union REGS regs;
+
+// tabela de conversão das 16 cores em suas sombras (a cor é o índice)
+//                    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15   // cor original
+char tab_sombra[] = { 0, 0, 8, 8, 0, 0, 0, 8, 0, 1, 2, 3, 4, 5, 6, 7}; // cor sombra
+
+
+//*********************************************
+// coloca a tela em modo texto 80x25 16 cores
+// utiliza o método int86 (interrupção para 8086)
+// a função de interrupção utilizada é responsabilidade da placa de vídeo
+// se você comentar esta função, verifique se seu #include é necessário, senão comente-o (verifique também pisca())
+
+void ini_tela(void)
+{
+	regs.h.ah= 0;
+	regs.h.al= 0x3;
+	int86( 0x10, &regs, &regs);
+}
+
+//*********************************************
+//  tipo: 0: cores intensas  1: algumas cores piscam
+// a função de interrupção utilizada é responsabilidade da placa de vídeo
+// você precisa executar pisca( 0) para habilitar as cores intensas necessárias para sombra() funcionar
+// se você comentar esta função, verifique se seu #include é necessário, senão comente-o (verifique também ini_tela()
+
+void pisca( char tipo)
+{
+	regs.x.ax = 0x1003;
+	regs.h.bl = tipo;
+	int86( 0x10, &regs, &regs);
+}
+
+
+//*********************************************
+// coloca um caracter em uma localização X,Y
+
+void direct_char( char x, char y, BYTE caracter)
+	{ *(buf_tela + x*2 + y*160) = caracter; }
+
+//*********************************************
+// modifica os atributos de cores em X,Y
+
+void direct_attr( char x, char y, BYTE atributo)
+	{ *(buf_tela + x*2 + y*160 + 1) = atributo; }
+
+//*********************************************
+// constrói um retângulo de x1,y1 a x2,y2 com o caracter "pr" e cor "at"
+
+void retangulo( char x1, char y1, char x2, char y2, BYTE pr, BYTE at)
+{
+	char x, y;
+
+	for( y=y1; y<=y2; y++)
+		for( x=x1; x<=x2; x++)
+		{
+			direct_char( x, y, pr);
+			direct_attr( x, y, at);
+		}
+}
+
+//*********************************************
+// muda a cor de um retângulo de x1,y1 a x2,y2 e cor "at"
+
+void retangulo_c( char x1, char y1, char x2, char y2, BYTE at)
+{
+	char x, y;
+
+	for( y=y1; y<=y2; y++)
+		for( x=x1; x<=x2; x++)
+		{
+			direct_attr( x, y, at);
+		}
+}
+
+//*********************************************
+// escurece (como uma sombra) o retângulo de x1,y1 a x2,y2
+// para esta função funcionar, você precisa, utilizar pisca( 0) para habilitar as cores intensas
+// se você comentar esta função, verifique se a função pisca e seu #include são necessários, senão comente-os
+
+void sombra( char x1, char y1, char x2, char y2)
+{
+	char x, y, frente, fundo;
+	BYTE temp;
+
+	for( y=y1; y<=y2; y++)
+		for( x=x1; x<=x2; x++)
+		{
+			temp = *(buf_tela + x*2 + y*160 + 1);
+			fundo = tab_sombra[temp/16];
+			frente = tab_sombra[temp%16];
+			temp = frente + fundo * 16;
+			direct_attr( x, y,temp);
+		}
+}
+
+//*********************************************
+// Escreve uma string em X,Y 
+
+void put_string( char x, char y, char *string)
+{
+	int contador1, contador2=0;
+
+	contador1 = x*2 + y*160;
+
+	while( string[contador2] != 0)
+	{
+		*(buf_tela + contador1) = string[contador2];
+		contador2++;
+		contador1+=2;
+	}
+}
+
+//*********************************************
+// cria uma janela com canto esquerdo superior em x1,y1
+// de tamanho x2,y2, com cor at para o corpo da janela,
+// cor tt para o título, opcionalmente animada em tp * 150 milisegundos,
+// string de título "st" com opção de gerar sombra um caracter além do quadro
+//
+//  char x1  = X do canto esquerdo superior (contando título)
+//  char y1  = Y do canto esquerdo superior (contando título)
+//  char x2  = largura (sem contar título, claro)
+//  char y2  = altura  (sem contar o título)
+//  BYTE at  = cores de caracter e fundo para o corpo da "janela"
+//  BYTE tt  = cores de caracter e fundo para o título da "janela"
+//  char tp  = tempo total da animação (em unidades de 150 milisegundos) 0 para instantâneo
+//  char *st = string com o título do quadro
+//  char sb  = se 1 gera sombra após o quadro, se 0 não
+
+void cortina( char x1, char y1, char x2, char y2, BYTE at, BYTE tt, char tp, char *st, char sb)
+{
+	char y;
+	int pausa;
+
+	pausa = 150*tp/(y2+1);
+	x2 = x1+x2-1;
+	y2 = y1+y2-1;
+	y1--;
+
+	retangulo( x1, y1, x2, y1, ' ', tt);
+	put_string( x1+1, y1, st);
+	if( sb != 0) sombra( x1+2, y1+1, x2+2, y1+1);
+            // se não quiser sombra, comente a função sombra() e verifique um #include e se pode comentar também pisca()
+	delay( pausa);  // se excluir a animação desta função, verifique se não há mais a necessidade de #include
+
+	for( y=y1+1; y<=y2; y++)
+	{
+		retangulo( x1, y, x2, y, ' ', at);
+		if( sb != 0) sombra( x1+2, y+1, x2+2, y+1);
+                    // se não quiser sombra, comente a função sombra() e verifique um #include e se pode comentar também pisca()
+		delay( pausa);  // se excluir a animação desta função, verifique se não há mais a necessidade de #include
+	}
+}
+
+
+// EXEMPLO:
+//
+// pisca( 0);  // habilita cores intensas, necessárias para a sombra)
+// cortina( 21, 9, 37, 3, 144, 31, 3, "Erro de Disco", 1);  // cria uma janela com animação
+// put_string( 23, 10, "Problemas ao ler ou gravar dados!");  // acrescenta um texto na janela
