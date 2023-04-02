@@ -1,0 +1,10 @@
+DELIMITER |
+CREATE OR REPLACE PROCEDURE ConsultarProgramacao( DataConsulta DATE) DETERMINISTIC READS SQL DATA
+BEGIN
+    SELECT cinema.nome, filme.nome, programacao.horario
+    FROM cinema, filme, programacao
+    WHERE cinema.codigo = programacao.cinema
+      AND filme.codigo = programacao.filme
+      AND programacao.data = DataConsulta
+    ORDER BY programacao.horario;
+END |
