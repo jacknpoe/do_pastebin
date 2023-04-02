@@ -1,0 +1,23 @@
+#include<iostream>
+#define f for
+#define v void
+#define i int
+#define b std
+#define s static
+#define r return
+#define c cout
+#define m main
+#define e " "
+#define h 100
+#define d --
+#define z ););}
+i &t(v){s i t
+=h;r t;}i m(v
+){f(;b::c<<t(
+)d<<e,t(z
+
+
+IGUAL A
+
+#include<iostream>
+int &t(void){static int t=100;return t;}int main(void){for(;std::cout<<t()--<<" ",t(););}
