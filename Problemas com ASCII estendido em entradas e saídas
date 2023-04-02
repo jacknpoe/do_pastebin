@@ -1,0 +1,18 @@
+#include<iostream>
+#include<locale>
+
+int main() {
+	char buffer[201], *nome;
+
+	/* muitas vezes compatível com setlocale( LC_ALL, "Portuguese");
+	   mas como está abaixo é garantido mesmo se o SO estiver em outra língua */
+	setlocale( LC_ALL, "");
+
+	std::cout << "Forneça o nome: ";
+	std::cin.getline( buffer, 200);
+	std::cout << "Nome que o usuário forneceu: ";
+
+	/* necessário porque as entradas e saídas são em "C", incluindo cin.getline() */
+	setlocale( LC_ALL, "C");
+	std::cout << buffer << "\n";
+}
