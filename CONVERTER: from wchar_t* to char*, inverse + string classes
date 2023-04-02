@@ -1,0 +1,127 @@
+// CONVERTER.H
+// namespace: jacknpoe
+// define JACKNPOE_CPP11 for C++11 compilers
+
+/*########################### CONVERTER (DEPOSIT VERSION 0.0 2013-10-30)
+/ Version: 0.0 (deposit)
+/ Old Versions:
+/ -
+*/
+ 
+#ifndef JACKNPOE_CONVERTER_H_
+#define JACKNPOE_CONVERTER_H_
+ 
+#include "tjacknpoe.h"  // just definitions
+#include <string>
+ 
+namespace jacknpoe {
+    char* pwchar_ttopchar( wchar_t* data);
+    wchar_t* pchartopwchar_t( char* data);
+    char* wstringtopchar( std::wstring data);
+     
+#ifdef JACKNPOE_CPP11 
+    char* pchar16_ttopchar( char16_t* data);
+    char16_t* pchartopchar16_t( char* data);
+    char* pchar32_ttopchar( char32_t* data);
+    char32_t* pchartopchar32_t( char* data);
+    char* u16stringtopchar( std::u16string data);
+    char* u32stringtopchar( std::u32string data);
+#endif 
+}
+ 
+#endif
+
+——————————————————————————————————————————————————————————————————————————————————————————————————————————————
+// CONVERTER.CPP (yes, it's a CPP library)
+// namespace: jacknpoe
+// define JACKNPOE_CPP11 for C++11 compilers
+
+#include<cstdlib>
+#include<cstring>
+#include<string>
+#include "converter.h"
+
+namespace jacknpoe {
+	char* pwchar_ttopchar( wchar_t* data) {
+		char *buffer; long size;
+		size = wcslen( data);
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (char) data[ index];
+		return buffer;
+	}
+	
+	wchar_t* pchartopwchar_t( char* data) {
+		wchar_t *buffer; long size;
+		size = strlen( data);
+		if( ( buffer = (wchar_t *) malloc( ( size + 1) * sizeof( wchar_t)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (wchar_t) data[ index];
+		return buffer;
+	}
+
+	char* wstringtopchar( std::wstring data) {
+		char *buffer; long size;
+		size =  data.size();
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = data[ index];
+		return buffer;
+	}
+
+	#ifdef JACKNPOE_CPP11 
+	char* pchar16_ttopchar( char16_t* data) {
+		char *buffer; long size;
+		size = std::char_traits<char16_t>::length( data);
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (char) data[ index];
+		return buffer;
+	}
+	
+	char16_t* pchartopchar16_t( char* data) {
+		char16_t *buffer; long size;
+		size = strlen( data);
+		if( ( buffer = (char16_t *) malloc( ( size + 1) * sizeof( char16_t)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (char16_t) data[ index];
+		return buffer;
+	}
+	
+	char* pchar32_ttopchar( char32_t* data) {
+		char *buffer; long size;
+		size = std::char_traits<char32_t>::length( data);
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (char) data[ index];
+		return buffer;
+	}
+	
+	char32_t* pchartopchar32_t( char* data){
+		char32_t *buffer; long size;
+		size = strlen( data);
+		if( ( buffer = (char32_t *) malloc( ( size + 1) * sizeof( char32_t)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = (char32_t) data[ index];
+		return buffer;
+	}
+
+	char* u16stringtopchar( std::u16string data) {
+		char *buffer; long size;
+		size =  data.size();
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = data[ index];
+		return buffer;
+	}
+
+	char* u32stringtopchar( std::u32string data) {
+		char *buffer; long size;
+		size =  data.size();
+		if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+		for( long index = 0; index <= size; index++)
+			buffer[ index] = data[ index];
+		return buffer;
+	}
+	#endif 
+}
