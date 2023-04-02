@@ -1,0 +1,277 @@
+//#########################################################################//
+//                                                                         //
+// Subtitle Tuning 0.3B (L) 2013 Ricardo Erick Rebêlo (jacknpoe)           //
+//                                                                         //
+// (.avis with .srt subtitle use: program <sourcefile> <targetfile> 0.9975 //
+//                                                                         //
+//#########################################################################//
+
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fstream>
+#include <cctype>
+#include <sstream>
+#include <locale.h>
+
+using namespace std;
+
+#define SPACER1 ":"
+#define SPACER2 ","
+#define AHUNDREDHOURS 360000000
+#define MAXFILENAME 256
+#define MAXLINESIZE 65536
+#define EXTENSION ".srt"
+
+// *** time, value and convertion
+class cTimeConverter {
+   long mili_seconds;
+   char ample[ 13], ampleinsecure[ 13];
+protected:
+   void assemble_ample( void);
+   long ample_to_long( char *);
+public:
+   cTimeConverter( void) { mili_seconds = 0; assemble_ample(); };
+   cTimeConverter( char * p_value) { mili_seconds = ample_to_long( p_value); assemble_ample(); };
+   cTimeConverter( long   p_value) { mili_seconds = p_value; assemble_ample(); };
+   char * as_char( void) { return ampleinsecure; };
+   long   as_long( void) { return mili_seconds; };
+   void set_value( long   p_value) { mili_seconds = p_value; assemble_ample(); };
+   void set_value( char * p_value) { mili_seconds = ample_to_long( p_value); assemble_ample(); };
+	cTimeConverter operator=( cTimeConverter p_value) { mili_seconds = p_value.mili_seconds; assemble_ample(); return *this; }
+	cTimeConverter operator*=( double p_value) { mili_seconds *= p_value; assemble_ample(); return *this; };
+	cTimeConverter operator/=( double p_value) { mili_seconds /= p_value; assemble_ample(); return *this; };
+} oTimeConverter;
+
+// *** assemble ample from miliseconds (error reduction with AHUNDREDHOURS)
+void cTimeConverter::assemble_ample( void) {
+	char hours[3], minutes[3], seconds[3], miliseconds[4]; int temp;
+	temp = mili_seconds % AHUNDREDHOURS;
+	snprintf( miliseconds, 4, "%03d", temp % 1000); temp /= 1000;
+	snprintf( seconds, 3, "%02d", temp % 60); temp /= 60;
+	snprintf( minutes, 3, "%02d", temp % 60); temp /= 60;
+	snprintf( hours, 3, "%02d", temp);
+
+	strcpy( ample, hours); strcat( ample, SPACER1);
+	strcat( ample, minutes); strcat( ample, SPACER1);
+	strcat( ample, seconds); strcat( ample, SPACER2);
+	strcat( ample, miliseconds);  strcpy( ampleinsecure, ample);	
+}
+
+// *** return miliseconds from ample (format error ignored)
+long cTimeConverter::ample_to_long( char * p_value) {
+	char hours[3], minutes[3], seconds[3], miliseconds[4];
+
+	hours[0] = p_value[0];  hours[1] = p_value[1];  hours[2] = 0;
+	minutes[0] = p_value[3];  minutes[1] = p_value[4];  minutes[2] = 0;
+	seconds[0] = p_value[6];  seconds[1] = p_value[7];  seconds[2] = 0;
+	miliseconds[0] = p_value[9];  miliseconds[1] = p_value[10];  miliseconds[2] = p_value[11];  miliseconds[3] = 0;
+
+	return ( ( atoi( hours) * 60 + atoi( minutes) ) * 60 + atoi( seconds) ) * 1000 + atoi( miliseconds) ;
+}
+
+// *** open files, read data, call converstor, keep multiplier, save file
+class cSubtitleTuning {
+	ifstream oReadFile; ofstream oSaveFile; double multiplier;
+	char sReadFile[ MAXFILENAME], sSaveFile[ MAXFILENAME];
+	char sReadFilei[ MAXFILENAME], sSaveFilei[ MAXFILENAME];
+private:
+
+// tolower in a string
+	void str_tolower( char * p_value, int maximum){
+		int iindex = 0;
+		while( p_value[ iindex] != 0 and iindex < maximum ){
+			p_value[ iindex] = tolower( p_value[ iindex]);
+			iindex++;
+		};
+	}
+
+// normalize file names
+	void normalizename( char * cName){
+		int isize; char final[5];
+		isize = strlen( cName);
+		if( isize > 4)
+		{
+			strcpy( final, &cName[ isize-4]);
+			str_tolower( final, 4);
+			if( strcmp( final, EXTENSION) == 0) return;
+		}
+		strcat( cName, EXTENSION);
+	}
+public:
+
+	cSubtitleTuning() { multiplier = 1; }
+
+// get single multiplier parameter
+	bool set_multiplier( char * p_value ) {
+		return ( ( istringstream ( p_value) >> multiplier) and multiplier > 0);
+	}
+
+// get compound multiplier parameters
+	bool set_multiplier( char * diference, char * base_time) {
+		long i_diference, i_base_time, isize;
+		char temp_ample[] = "0000000000000";
+		if( ( ! ( istringstream ( diference) >> i_diference)) or i_diference == 0) return false;
+		isize = strlen( base_time);
+		if( isize < 12) temp_ample[ 12 - isize] = 0; else temp_ample[ 0] = 0;
+		strcat( temp_ample, base_time);
+		oTimeConverter.set_value( temp_ample);
+		i_base_time = oTimeConverter.as_long();
+		if( ( i_base_time == 0) or ( i_base_time <= abs( i_diference) ) ) return false;
+		multiplier = ( double ( i_base_time) + double ( i_diference) ) / ( double ( i_base_time));
+		return true;
+	}
+
+// open the read file
+	bool openreadfile( char * cName){
+		strcpy( sReadFile, cName);
+		normalizename( sReadFile);
+		strcpy( sReadFilei, sReadFile);
+		oReadFile.open( sReadFile, ios::in);
+		return oReadFile.is_open();
+	}
+
+// open the write file
+	bool openwritefile( char * cName){
+		strcpy( sSaveFile, cName);
+		normalizename( sSaveFile);
+		strcpy( sSaveFilei, sSaveFile);
+		oSaveFile.open( sSaveFile, ios::out); //, ios::nocreate
+		return oSaveFile.is_open();
+	}
+
+// changes the time of te lines with  --> 
+	void recalculate( char * charLine){
+		char * cTimeConverter1, * cTimeConverter2, * cBetween;
+		
+		cTimeConverter1 = strtok( charLine, " \t" );
+		cBetween  = strtok( NULL, " \t" );
+		cTimeConverter2 = strtok( NULL, " \t" );
+
+		// CORE OF THE CHANGES IN THE FILE IN THE FOUR LINES BELOW
+		oTimeConverter.set_value( cTimeConverter1); oTimeConverter *= multiplier; cTimeConverter1 = oTimeConverter.as_char();
+		strcpy( charLine, cTimeConverter1); strcat( charLine, " --> ");
+		oTimeConverter.set_value( cTimeConverter2); oTimeConverter *= multiplier; cTimeConverter2 = oTimeConverter.as_char();
+		strcat( charLine, cTimeConverter2);
+	}
+	
+	char * get_sReadFile( void) { return sReadFilei; };
+
+	char * get_sSaveFile( void) { return sSaveFilei; };
+
+// read from a file and write in other (selecting lines with --> to changes
+	bool process( void){
+		char sTeste[ MAXLINESIZE];
+		while( ! oReadFile.eof() ) {
+			oReadFile.getline( sTeste, MAXLINESIZE-1);
+			if( strstr( sTeste, " --> ") != NULL) recalculate( sTeste);
+			oSaveFile << sTeste << "\n";
+			if( oSaveFile.bad() or oSaveFile.fail()) return false;
+		}
+		return true;
+	}
+
+	~cSubtitleTuning() {
+		if( oReadFile.is_open() ) oReadFile.close();
+		if( oSaveFile.is_open() ) oSaveFile.close();
+	}
+
+} oSubtitleTuning;
+
+// *** centralize all messagens and dialogs
+class cMessage {
+	char programname[ MAXFILENAME];
+
+public:
+
+// help (insufficient parameters)
+	void help( void) {
+		cout << "\nSubtitle Tuning 0.3B (L) 2013 Ricardo Erick Rebêlo (jacknpoe)";
+		cout << "\n\nSyntaxes: 1. " << programname << " <source> <target> <variation> <base time>";
+		cout << "\n          2. " << programname << " <source> <target> <multiplier>";
+		cout << "\n\nsource: the file must exist, in the " << EXTENSION << " format, free from errors.";
+		cout << "\ntarget: " << EXTENSION << " file, can't be the source file. It will be overwritten.";
+		cout << "\nvariaton: milisseconds to apply to base time (to calculate the rate of change).";
+		cout << "\n          (if negative will advance, if positive delay the subtitles)";
+		cout << "\nbase time: time (HH:MM:SS,mmm) to apply 100% of the variation.";
+		cout << "\nmultiplier: positive non-integer number to multiply the subtitles time.";
+		cout << "\n\nExamples:";
+		cout << "\n\n1. " << programname << " test1 test2 -9750 00:50:30,000";
+		cout << "\n   adjusts the time gradually until, in fifty minutes of video, the subtitle";
+		cout << "\n   is advanced 9,75 seconds (approximately 99,6782% of the time)";
+		cout << "\n\n2. " << programname << " test1 test2 0.9975     (standard to some .avi files)";
+		cout << "\n   adjust the subtitles in test1" << EXTENSION << " in 99,75% of time and write in test2" << EXTENSION << ".\n";
+	}
+
+// find the program name, without extension and path
+	void set_programname( char * executable){
+		int iBegin = 0, iEnd = 0, iindex;
+		for( iindex = strlen( executable)-1; iindex >= 0 and iBegin == 0; iindex-- ) {
+			if( executable[iindex] == '.' and iEnd == 0)	iEnd = iindex - 1;
+			if( iEnd != 0 and iBegin == 0 and 
+				( executable[iindex] == '\\' or executable[iindex] == '/' or executable[iindex] == '>' ) )
+					iBegin = iindex + 1;
+		}
+		if( iEnd != 0 and iBegin <= iEnd )	{	
+			strcpy( programname, &executable[ iBegin]);
+			programname[iEnd-iBegin+1] = 0;
+		} else if ( iEnd == 0 and iBegin == 0 ) strcpy( programname, executable);
+		  else strcpy( programname, "undetermined");
+
+	}
+
+// some errors and messages (self explanatory)
+	void error_multiplier( char * p_value) { 
+		cout << "\nInvalid '" << p_value << "' parameter (must be numeric greater than zero).\n";
+	}
+
+	void error_multiplier( char * diference, char * base_time) {
+		cout << "\nInvalid parameters: '" << diference << "' and/or '"<< base_time << "'.\n";
+	}
+
+	void error_opening( void){
+		cout << "\nFile " << oSubtitleTuning.get_sReadFile() << " cannot be opened.\n";
+	}
+
+	void error_openwrite( void){
+		cout << "\nFile " << oSubtitleTuning.get_sSaveFile() << " cannot be opened or created.\n";
+	}
+
+	void error_process( void){
+		cout << "\nAn error occurred in the process of creating of file " << oSubtitleTuning.get_sSaveFile() << ".\n";
+	}
+
+	void processing( void){
+		cout << "\nProcessing file " << oSubtitleTuning.get_sSaveFile() << "...\n";
+	}
+
+	void sucess( void){
+		cout << "\nFile " << oSubtitleTuning.get_sSaveFile() << " was successfully generated.\n";
+	}
+} oMessage;
+
+
+// ***  M A I N  () *******************************************************************
+
+int main( int argc, char* argv[]) {
+	setlocale( LC_ALL, "");		// equal caracters in prompt
+
+	oMessage.set_programname( argv[ 0]);
+
+	if( argc < 4) { oMessage.help(); exit( 1); };
+
+	if( argc == 4) if( ! oSubtitleTuning.set_multiplier( argv[ 3]) )
+											{ oMessage.error_multiplier( argv[ 3]); exit( 2); }
+
+	if( argc == 5) if( ! oSubtitleTuning.set_multiplier( argv[ 3], argv[ 4]) )
+											{ oMessage.error_multiplier( argv[ 3], argv[ 4]); exit( 3); }
+
+	if( ! oSubtitleTuning.openreadfile( argv[ 1]) ) { oMessage.error_opening(); exit( 4); }
+
+	if( ! oSubtitleTuning.openwritefile( argv[ 2]) ) { oMessage.error_openwrite(); exit( 5); }
+
+	oMessage.processing(); if( ! oSubtitleTuning.process() ) { oMessage.error_process(); exit( 6); }
+
+	oMessage.sucess();	return EXIT_SUCCESS;
+}
