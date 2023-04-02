@@ -1,0 +1,79 @@
+// Raízes nos métodos de bisseção e Newton com margem de erro de 10 na -10
+#include <cmath>
+#include <cstdio>
+#include <locale>
+
+const double EULER = 2.718281828459045235360287;
+
+ double funcao( double x)
+{
+//    return pow( x, 3) - 9 * x + 3;
+    return pow( x + 1, 2) * pow( EULER, pow( x, 2) - 2) - 1;
+}
+
+ double derivada( double x)
+{
+//    return 3 * pow( x, 2) - 9;
+    return 2 * ( x + 1 ) * pow( EULER, pow( x, 2) - 2) +
+           2 * x * pow( x + 1, 2) * pow( EULER, pow( x, 2) - 2);
+}
+
+ double bissecao( double a,  double b)
+{
+    double xk, xk_1;
+
+    xk_1 = 0;
+    while( true )
+    {
+        xk = ( a + b) / 2;
+        if( ( funcao( a) * funcao( xk) ) < 0 )
+        {
+            b = xk;
+        }
+        else
+        {
+            a = xk;
+        }
+        if( std::abs( ( xk - xk_1 ) / xk ) < 0.0000000001 ) break;
+        xk_1 = xk;
+    }
+    return ( a + b) / 2;
+}
+
+double newton( double xk)
+{
+    double xk_1;
+
+    xk_1 = 0;
+    while( true )
+    {
+        xk_1 = xk - ( funcao( xk) / derivada( xk) );
+        if( std::abs( ( xk_1 - xk ) / xk_1 ) < 0.0000000001 ) break;
+        xk = xk_1;
+    }
+    return ( xk + xk_1) / 2;
+}
+
+
+int main( void)
+{
+    double x1, x2;
+    int i;
+
+    setlocale( LC_ALL, "");
+
+    x1 = funcao( -3);
+    printf( "%i : %2.17f\n", -3, x1 );
+    for( i = -2; i <= 3; i++)
+    {
+        x2 = funcao( i);
+        printf( "%i : %2.17f\n", i, x2 );
+        if( ( x1 * x2) < 0 )
+        {
+            printf( "Bisseção: %2.17f\n", bissecao( i-1, i) );
+            printf( "Newton :  %2.17f\n", newton( i-0.5 ));
+        }
+        x1 = x2;
+    }
+    return 0;
+}
