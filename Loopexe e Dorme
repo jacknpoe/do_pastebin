@@ -1,0 +1,55 @@
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+LOOPEXE.CPP
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+#include <windows.h>
+#include <cstdlib>
+#include <iostream>
+
+int main( int argc, char* argv[])
+{
+	int retorno;
+
+	if( argc < 2) exit( 1); 	// sem parâmetro
+
+	while( true) {
+		retorno = system( argv[ 1]);
+
+		std::cout << "\nRetorno: " << retorno << "\n\n";
+		Sleep( 1000);
+	}
+  		
+	return 0;
+}
+
+
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+DORME.CPP
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+#include <windows.h>
+#include <time.h>
+#include <sstream>
+#include <iostream>
+
+int main( int argc, char* argv[])
+{
+	time_t tempo1, tempo2;
+	long diferenca = 0, TEMPOTOTAL = 10, TEMPOSLEEP = 1;
+
+	if( !( argc < 2)) std::istringstream ( argv[ 1]) >> TEMPOTOTAL;  // primeiro parâmetro, tempo total em segundos
+	if( !( argc < 3)) std::istringstream ( argv[ 2]) >> TEMPOSLEEP;  // segundo parámetro, intervalo em segundos
+	std::cout << "Dorme " << TEMPOTOTAL << " segundos em intervalo de " << TEMPOSLEEP << " segundos\n\n";
+
+	tempo2 = tempo1 = time( NULL);
+
+	while( diferenca < TEMPOTOTAL)
+	{
+		std::cout << diferenca << " segundos\n";
+		Sleep( TEMPOSLEEP * 1000);
+		tempo2 = time( NULL);
+		diferenca = difftime( tempo2, tempo1);
+	}
+
+	std::cout << "\n";
+}
