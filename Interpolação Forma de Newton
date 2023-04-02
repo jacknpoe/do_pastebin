@@ -1,0 +1,49 @@
+#include <iostream>
+#include <locale.h>
+
+const int TAMANHO = 5;
+using namespace std;
+
+int main( void)
+{
+    int l, j;
+    double x[ TAMANHO] = { -1,  0,  1,  2,  3 } ;
+    double y[ TAMANHO] = {  1,  1,  0, -1, -2 } ;
+    double tabela[ TAMANHO][ TAMANHO];
+    double p, acum_1, acum_2;
+
+
+    setlocale( LC_ALL, "");     // equal caracters in prompt
+
+    // MONTA A TABELA
+    // primeiro copia os y para a ordem 0
+    for( l = 0; l < TAMANHO; l++)
+    {
+        tabela[ 0][ l] = y[ l];
+    }
+
+    // calcula os deltas
+    for( l = 1; l < TAMANHO; l++)
+    {
+        for( j = 0; j < ( TAMANHO - l); j++)
+        {
+            tabela[ l][ j] = ( tabela[ l-1][ j+1] - tabela[ l-1][ j] ) / ( x[ j+l] - x[ j] );
+        }
+    }
+
+    // calcula as somatórias
+    p = 3.2;
+    acum_1 = 0;
+    for( l = 0; l < TAMANHO; l++)
+    {
+        acum_2 = 1;
+        for( j = 0; j < l; j++)
+        {
+            acum_2 *= ( p - x[ j]);
+        }
+        cout << "Delta" << l << ": " << tabela[ l][ 0] << ", polinômio: " << acum_2 << endl ;
+        acum_2 *= tabela[ l][ 0];
+        acum_1 += acum_2;
+    }
+    cout << "Valor de p: " << acum_1;
+}
