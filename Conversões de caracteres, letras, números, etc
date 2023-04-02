@@ -1,0 +1,143 @@
+//  A TABELA DE CONVERSÃO E OS MÉTODOS DEVERÃO ESTAR EM UMA CLASSE (ORIENTADOS A OBJETO)
+//  PARA USAR FORA DE CLASSE, RETIRAR OS QUALIDICADORES (private) E O PONTEIRO ESPECIAL ($this->)
+
+//  CONVERSÃO DE LETRAS (CUIDADO, NÃO EXISTE "DEFAULT" PARA LETRAS NÃO-ASCII, VER ABAIXO)
+
+private $_tabela_conversao = array(
+	'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'AE', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+	'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+	'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+	'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'ae', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+	'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+	'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ý'=>'y', 'ý'=>'y', 
+	'þ'=>'b', 'ÿ'=>'y', '°'=>'o', 'º'=>'o', 'ª'=>'a'
+        );
+		// retirado (e adaptado) do manual do PHP (allixsenos at gmail dot com)
+		// ADICIONAR QUALQUER OUTRA CONVERSÃO AQUI
+		// exemplos de alguns símbolos que podem exigir conversão/tratamento:
+		// !@"#$%-=*&,.;:/?´^~_§'=<>()|\
+
+private function converterAcentosEEspeciais( $texto)
+{
+	return strtr( $texto, $this->_tabela_conversao);  // VER TABELA (array) NO TOPO
+}
+	// retirado (e adaptado) do manual do PHP (allixsenos at gmail dot com)
+
+
+//  CONVERTE AS LETRAS SEGUNDO A TABELA NO TOPO (OPCIONAL) E ACEITA APENAS LETRAS E NÚMEROS
+
+private function apenasLetrasENumeros( $texto, $converter)
+{
+	if( $converter)
+	{
+		$texto = $this->converterAcentosEEspeciais( $texto);
+	}
+
+	$texto_temp = '';
+
+	for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+	{
+		$ascii = ord( $texto[$contador]);
+
+		//  OUTROS MÉTODOS PODEM SER CRIADOS PARA ACEITAR OUTROS CARACTERES
+		//  ACRESCENTE LINHAS "OR" COMO ABAIXO COM AS FAIXAS CORRESPONDENTES
+
+		//  EXERCÍCIO: CRIAR MÉTODOS COM OPÇÕES DE FAIXAS COMO PARÂMETRO
+
+		if (    ( $ascii >= 97 and $ascii <= 122 )
+			or ( $ascii >= 65 and $ascii <= 90 )
+			or ( $ascii >= 48 and $ascii <= 57 ) )
+		{
+			$texto_temp .= $texto[$contador];
+		}
+	}
+
+ 	return $texto_temp;
+}
+
+
+//  CONVERTE AS LETRAS SEGUNDO A TABELA NO TOPO (OPCIONAL) E ACEITA APENAS LETRAS
+ 
+private function apenasLetras( $texto, $converter)
+{
+	if( $converter)
+	{
+		$texto = $this->converterAcentosEEspeciais( $texto);
+	}
+
+	$texto_temp = '';
+
+	for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+	{
+		$ascii = ord( $texto[$contador]);
+
+		if (    ( $ascii >= 97 and $ascii <= 122 )
+			or ( $ascii >= 65 and $ascii <= 90 ) )
+		{
+			$texto_temp .= $texto[$contador];
+		}
+	}
+
+	return $texto_temp;
+}
+
+
+//  CONVERTE AS LETRAS SEGUNDO A TABELA NO TOPO (OPCIONAL) E ACEITA APENAS NÚMEROS
+
+private function apenasNumeros( $texto, $converter)
+{
+	if( $converter)
+	{
+		$texto = $this->converterAcentosEEspeciais( $texto);
+	}
+
+	$texto_temp = '';
+
+	for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+	{
+		$ascii = ord( $texto[$contador]);
+
+		if ( $ascii >= 48 and $ascii <= 57 )
+		{
+			$texto_temp .= $texto[$contador];
+		}
+	}
+
+	return $texto_temp;
+}
+
+
+//  CONVERTE AS LETRAS SEGUNDO A TABELA NO TOPO (OPCIONAL) E ACEITA APENAS ASCII (ENTRE 32 e 126)
+
+private function apenasASCII( $texto, $converter)
+{
+	if( $converter)
+	{
+		$texto = $this->converterAcentosEEspeciais( $texto);
+	}
+
+	$texto_temp = '';
+
+	for ( $contador = 0; $contador < strlen( $texto); $contador++ )
+	{
+		$ascii = ord( $texto[$contador]);
+
+		// SERÃO ACEITOS CARACTERES ASCII ENTRE 32 E 126
+
+		if ( $ascii >= 32 and $ascii <= 126 )
+		{
+			$texto_temp .= $texto[$contador];
+		}
+
+		// OUTROS CARACTERES SERÃO ALTERADOS PARA ESPAÇO
+		// EXEMPLO PARA ALTERAR PARA UNDERLINE:  $texto_temp .= '_';
+		// PARA IGNORAR OS CARACTERES, COMENTAR A CLÁUSULA ELSE ABAIXO
+
+		else
+		{
+			$texto_temp .= ' ';
+		}
+	}
+
+	return $texto_temp;
+}
