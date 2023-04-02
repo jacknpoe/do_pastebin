@@ -1,0 +1,16 @@
+<script type="text/javascript"> 
+
+var primeiro = 0, segundo = 1, temporario = 0, num_sequencia = 15, omitir_0 = false;
+
+if( omitir_0) primeiro = 1;
+if( num_sequencia > 0) document.write( primeiro);
+if( num_sequencia > 1) document.write( " / " + segundo);
+
+for ( var iterador = 0; iterador < num_sequencia - 2; iterador++) { 
+	temporario = segundo;
+	segundo += primeiro;
+	primeiro = temporario;
+	document.write( " / " + segundo);
+}
+
+</script>
