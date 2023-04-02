@@ -1,0 +1,23 @@
+#include<cstdio>
+#include<cstdlib>
+
+/* Pra ficar claro o problema do número absoluto, entre com os valores:
+/  10, 5 / 5, 10 / 0
+*/
+
+int main( void){
+	int a, b, a_b, b_a, abs_a_b;
+
+	while( true) {
+		printf( "\nDigite o primeiro numero (zero para sair): ");
+		scanf	( "%d", &a);
+		if( a == 0) exit( 0);
+		printf( "Digite o segundo numero: ");
+		scanf	( "%d", &b);
+
+		a_b = a - b;
+		b_a = b - a;
+		abs_a_b = ( ( a_b > 0 ) ? a_b : b_a);
+		printf( "\na-b: %d / b-a: %d / diferenca: %d\n\n", a_b, b_a, abs_a_b);
+	}
+}
