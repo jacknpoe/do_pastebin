@@ -1,0 +1,126 @@
+<?php
+/**
+ * @package     Perguntas
+ * @subpackage  mod_perguntas
+ * @copyright   Copyright (C) 2012 AtomTech, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+ 
+// No direct access
+defined('_JEXEC') or die;  
+ 
+$limite = 5; // Define o limite de registros a serem exibidos com o valor cinco
+ 
+// Captura os dados da variável 'pag' vindo da url, onde contém o número da página atual
+$pagina = $_GET['pag'];
+ 
+/* Se a variável $pagina não conter nenhum valor,
+então por padrão ela será posta com o valor 1 (primeira página) */
+if(!$pagina)
+{
+    $pagina = 1;
+}
+ 
+/* Operação matemática que resulta no registro inicial
+a ser selecionado no banco de dados baseado na página atual */
+$inicio = ($pagina * $limite) - $limite;
+
+$query = mysql_query("SELECT id, pergunta, resposta FROM l6t0_perguntas LIMIT $inicio,$limite");
+ 
+echo  "<style type='text/css' media='all'>
+#box-toggle {
+    margin: 0 auto;
+  font: 12px/1.4 Arial, Helvetica, sans-serif;
+}
+#box-toggle .tgl {
+  text-align: justify;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+#box-toggle span {
+  display: block;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333399;
+  margin-top: 15px;
+}
+body {
+  background-color: #FFF;
+}
+</style>
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'></script>
+<script type='text/javascript'>
+jQuery.fn.toggleText = function(a,b) {
+return   this.html(this.html().replace(new RegExp('('+a+'|'+b+')'),function(x){return(x==a)?b:a;}));
+}
+ 
+$(document).ready(function(){
+$('.tgl').before('<span>Mostrar Resposta</span>');
+$('.tgl').css('display', 'none')
+$('span', '#box-toggle').click(function() {
+$(this).next().slideToggle('slow')
+.siblings('.tgl:visible').slideToggle('fast');
+// aqui começa o funcionamento do plugin
+$(this).toggleText('Revelar','Esconder')
+.siblings('span').next('.tgl:visible').prev()
+.toggleText('Revelar','Esconder')
+});
+})
+</script>
+ 
+<table width='900'>
+  <tr>
+  <td>
+     <meta charset='utf-8'>
+<div class='box2 title1'>
+  <div class='rt-block'>
+    <div class='module-title'>
+    <h2 class='title' style='color: rgb(255, 255, 255); text-shadow: -1px -1px 0px rgba(0, 0, 0, 0.3); font-size: 18px;'> Questões Discursivas 2ª Fase RS</h2>
+      <div class='accent'> </div>
+    </div>
+  <div id='box-toggle'  style='padding: 0px; padding-left: 20px; padding-right: 20px;'>";
+  nl2br($mostrar['pergunta']);
+  nl2br($mostrar['resposta']);
+while($mostrar = mysql_fetch_array($query))
+{
+  echo  "<div id='box-toggle'  style='padding: 0px; padding-left: 20px; padding-right: 20px;'>
+   
+  <p style='font-size: 14px; text-align: justify;'> <strong>".
+ 
+  $mostrar['id']."&nbsp - </strong> &nbsp ". nl2br($mostrar['pergunta']). " </p> <div class='tgl'>
+      <h4>RESPOSTA: </h4>";
+    echo "<p style='font-size: 14px;'>". nl2br($mostrar['resposta']) . "</p>" . " </div> </div>   <hr> "  ;
+}
+
+
+$consulta = mysql_query("SELECT id FROM l6t0_perguntas"); // Seleciona o campo id da nossa tabela produtos
+ 
+// Captura o número do total de registros no nosso banco a partir da nossa consulta
+$total_registros = mysql_num_rows($consulta);
+ 
+/* Define o total de páginas a serem mostradas baseada
+na divisão do total de registros pelo limite de registros a serem mostrados */
+echo "
+<div id='box-toggle'  style='padding: 0px; padding-left: 20px; padding-right: 20px;'>
+<h4 align='center'> Páginas </h4>";
+$total_paginas = Ceil($total_registros / $limite);
+echo "<h4 align='center'><< &nbsp;" ;
+for($i=1; $i <= $total_paginas; $i++)
+{
+    if($pagina == $i)
+    {
+        echo " ".$i." "; // Escreve somente o número da página sem ação alguma
+    }
+     else
+     {
+        echo '<a href="perguntas.php?pag='.$i.'"> '.$i.'</a>'." "; // Escreve o número e o link da página
+ 
+     }
+}
+echo "&nbsp;>></h6>";
+ 
+echo "</td> </tr>
+";
+ 
+?>
