@@ -1,0 +1,158 @@
+/* Typical Output:
+
+Resolution: 1000 ticks per second.
+
+Number of tests (1-10): 4
+Number of dozens of millions iterations per test (1-20): 5
+Fatorial cut times 100 for test 1(1-10): 1
+
+Please, configure the enviroment before continue.
+Press any key to continue. . .
+
+
+Foo factorial: 3.016s (549428545)
+
+Test 1
+Recursive factorial: 2.141s (549428545)
+Inline recursive factorial: 1.659s (549428545)
+For Factorial: 1.435s (549428545)
+Inline for factorial: 1.442s (549428545)
+
+Test 2
+Recursive factorial: 3.153s (274714273)
+Inline recursive factorial: 3.164s (274714273)
+For Factorial: 2.904s (274714273)
+Inline for factorial: 2.893s (274714273)
+
+Test 3
+Recursive factorial: 4.639s (141155614)
+Inline recursive factorial: 4.652s (141155614)
+For Factorial: 4.375s (141155614)
+Inline for factorial: 4.389s (141155614)
+
+Test 4
+Recursive factorial: 6.147s (137357137)
+Inline recursive factorial: 6.146s (137357137)
+For Factorial: 5.901s (137357137)
+Inline for factorial: 5.865s (137357137)
+
+Press any key to continue. . .
+
+*/
+
+#include <iostream>
+#include <cstdlib>
+#include <time.h>
+
+//#define ITERATIONS 50000000
+//#define QUANTTESTS 4
+//#define FACTORIALCUT 100
+
+inline long inline_factorial( long n) { return n ? n * inline_factorial(n-1) : 1; }
+
+long factorial( long n) {
+  if(n == 0)
+    return 1;
+  else
+    return n * factorial(n-1);
+}
+
+inline long inline_for_factorial( long n) {
+	long temp = 1;
+	for( long index = 1; index <= n; index++) temp *= index;
+	return temp;
+}
+
+long for_factorial( long n) {
+	long temp = 1;
+	for( long index = 1; index <= n; index++) temp *= index;
+	return temp;
+}
+
+inline long foo_factorial( long n) {
+	long temp = 1;
+	for( long index = 1; index <= n; index++) temp *= index;
+	return temp;
+}
+
+int main() {
+	clock_t clock1, clock2;
+	long accumulator;
+	long ITERATIONS, QUANTTESTS,  FACTORIALCUT;
+
+	std::cout.precision(5);
+
+	std::cout << "Resolution: " << CLOCKS_PER_SEC << " ticks per second." << std::endl << std::endl;
+
+	std::cout << "Number of tests (1-10): ";
+	std::cin >> QUANTTESTS;
+	if( QUANTTESTS < 1 or QUANTTESTS > 10 ) return 1;
+
+	std::cout << "Number of dozens of millions iterations per test (1-20): ";
+	std::cin >> ITERATIONS;
+	if( ITERATIONS < 1 or ITERATIONS > 20 ) return 1;
+	ITERATIONS *= 10000000;
+
+	std::cout << "Fatorial cut times 100 for test 1(1-10): ";
+	std::cin >> FACTORIALCUT;
+	if( FACTORIALCUT < 1 or FACTORIALCUT > 10 ) return 1;
+	FACTORIALCUT *= 100;
+
+	std::cout << std::endl << "Please, configure the enviroment before continue."  << std::endl;
+	system( "PAUSE");
+
+	// To avoid cache differences
+	accumulator = 0;
+	clock1 = clock();
+	for( int index = 0; index <= ITERATIONS; index++)
+		accumulator += foo_factorial( index % FACTORIALCUT);
+	clock2 = clock();
+
+	std::cerr << std::endl << std::endl << "Foo factorial: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s"
+	          << " (" << accumulator << ")" << std::endl;
+
+	for( int i = 1; i <= QUANTTESTS; i++) {
+
+		std::cout << std::endl << "Test " << i << std::endl;
+
+		accumulator = 0;
+		clock1 = clock();
+		for( int index = 0; index <= ITERATIONS; index++)
+			accumulator += factorial( index % (FACTORIALCUT * i));
+		clock2 = clock();
+	
+		std::cout << "Recursive factorial: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s"
+		          << " (" << accumulator << ")" << std::endl;
+	
+		accumulator = 0;
+		clock1 = clock();
+		for( int index = 0; index <= ITERATIONS; index++)
+			accumulator += inline_factorial( index % (FACTORIALCUT * i));
+		clock2 = clock();
+	
+		std::cout << "Inline recursive factorial: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s"
+		          << " (" << accumulator << ")" << std::endl;
+	
+		accumulator = 0;
+		clock1 = clock();
+		for( int index = 0; index <= ITERATIONS; index++)
+			accumulator += for_factorial( index % (FACTORIALCUT * i));
+		clock2 = clock();
+	
+		std::cout << "For Factorial: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s"
+		          << " (" << accumulator << ")" << std::endl;
+	
+		accumulator = 0;
+		clock1 = clock();
+		for( int index = 0; index <= ITERATIONS; index++)
+			accumulator += inline_for_factorial( index % (FACTORIALCUT * i));
+		clock2 = clock();
+	
+		std::cout << "Inline for factorial: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s"
+		          << " (" << accumulator << ")" << std::endl;
+	}
+
+	std::cout << std::endl;
+
+	system( "PAUSE");
+}
