@@ -1,0 +1,223 @@
+//########################### RETINENS (DEVELOPMENT VERSION 2013-10-19)
+
+#include <string>
+
+namespace retinens{
+//########################### STRUCT FOR DATA TYPES DESCRIPTION
+	typedef struct {
+		bool instantiable;
+		bool sized;     // have size or precision
+		long maxsize;
+		bool scaled;    // have decimal or scale
+		char maxscale;
+		bool limitedscale;
+		bool autovalue; // can't have default or autovalue in field description or be updated
+		bool isxml;
+		std::string description;
+	} DataTypeDescription;
+
+//########################### ENUMS FOR SQL DATA TYPES
+
+//########################### ISO SQL DATA TYPES (C-Style) ISOSQLDataType
+	typedef enum {
+		ISO_NONE,
+// INTEGERS / BOOLEAN
+		ISO_BIGINT,
+		ISO_INTEGER,
+		ISO_SMALLINT,
+		ISO_INTEGER10TO18,     // INTEGER() equivalent to a BIGINT
+		ISO_INTEGER5TO9,       // INTEGER() equivalent to a INTEGER
+		ISO_INTEGER3TO4,       // INTEGER() equivalent to a SMALLINT
+		ISO_INTEGER1TO2,       // INTEGER() equivalent to a BYTE (only specific DBMS)
+		ISO_INTEGERN,          // general INTEGER()
+		ISO_BOOLEAN,
+// NUMERICAL AND APPROXIMATE NUMERICAL
+		ISO_DECIMAL,     // SAME AS NUMERIC
+		ISO_NUMERIC,     // SAME AS DECIMAL
+		ISO_FLOAT,       // SOME AS DOUBLEPRECISION
+		ISO_REAL,
+		ISO_DOUBLEPRECISION,     // SAME AS FLOAT
+		ISO_FLOAT1TO7,           // FLOAT() equivalent to a REAL
+		ISO_FLOAT8TO16,          // FLOAT() equivalent to a FLOAT
+		ISO_FLOATN,              // general FLOAT()
+// TIME
+		ISO_DATE,
+		ISO_TIME,
+		ISO_TIMESTAMP,
+		ISO_TIMEZ,
+		ISO_TIMESTAMPZ,
+// TEXT NON-UNICODE
+		ISO_CHARACTER,
+		ISO_CHARACTERVARYING,     // SAME AS VARCHAR
+		ISO_VARCHAR,              // SAME AS CHARACTERVARYING
+		ISO_CHARACTERVARYINGMAX,  // SAME AS VARCHARMAX
+		ISO_VARCHARMAX,           // SAME AS CHARACTERVARYINGMAX
+		ISO_CHARACTERLARGEOBJECT,
+// TEXT UNICODE
+		ISO_NATIONALCHARACTER,
+		ISO_NATIONALCHARACTERVARYING,
+		ISO_NATIONALCHARACTERVARYINGMAX,
+		ISO_NATIONALCHARACTERLARGEOBJECT,
+// BINARY
+		ISO_BINARY,
+		ISO_BINARYVARYING,     // SAME AS VARBINARY
+		ISO_VARBINARY,         // SAME AS BINARYVARYING
+		ISO_BINARYVARYINGMAX,  // SAME AS VARBINARYMAX
+		ISO_VARBINARYMAX,      // SAME AS BINARYVARYINGMAX
+		ISO_BINARYLARGEOBJECT,
+// OTHERS
+		ISO_ARRAY,
+		ISO_MULTISET,
+		ISO_XML,
+// INTERVAL
+		ISO_INTERVAL,     // GENERAL INTERVAL FOR SINGLE CONVERSION
+		ISO_YEAR,
+		ISO_MONTH,
+		ISO_YEARTOMONTH,
+		ISO_DAY,
+		ISO_HOUR,
+		ISO_MINUTE,
+		ISO_SECOND,
+		ISO_DAYTOHOUR,
+		ISO_DAYTOMINUTE,
+		ISO_DAYTOSECOND,
+		ISO_HOURTOMINUTE,
+		ISO_HOURTOSECOND,
+		ISO_MINUTETOSECOND
+	} ISOSQLDataType;
+
+//########################### ISO SQL DATA TYPES DESCRIPTION
+	DataTypeDescription ISOSQLDataTypeDescription[ ISO_MINUTETOSECOND + 1] {
+// INTEGERS / BOOLEAN		
+		{ false, false, 0, false, 0, false, false, false, "<indefined>" },
+		{ true,  false, 0, false, 0, false, false, false, "bigint" },
+		{ true,  false, 0, false, 0, false, false, false, "integer" },
+		{ true,  false, 0, false, 0, false, false, false, "smallint" },
+		{ false, false, 0, false, 0, false, false, false, "integer( 10-18)" },
+		{ false, false, 0, false, 0, false, false, false, "integer( 5-9)" },
+		{ false, false, 0, false, 0, false, false, false, "integer( 3-4)" },
+		{ false, false, 0, false, 0, false, false, false, "integer( 1-2)" },
+		{ true,  true, 45, false, 0, false, false, false, "integer( p)" },
+		{ true,  false, 0, false, 0, false, false, false, "boolean" },
+// NUMERICAL AND APPROXIMATE NUMERICAL
+		{ true,  true,  45, true,  0, true,  false, false, "decimal( p, s)" },
+		{ true,  true,  45, true,  0, true,  false, false, "numeric( p, s)" },
+		{ true,  false,  0, false, 0, false, false, false, "float" },
+		{ true,  false,  0, false, 0, false, false, false, "real" },
+		{ true,  false,  0, false, 0, false, false, false, "double precision" },
+		{ false, false,  0, false, 0, false, false, false, "float( 1-7)" },
+		{ false, false,  0, false, 0, false, false, false, "float( 8-16)" },
+		{ true,  true,  45, false, 0, false, false, false, "float( p)" },
+// TIME
+		{ true, false, 0, false, 0, false, false, false, "date" },
+		{ true, true,  9, false, 0, false, false, false, "time" },
+		{ true, true,  9, false, 0, false, false, false, "timestamp" },
+		{ true, true,  9, false, 0, false, false, false, "timez" },
+		{ true, true,  9, false, 0, false, false, false, "timestampz" },
+// TEXT NON-UNICODE
+		{ true, true,  8000,      false, 0, false, false, false, "character( n)" },
+		{ true, true,  8000,      false, 0, false, false, false, "character varying( n)" },
+		{ true, true,  8000,      false, 0, false, false, false, "varchar( n)" },
+		{ true, false, 0,         false, 0, false, false, false, "character varying( max)" },
+		{ true, false, 0,         false, 0, false, false, false, "varchar( max)" },
+		{ true, true, 2147483647, false, 0, false, false, false, "character large object" },
+// TEXT UNICODE
+		{ true, true,  4000,      false, 0, false, false, false, "national character( n)" },
+		{ true, true,  4000,      false, 0, false, false, false, "national character varying( n)" },
+		{ true, false, 0,         false, 0, false, false, false, "national character varying( max)" },
+		{ true, true, 2147483647, false, 0, false, false, false, "national character large object" },
+// BINARY
+		{ true, true,  8000,      false, 0, false, false, false, "binary( n)" },
+		{ true, true,  8000,      false, 0, false, false, false, "binary varying( n)" },
+		{ true, true,  8000,      false, 0, false, false, false, "varbinary( n)" },
+		{ true, false, 0,         false, 0, false, false, false, "binary varying( max)" },
+		{ true, false, 0,         false, 0, false, false, false, "varbinary( max)" },
+		{ true, true, 2147483647, false, 0, false, false, false, "binary large object" },
+// OTHERS
+		{ true, false, 0, false, 0, false, false, false, "array" },
+		{ true, false, 0, false, 0, false, false, false, "multiset" },
+		{ true, false, 0, false, 0, false, false, true,  "xml" },
+// INTERVAL
+		{ false, false, 0, false, 0, false, false, false, "interval" },
+		{ true,  true,  4, false, 0, false, false, false, "year" },
+		{ true,  true,  4, false, 0, false, false, false, "month" },
+		{ true,  true,  4, false, 0, false, false, false, "year to month" },
+		{ true,  true,  4, false, 0, false, false, false, "day" },
+		{ true,  true,  4, false, 0, false, false, false, "hour" },
+		{ true,  true,  4, true,  9, false, false, false, "minute" },
+		{ true,  true,  4, false, 0, false, false, false, "second" },
+		{ true,  true,  4, false, 0, false, false, false, "day to hour" },
+		{ true,  true,  4, false, 0, false, false, false, "day to minute" },
+		{ true,  true,  4, true,  9, false, false, false, "day to second" },
+		{ true,  true,  4, false, 0, false, false, false, "hour to minute" },
+		{ true,  true,  4, true,  9, false, false, false, "hour to second" },
+		{ true,  true,  4, true,  9, false, false, false, "minute to second" } 
+	};
+
+//########################### SQL SERVER DATA TYPES (C-Style) SQLServerDataType
+	typedef enum SQLServerDataType{
+		SQLS_NONE
+	} SQLServerDataType;
+}
+
+//########################### TEST SECTION
+
+#include<iostream>
+
+using namespace std;
+
+int main( void){
+	retinens::ISOSQLDataType test;
+	int int_test;
+
+	test = retinens::ISO_NATIONALCHARACTERVARYINGMAX;
+	int_test = test;
+	cout << "Integer value to retinens::ISO_NATIONALCHARACTERVARYINGMAX: " << int_test << endl;
+	test = retinens::ISO_NONE;
+	int_test = test;
+	cout << "Integer value to retinens::ISO_NONE: " << int_test << endl;
+	test = retinens::ISO_MINUTETOSECOND;
+	int_test = test;
+	cout << "Integer value to retinens::ISO_MINUTETOSECOND: " << int_test << endl;
+	int_test = 9;
+	cout << "Value 9 is retinens::ISO_BOOLEAN? " << ( int_test == int( retinens::ISO_BOOLEAN) ? "Y" : "N") << endl;
+
+	test = retinens::ISO_NUMERIC;
+	int_test = test;
+	cout << endl << "Description for retinens::ISO_NUMERIC: " << endl;
+	cout << "Is it instantiable? " << ( retinens::ISOSQLDataTypeDescription[ int_test].instantiable ? "Y" : "N") << endl;
+	cout << "Have size or precision?  " << ( retinens::ISOSQLDataTypeDescription[ int_test].sized ? "Y" : "N") << endl;
+	cout << "Maximum size: " << retinens::ISOSQLDataTypeDescription[ int_test].maxsize << endl;
+	cout << "Have decimal or scale? " << ( retinens::ISOSQLDataTypeDescription[ int_test].scaled ? "Y" : "N") << endl;
+	cout << "Maximum scale (if any): " << int( retinens::ISOSQLDataTypeDescription[ int_test].maxscale) << endl;
+	cout << "Is it scale limited to size? " << ( retinens::ISOSQLDataTypeDescription[ int_test].limitedscale ? "Y" : "N") << endl;
+	cout << "Is default (or autovalue) forbidden? " << ( retinens::ISOSQLDataTypeDescription[ int_test].autovalue ? "Y" : "N") << endl;
+	cout << "Is it a xml type? " << ( retinens::ISOSQLDataTypeDescription[ int_test].isxml ? "Y" : "N") << endl;
+	cout << "Description: " << retinens::ISOSQLDataTypeDescription[ int_test].description << endl;
+
+	test = retinens::ISO_XML;
+	int_test = test;
+	cout << endl << "Description for retinens::ISO_XML: " << endl;
+	cout << "Is it instantiable? " << ( retinens::ISOSQLDataTypeDescription[ int_test].instantiable ? "Y" : "N") << endl;
+	cout << "Have size or precision?  " << ( retinens::ISOSQLDataTypeDescription[ int_test].sized ? "Y" : "N") << endl;
+	cout << "Maximum size: " << retinens::ISOSQLDataTypeDescription[ int_test].maxsize << endl;
+	cout << "Have decimal or scale? " << ( retinens::ISOSQLDataTypeDescription[ int_test].scaled ? "Y" : "N") << endl;
+	cout << "Maximum scale (if any): " << int( retinens::ISOSQLDataTypeDescription[ int_test].maxscale) << endl;
+	cout << "Is it scale limited to size? " << ( retinens::ISOSQLDataTypeDescription[ int_test].limitedscale ? "Y" : "N") << endl;
+	cout << "Is default (or autovalue) forbidden? " << ( retinens::ISOSQLDataTypeDescription[ int_test].autovalue ? "Y" : "N") << endl;
+	cout << "Is it a xml type? " << ( retinens::ISOSQLDataTypeDescription[ int_test].isxml ? "Y" : "N") << endl;
+	cout << "Description: " << retinens::ISOSQLDataTypeDescription[ int_test].description << endl;
+
+	test = retinens::ISO_DAYTOSECOND;
+	int_test = test;
+	cout << endl << "Description for retinens::ISO_DAYTOSECOND: " << endl;
+	cout << "Is it instantiable? " << ( retinens::ISOSQLDataTypeDescription[ int_test].instantiable ? "Y" : "N") << endl;
+	cout << "Have size or precision?  " << ( retinens::ISOSQLDataTypeDescription[ int_test].sized ? "Y" : "N") << endl;
+	cout << "Maximum size: " << retinens::ISOSQLDataTypeDescription[ int_test].maxsize << endl;
+	cout << "Have decimal or scale? " << ( retinens::ISOSQLDataTypeDescription[ int_test].scaled ? "Y" : "N") << endl;
+	cout << "Maximum scale (if any): " << int( retinens::ISOSQLDataTypeDescription[ int_test].maxscale) << endl;
+	cout << "Is it scale limited to size? " << ( retinens::ISOSQLDataTypeDescription[ int_test].limitedscale ? "Y" : "N") << endl;
+	cout << "Is default (or autovalue) forbidden? " << ( retinens::ISOSQLDataTypeDescription[ int_test].autovalue ? "Y" : "N") << endl;
+	cout << "Is it a xml type? " << ( retinens::ISOSQLDataTypeDescription[ int_test].isxml ? "Y" : "N") << endl;
+	cout << "Description: " << retinens::ISOSQLDataTypeDescription[ int_test].description << endl;
+}
