@@ -1,0 +1,17 @@
+# Dependência: criar banco (banco.sql) e tabelas (tabelas.sql)
+#
+# Retorna quais os itens de estoque estão duplicados (mesmo estoque e produto)
+#
+
+###### SELECIONA O DATABASE CORRETO ANTES DE CRIAR A PROCEDURE
+USE Representante;
+
+###### DELIMITADOR PARA O BANCO DE DADOS INCLUIR A PROCEDURE CORRETAMENTE
+DELIMITER |
+CREATE OR REPLACE PROCEDURE EstoqueItensDuplicados( ) DETERMINISTIC READS SQL DATA
+BEGIN
+	SELECT * FROM
+		( SELECT count(*) as quantidade, CD_Estoque, CD_Produto
+			FROM EstoqueItem GROUP BY CD_Estoque, CD_Produto ) as SomaItens
+		WHERE quantidade > 1;
+END |
