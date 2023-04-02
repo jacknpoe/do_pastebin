@@ -1,0 +1,133 @@
+#include <iostream>
+#include <ctime>
+#include <cmath>
+
+using namespace std;
+
+class Tgerador_atraso_fibonacci
+{
+    public:
+    unsigned long semente_1, semente_2;
+    unsigned long rand( void);
+};
+
+unsigned long Tgerador_atraso_fibonacci::rand( void)
+{
+    unsigned long temporario;
+    temporario = this->semente_1 % this->semente_2;
+    this->semente_1 = this->semente_2;
+    this->semente_2 = temporario;
+    return temporario;
+}
+
+unsigned long semente;
+
+unsigned long quadrado_do_meio( void)
+{
+    semente = semente % 1000000;
+    semente = ( ( semente * semente ) / 100 ) % 1000000;  // 1000000-1 é o valor máximo
+    return semente;
+}
+
+unsigned long congruente_linear_potencias( void)
+{
+    unsigned long temp;
+    temp = (unsigned long) ( pow( 283656383, semente) );
+    semente = semente + 1;
+    return temp % 748646352;
+}
+
+unsigned long congruente_linear_adaptado( void)
+{
+    semente = ( 283656383 * semente + 889348993 ) % 748646352;
+    return semente;
+}
+
+unsigned long congruente_linear_multiplicativo( void)
+{
+    semente = ( 16807 * semente ) % 2147483647;  // 2147483646 é o valor máximo
+    return semente;
+}
+
+const int NUM_AMOSTRAS = 500;
+const int NUM_FAIXAS = 10;
+const int VALOR_MAX = 100;
+const int QTD_ESPERADA = 50;
+
+int main( void)
+{
+    Tgerador_atraso_fibonacci gerador_atraso_fibonacci;
+    int i, matriz[ NUM_FAIXAS];
+    unsigned long temp;
+    double quiquadrado;
+    time_t seconds;
+    semente = time( &seconds);
+    temp = quadrado_do_meio();
+    temp = congruente_linear_potencias();
+    temp = congruente_linear_adaptado();
+    temp = congruente_linear_multiplicativo();
+    gerador_atraso_fibonacci.semente_1 = semente;
+    gerador_atraso_fibonacci.semente_2 = time( &seconds);
+
+    cout << "AMOSTRAS: " << NUM_AMOSTRAS << endl;
+
+    // TESTE DO QUADRADO DO MEIO
+    cout << "QUADRADO DO MEIO | Semente: " << semente << endl;
+    for( i = 0; i < NUM_FAIXAS; i++ ) matriz[ i] = 0;
+    for( i = 0; i < NUM_AMOSTRAS; i++ )
+    {
+        temp = quadrado_do_meio() % VALOR_MAX;
+        matriz[ temp / ( VALOR_MAX / NUM_FAIXAS) ]++;
+    }
+    quiquadrado = 0;
+    for( i = 0; i < NUM_FAIXAS; i++ ) quiquadrado += pow( QTD_ESPERADA - matriz[ i], 2) / QTD_ESPERADA;
+    cout << "Quiquadrado: " << quiquadrado << endl;
+
+    // TESTE DO LINEAR BASEADO EM POTÊNCIAS
+    cout << "LINEAR BASEADO EM POTENCIAS | Semente: " << semente << endl;
+    for( i = 0; i < NUM_FAIXAS; i++ ) matriz[ i] = 0;
+    for( i = 0; i < NUM_AMOSTRAS; i++ )
+    {
+        temp = congruente_linear_potencias() % VALOR_MAX;
+        matriz[ temp / ( VALOR_MAX / NUM_FAIXAS) ]++;
+    }
+    quiquadrado = 0;
+    for( i = 0; i < NUM_FAIXAS; i++ ) quiquadrado += pow( QTD_ESPERADA - matriz[ i], 2) / QTD_ESPERADA;
+    cout << "Quiquadrado: " << quiquadrado << endl;
+
+    // TESTE DO LINEAR ADAPTADO
+    cout << "LINEAR ADAPTADO | Semente: " << semente << endl;
+    for( i = 0; i < NUM_FAIXAS; i++ ) matriz[ i] = 0;
+    for( i = 0; i < NUM_AMOSTRAS; i++ )
+    {
+        temp = congruente_linear_adaptado() % VALOR_MAX;
+        matriz[ temp / ( VALOR_MAX / NUM_FAIXAS) ]++;
+    }
+    quiquadrado = 0;
+    for( i = 0; i < NUM_FAIXAS; i++ ) quiquadrado += pow( QTD_ESPERADA - matriz[ i], 2) / QTD_ESPERADA;
+    cout << "Quiquadrado: " << quiquadrado << endl;
+
+    // TESTE DO LINEAR MULTIPLICATIVO
+    cout << "LINEAR MULTIPLICATIVO | Semente: " << semente << endl;
+    for( i = 0; i < NUM_FAIXAS; i++ ) matriz[ i] = 0;
+    for( i = 0; i < NUM_AMOSTRAS; i++ )
+    {
+        temp = congruente_linear_multiplicativo() % VALOR_MAX;
+        matriz[ temp / ( VALOR_MAX / NUM_FAIXAS) ]++;
+    }
+    quiquadrado = 0;
+    for( i = 0; i < NUM_FAIXAS; i++ ) quiquadrado += pow( QTD_ESPERADA - matriz[ i], 2) / QTD_ESPERADA;
+    cout << "Quiquadrado: " << quiquadrado << endl;
+
+    // TESTE DO GERADOR ATRASO FIBONACCI
+    cout << "GERADOR ATRASO FIBONACCI | Sementes: " << gerador_atraso_fibonacci.semente_1 << ", " << gerador_atraso_fibonacci.semente_2 << endl;
+    for( i = 0; i < NUM_FAIXAS; i++ ) matriz[ i] = 0;
+    for( i = 0; i < NUM_AMOSTRAS; i++ )
+    {
+       temp = gerador_atraso_fibonacci.rand( ) % VALOR_MAX;
+       matriz[ temp / ( VALOR_MAX / NUM_FAIXAS) ]++;
+    }
+    quiquadrado = 0;
+    for( i = 0; i < NUM_FAIXAS; i++ ) quiquadrado += pow( QTD_ESPERADA - matriz[ i], 2) / QTD_ESPERADA;
+    cout << "Quiquadrado: " << quiquadrado << endl;
+}
