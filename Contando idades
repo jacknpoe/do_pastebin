@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define QUANTIDADE 6
+
+int main(){
+	int idade, idades[] = { 0, 0, 0, 0, 0 };
+	char *desc[] = { "criancas", "jovens", "adultos", "idosos", "muito idosos" };
+	
+	for( int i = 0; i < QUANTIDADE; i ++ ) {
+		printf( "Entre com a idade: ");
+		scanf( "%d", &idade);
+
+		idade = ( idade - 1) / 15;
+		idades[ ( idade > 4 ? 4 : idade) ] ++;
+	}
+
+	printf( "\n" );
+
+	for( int i = 0; i < 5; i ++ ) 
+		printf( "A quantidade de %s e: %d e corresponde a %.2f porcento da pesquisa\n", desc[i], idades[i], (float) idades[i] * 100 / QUANTIDADE );
+
+	system( "PAUSE");
+}
