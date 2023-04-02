@@ -1,0 +1,73 @@
+#include<iostream>
+#include<cstdlib>
+
+typedef struct estrutura{
+	char caracter;  int inteiro;
+} estrutura;
+
+#define ESTRUTURA(index) ( (estrutura *) buffer) [ (long long) (index) ]
+
+inline int soma( int i1, int i2) { return i1 + i2; }
+
+int main( void){
+	void *buffer;
+
+	buffer = (void *) malloc( sizeof( estrutura) * 2);
+
+	ESTRUTURA( 0).caracter = 10;   ESTRUTURA( 1).inteiro = 15;
+
+// COM MACRO
+	std::cout << soma( ESTRUTURA(0).caracter, ESTRUTURA(1).inteiro) << std::endl;
+
+// SEM MACRO (MESMO QUE ACIMA)
+	std::cout << soma( (( (estrutura *) buffer) [ 0]).caracter,
+	                   (( (estrutura *) buffer) [ 1]).inteiro ) << std::endl;
+	free( buffer);
+	return 0;
+}
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————
+————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+CÓDIGO GERADO PELO COMPILADOR (TDM-GCC 4.7.1 32 bits, Orwell Dev C++ Windows)
+
+COM MACRO:
+
+   0x0040153b <+59>:	add    eax,0x8
+   0x0040153e <+62>:	mov    edx,DWORD PTR [eax+0x4]
+   0x00401541 <+65>:	mov    eax,DWORD PTR [ebp-0xc]
+   0x00401544 <+68>:	movzx  eax,BYTE PTR [eax]
+   0x00401547 <+71>:	movsx  eax,al
+   0x0040154a <+74>:	mov    DWORD PTR [esp+0x4],edx
+   0x0040154e <+78>:	mov    DWORD PTR [esp],eax
+   0x00401551 <+81>:	call   0x4157e0 <soma(int, int)>
+   0x00401556 <+86>:	mov    DWORD PTR [esp],eax
+   0x00401559 <+89>:	mov    ecx,0x47bf60
+   0x0040155e <+94>:	call   0x4450f0 <std::ostream::operator<<(int)>
+   0x00401563 <+99>:	sub    esp,0x4
+   0x00401566 <+102>:	mov    DWORD PTR [esp],0x46dd30
+   0x0040156d <+109>:	mov    ecx,eax
+   0x0040156f <+111>:	call   0x444df0 <std::ostream::operator<<(std::ostream& (*)(std::ostream&))>
+   0x00401574 <+116>:	sub    esp,0x4
+   0x00401577 <+119>:	mov    eax,DWORD PTR [ebp-0xc]
+
+
+SEM MACRO:
+
+   0x0040157a <+122>:	add    eax,0x8
+   0x0040157d <+125>:	mov    edx,DWORD PTR [eax+0x4]
+   0x00401580 <+128>:	mov    eax,DWORD PTR [ebp-0xc]
+   0x00401583 <+131>:	movzx  eax,BYTE PTR [eax]
+   0x00401586 <+134>:	movsx  eax,al
+   0x00401589 <+137>:	mov    DWORD PTR [esp+0x4],edx
+   0x0040158d <+141>:	mov    DWORD PTR [esp],eax
+   0x00401590 <+144>:	call   0x4157e0 <soma(int, int)>
+   0x00401595 <+149>:	mov    DWORD PTR [esp],eax
+   0x00401598 <+152>:	mov    ecx,0x47bf60
+   0x0040159d <+157>:	call   0x4450f0 <std::ostream::operator<<(int)>
+   0x004015a2 <+162>:	sub    esp,0x4
+   0x004015a5 <+165>:	mov    DWORD PTR [esp],0x46dd30
+   0x004015ac <+172>:	mov    ecx,eax
+   0x004015ae <+174>:	call   0x444df0 <std::ostream::operator<<(std::ostream& (*)(std::ostream&))>
+   0x004015b3 <+179>:	sub    esp,0x4
+=> 0x004015b6 <+182>:	mov    eax,DWORD PTR [ebp-0xc]
