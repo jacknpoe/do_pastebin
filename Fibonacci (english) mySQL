@@ -1,0 +1,40 @@
+#
+# Return the first <number_seq> numbers of Fibonacci sequence,
+# omits (<omit_0>) or not the initial zero
+#
+
+DELIMITER |
+CREATE OR REPLACE FUNCTION Fibonacci( number_seq INT, omit_0 BOOLEAN) RETURNS VARCHAR( 512) DETERMINISTIC NO SQL
+BEGIN
+	DECLARE first INT DEFAULT 0;
+	DECLARE second INT DEFAULT 1;
+	DECLARE temporary INT DEFAULT 0;
+	DECLARE cont INT DEFAULT 0;
+	DECLARE acumulator VARCHAR( 512) DEFAULT "";
+
+	IF omit_0 THEN
+		SET first = 1;
+	END IF;
+
+	IF number_seq > 0 THEN
+		SET acumulator = cast( first AS CHAR);
+	END IF;
+
+	IF number_seq > 1 THEN
+		SET acumulator = concat( acumulator, ' / ', second);
+	END IF;
+
+	IF number_seq > 2 THEN 
+		REPEAT
+			SET temporary = second;
+			SET second = second + first;
+			SET first := temporary;
+
+			SET acumulator = concat( acumulator, ' / ', second);		
+
+			SET cont := cont + 1;
+		UNTIL cont = number_seq - 2 END REPEAT;
+	END IF;
+
+	RETURN acumulator;
+END |
