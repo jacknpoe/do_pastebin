@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+
+char matriz[9][5] = { { 0, 0, 0, 0, 0 },
+                      { 3, 2, 4, 0, 0 },
+                      { 3, 0, 4, 0, 0 },
+                      { 3, 0, 5, 0, 0 },
+                      { 5, 0, 0, 0, 0 },
+                      { 5, 0, 0, 6, 0 },
+                      { 8, 7, 0, 0, 0 },
+                      { 8, 0, 0, 0, 0 },
+                      { 8, 0, 0, 0, 0 } };
+
+int tipochar( char caracter)
+{
+	if( caracter >= '0' && caracter <= '9') return( 0);
+	if( caracter == '+' || caracter == '-') return( 1);
+	if( caracter == '.') return( 2);
+	if( caracter == 'E' || caracter == 'e') return( 3);
+	return( 4);
+}
+
+int main( void)
+{
+	char cadeia[256];
+	int estado;
+	int contador;
+	int tam_cadeia;
+
+	printf( "Digite um numero no formato +-XXX.XXXE+-XXX: ");
+	scanf( "%256s", cadeia);
+
+	tam_cadeia = strlen( cadeia);
+
+	estado = 1;
+
+	for( contador=0; contador<tam_cadeia; contador ++)
+		estado = matriz[ estado][ tipochar( cadeia[ contador])];
+
+	if( estado == 0)
+		printf( "\nNao Numerico!\n");
+	else if( estado == 3)
+		printf( "\nNumero Inteiro.\n");
+	else if( estado == 5)
+		printf( "\nNumero Decimal.\n");
+	else if( estado == 8)
+		printf( "\nNumero Exponencial.\n");
+	else
+		printf( "\nIndeterminado. Cadeia Incompleta!\n");
+
+    return 0;
+}
