@@ -1,0 +1,26 @@
+  {echo ("<p align='center'><strong>Cronograma do curso</strong> </p>");
+echo (" <table border='0' align='center'>
+                        <tbody>
+                          <tr>
+                            <td height='30' width='160' style='text-align: center; background-color: #999999; color: white; background-color: #CCCCCC; font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px #666666;  border: 1px solid #666666;'>
+                             DATAS</td>
+                            <td width='160'                     style='text-align: center; background-color: #999999; color: white; background-color: #CCCCCC; font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px #666666;  border: 1px solid #666666;'>
+                             MATÉRIAS</td>
+                            <td width='160'                     style='text-align: center; background-color: #999999; color: white; background-color: #CCCCCC; font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center; font-weight: bold; text-shadow: 1px 1px 2px #666666;  border: 1px solid #666666;'>
+                             PROFESSOR</td>
+                          </tr>
+                             <tr>
+                            <td height='30' width='160' style='text-align: center;   font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center;    border: 1px solid #666666;'>");
+                          echo( $item->d1);  
+                          echo( "</td>
+                           <td height='30' width='160' style='text-align: center;   font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center;    border: 1px solid #666666;'>");
+                          echo( $item->m1);
+                          echo( "</td>
+                            <td height='30' width='160' style='text-align: center;   font-family: Verdana, Geneva, sans-serif; font-size: 14px; text-align: center;    border: 1px solid #666666;'>");
+                          echo( $item->p1);
+                          echo( "</td>
+                          </tr>
+                             
+                        </tbody>
+                         </table>
+                         " ); }
