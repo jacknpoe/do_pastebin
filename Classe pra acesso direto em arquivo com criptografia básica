@@ -1,0 +1,884 @@
+{############################################################################
+#
+#	DOCUMENTAÇÃO DA UNIDADE UARQUIVODIRETO (UArquivoDireto.pas)
+#
+#	Autor: Ricardo Erick Rebêlo
+#	Última Modificação: 13/03/05
+#
+#############################################################################
+
+
+USES
+====
+
+Tipos: TEModoArquivo
+       TEErroArquivo
+
+
+CLASSES
+=======
+
+TArquivoDireto
+
+	Descrição: Arquivo binário de Leitura ou Escrita com métodos
+	           para salvar e ler vários tipos de dados,
+	           com criptografia simples e controle de erros
+
+	Autor: Ricardo Erick Rebêlo
+
+	Portabilidade: versões diferentes do DELPHI geram códigos incompatíveis entre si,
+	               pois os tipos integer e real podem sofrer alterações de tamanho
+
+	Versão Atual: 1.4
+
+	Alterada em: 13/03/05
+
+	Alterações:
+		• nova forma de uso (inclusão) para uso de UArquivoLog versão 1.2
+		• nome alterado para ArquivoDireto, evitando conflito com versões
+		  anteriores a 19/02/05 e forçando a migração hard-coded
+		• propriedade Nome alterada para published para futuro componente
+
+	Versões Anteriores:
+		• 1.3: 19/02/05 • Ricardo Erick Rebêlo
+		  • inversão da forma de retorno de erros (true = erro)
+		  • possibilitação de criptografia "mochila":
+		    SetSementes agora pode ser chamada com o arquivo aberto!
+
+		• 1.2: 03/02/05 • Ricardo Erick Rebêlo
+		  • incluídas as funções Grava64, Le64, GravaDouble e LeDouble
+		    para uso no módulo TryToCopy versão 0.2
+
+		• 1.1: 22/05/04 • Ricardo Erick Rebêlo
+		  • bugs corrigidos e comentários acrescentados
+		  • incluídas as funções GravaStringFixa e LeStringFixa
+
+		• 1.0: 04/08/03 • Ricardo Erick Rebêlo
+
+	Métodos:
+Const	Cria: cria o objeto, sem nome de arquivo (overload)
+Const	Cria( nome): cria o objeto, com nome de arquivo (overload)
+Destr	Destroi: destrói o objeto, fechando o arquivo, se estiver aberto
+	Fecha: fecha o arquivo, se estiver aberto - retorna erros
+	Grava: abre o arquivo para gravação - retorna erros (overload)
+	Grava( nome): idem, entra com (novo) nome do arquivo (overload)
+	Grava64( i): grava um número inteiro de 64bits - retorna erros - versão 1.2 em diante
+	GravaBoolean( b): grava um boolean - retorna erros
+	GravaDouble( r): grava um número double - retorna erros - versão 1.2 em diante
+	GravaInteiro( i): grava um número inteiro - retorna erros
+	GravaReal( r): grava um número real - retorna erros
+	GravaString( s): grava uma string de tamanho variável - retorna erros
+	GravaStringFixa( s, t): grava uma string de tamanho t - retorna erros - versão 1.1 em diante
+	Inclui: abre o arquivo para gravação (inclusão) - retorna erros (overload) - versão 1.4 em diante
+	Inclui( nome): idem, entra com (novo) nome do arquivo (overload) - versão 1.4 em diante
+	Le: abre o arquivo para leitura - retorna erros (overload)
+	Le( nome): idem, entra com (novo) nome do arquivo (overload)
+	Le64(var i): lê um número inteiro de 64bits - retorna erros - versão 1.2 em diante
+	LeBoolean( var b): lê um boolean - retorna erros
+	LeDouble( var r): lê um número double - retorna erros - versão 1.2 em diante
+	LeInteiro( var i): lê um número inteiro - retorna erros
+	LeReal( var r): lê um número real - retorna erros
+	LeString( var s): lê uma string de tamanho variável - retorna erros
+	LeStringFixa( var s, t): lê uma string de tamanho t - retorna erros - versão 1.1 em diante
+	SetSementes( i, b, r): seta as sementes de criptografia
+	ResetSementes: retira as sementes (sem criptografia)
+
+	Propriedades:
+	nome (rw): nome do arquivo - verificar erro logo após a escrita (w) (publicada da versão 1.4 em diante)
+	erro (r): dado do tipo TEErroArquivo indicando o erro que ocorreu
+                  quando uma função que retorna erros retorna true
+	          (uma função que retorna erros retorna falso quando não houve erro)
+		  (o retorno nas versões anteriores a 1.3 é invertido!)
+	modo (r): dado do tipo TEModoArquivo indicando o modo do arquivo
+	          (TMFechado, TMLeitura, TMGravacao, TMInclusao - versão 1.4 em diante)
+
+	Privados:
+		procedure SetNome( nome): modifica o nome do arquivo (escrita da propriedade nome)
+		SArquivo (file): número do arquivo, usado nas funções de I/O
+		SErro (TEErroArquivo): dado interno indicando o último erro
+		SModo (TEModoArquivo): dado interno indicando o modo do arquivo
+		SNome (string): nome interno do arquivo, privado por causa da escrita
+		SSementes (boolean): indica se existem sementes de criptografia simples
+		SSementeInteiro (integer): semente de criptografia simples para inteiros
+		SSementeReal (real): semente de criptografia simples para reais
+		SSementeString (byte): semente de criptografia simples para strings - não usada em boolean
+
+	Exemplo de Uso:
+	(veja UArquivoLog 1.2)
+
+	Outras Informações:
+		• O arquivo gerado por TArquivoDireto não é estruturado. Para ler este
+		  arquivo, o aplicativo tem que se responsabilizar pela ordem dos dados.
+		  Use a regra FIFO - First In, First Out - primeira entrada, primeira saída!
+
+		• WideString não é suportada nesta versão. Não use typecast, pois
+		  as WideStrings serão truncadas nas duas versões de GravaString.
+		  Caso você precise usar WideStrings, copie e altere os códigos dos
+		  métodos que usam strings que mais lhe convier.
+
+		• Embora teoricamente seja possível gravar strings de até 2GB, tente não usar
+		  strings muito maiores que 64KB, por questões de eficiência e uso de memória.
+
+		• Tamanhos (DELPHI 5)*:
+			boolean:    01 byte
+			double:     08 bytes
+			integer:    04 bytes
+			int64:      08 bytes
+			real:       06 bytes
+			string:     04 bytes + tamanho da string
+			stringfixa: tamanho da string
+		* os tamanhos podem se alterar em versões posteriores e são diferentes
+		  em versões anteriores para real, integer e string.
+}
+
+
+{
+    Autor: Ricardo Erick Rebelo
+    Versão: 1.4 (quarta versão da primeira implementação)
+    Última Modificação: 13/03/05 por Ricardo Erick Rebêlo
+    Documentação: UArquivoDireto.txt
+
+    AVISO: não substituir nos projetos anteriores a 19/02/05
+}
+
+unit UArquivoDireto;
+
+interface
+
+uses UTipos; {para usar TEModoArquivo e TEErroArquivo}
+
+type
+
+{ ############### TArquivoDireto ############### }
+
+  TArquivoDireto = class
+  private
+    SNome: string;
+    SArquivo: file;
+    SModo: TEModoArquivo;
+    SErro: TEErroArquivo;
+    SSementes: Boolean;
+    SSementeInteiro: integer;
+    SSementeString: byte;
+    SSementeReal: real;
+    procedure   SetNome( nome: string);
+  public
+    constructor Cria; overload;
+    constructor Cria( nome: string); overload;
+    destructor  Destroi;
+    function    Grava: boolean; overload;
+    function    Grava( nome: string): boolean; overload;
+//===========================================
+    function    Inclui: boolean; overload;
+    function    Inclui( nome: string): boolean; overload;
+{============================================
+      INCLUÍDAS PARA PERMITIR NOVA FORMA DE USO (INCLUSÃO) (12/03/05) }
+    function    Le: boolean; overload;
+    function    Le( nome: string): boolean; overload;
+    function    Fecha: boolean;
+    function    GravaInteiro( i: integer): boolean;
+    function    LeInteiro( var i: integer): boolean;
+    function    GravaString( s: string): boolean;
+    function    LeString( var s: string): boolean;
+    function    GravaBoolean( b: boolean): boolean;
+    function    LeBoolean( var b: boolean): boolean;
+    function    GravaReal( r: real): boolean;
+    function    LeReal( var r: real): boolean;
+    function    GravaStringFixa( s: string; t: integer): boolean; // versão 1.1
+    function    LeStringFixa( var s: string; t: integer): boolean; // versão 1.1
+//===========================================
+    function    Grava64( i: int64): boolean;
+    function    Le64( var i: int64): boolean;
+    function    GravaDouble( r: double): boolean;
+    function    LeDouble( var r: double): boolean;
+{============================================
+      INCLUÍDAS PARA USO DO TRYTOCOPY (03/02/05) }
+    procedure   SetSementes( i: integer; b: byte; r: real);
+    procedure   ResetSementes;
+    property erro: TEErroArquivo read SErro;
+    property modo: TEModoArquivo read SModo;
+  published
+    property nome: string read SNome write SetNome;
+  end;
+
+{############################################
+#   I  M  P  L  E  M  E  N  T  A  Ç  Ã  O   #
+############################################}
+
+implementation
+
+uses sysutils; {para usar rotinas de I/O}
+
+{ ############### TArquivoDireto ############### }
+
+//=====================================
+
+constructor TArquivoDireto.Cria;
+begin
+  SNome := '';
+  SModo := TMFechado;
+  SErro := TENenhum;
+  SSementes := False;
+end; {cria o arquivo (sem abrir) e zera atributos}
+
+//=====================================
+
+constructor TArquivoDireto.Cria(nome: string);
+begin
+  Cria;
+  SNome := nome;
+end; {cria o arquivo (sem abrir) e seta nome}
+
+//=====================================
+
+destructor TArquivoDireto.Destroi;
+begin
+  if SModo <> TMFechado then
+  begin
+    {$I-}
+    CloseFile( SArquivo);
+    {$I+}
+  end;
+end; {destrói o arquivo (fechando se possível)}
+
+//=====================================
+
+function TArquivoDireto.Fecha: boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    {$I-}
+    CloseFile( SArquivo);
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      SModo := TMFechado;
+      Fecha := False;
+    end else begin
+      SErro := TEErroIO;
+      Fecha := True;
+    end;
+  end else begin
+    SErro := TEArquivoFechado;
+    Fecha := True;
+  end;
+end;  {tenta fechar o arquivo e retorna true se não consegue - alterado em 19/02/05}
+
+//=====================================
+
+function TArquivoDireto.Grava(nome: string): boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Grava := True;
+  end else begin
+    if nome = '' then
+    begin
+      SErro := TESemNome;
+      Grava := True;
+    end else begin
+      AssignFile( SArquivo, nome);
+      {$I-}
+      ReWrite( SArquivo, 1);
+      {$I+}
+      if IOResult = 0 then
+      begin
+        SNome := nome;
+        SErro := TENenhum;
+        SModo := TMGravacao;
+        Grava := False;
+      end else begin
+        SErro := TEErroIO;
+        Grava := True;
+      end;
+    end;
+  end;
+end; {abre para gravação (se arquivo estiver fechado!)}
+
+//=====================================
+
+function TArquivoDireto.Grava: boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Grava := True;
+  end else begin
+    if SNome = '' then
+    begin
+      SErro := TESemNome;
+      Grava := True;
+    end else begin
+      AssignFile( SArquivo, SNome);
+      {$I-}
+      ReWrite( SArquivo, 1);
+      {$I+}
+      if IOResult = 0 then
+      begin
+        SErro := TENenhum;
+        SModo := TMGravacao;
+        Grava := False;
+      end else begin
+        SErro := TEErroIO;
+        Grava := True;
+      end;
+    end;
+  end;
+end; {abre para gravação (se arquivo estiver fechado!)}
+
+//=====================================
+
+function TArquivoDireto.GravaBoolean(b: boolean): boolean;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaBoolean := True;
+  end else begin
+    {$I-}
+    BlockWrite( SArquivo, b, sizeof( b));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      GravaBoolean := False;
+    end else begin
+      SErro := TEErroIO;
+      GravaBoolean := True;
+    end;
+  end;
+end; {salva um valor boolean (se arquivo estiver estiver em gravação ou inclusão)}
+
+//=====================================
+
+function TArquivoDireto.GravaInteiro(i: integer): boolean;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaInteiro := True;
+  end else begin
+    {$I-}
+    if SSementes then i := SSementeInteiro - i;
+    BlockWrite( SArquivo, i, sizeof( i));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      GravaInteiro := False;
+    end else begin
+      SErro := TEErroIO;
+      GravaInteiro := True;
+    end;
+  end;
+end; {salva um valor inteiro (se arquivo estiver estiver em gravação ou inclusão)}
+
+//===================================== VERSÃO 1.2 (03/02/05)
+
+function TArquivoDireto.Grava64(i: int64): boolean;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    Grava64 := True;
+  end else begin
+    {$I-}
+    if SSementes then i := SSementeInteiro - i;
+    BlockWrite( SArquivo, i, sizeof( i));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      Grava64 := False;
+    end else begin
+      SErro := TEErroIO;
+      Grava64 := True;
+    end;
+  end;
+end; {salva um valor int64 (se arquivo estiver estiver em gravação ou inclusão)}
+
+//=====================================
+
+function TArquivoDireto.GravaReal(r: real): boolean;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaReal := True;
+  end else begin
+    {$I-}
+    if SSementes then r := SSementeReal - r;
+    BlockWrite( SArquivo, r, sizeof( r));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      GravaReal := False;
+    end else begin
+      SErro := TEErroIO;
+      GravaReal := True;
+    end;
+  end;
+end; {salva um valor real (se arquivo estiver estiver em gravação ou inclusão)}
+
+//===================================== VERSÃO 1.2 (03/02/05)
+
+function TArquivoDireto.GravaDouble(r: double): boolean;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaDouble := False;
+  end else begin
+    {$I-}
+    if SSementes then r := SSementeReal - r;
+    BlockWrite( SArquivo, r, sizeof( r));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      GravaDouble := True;
+    end else begin
+      SErro := TEErroIO;
+      GravaDouble := False;
+    end;
+  end;
+end; {salva um valor double (se arquivo estiver estiver em gravação ou inclusão)}
+
+//=====================================
+
+function TArquivoDireto.GravaString(s: string): boolean;
+var
+  c, t: integer;
+  a: char;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaString := True;
+  end else begin
+    t := Length( s);
+    if GravaInteiro ( t) then
+    begin
+      GravaString := True;
+      Exit; {nesse caso, SErro será igual o que GravaInteiro gerou, TEErroIO provavelmente}
+    end;
+    for c := 1 to t do
+    begin
+      {$I-}
+      a := s[c];
+      if SSementes then Inc(a, SSementeString);
+      BlockWrite( SArquivo, a, sizeof( a));
+      {$I+}
+      if IOResult <> 0 then
+      begin
+        SErro := TEErroIO;
+        GravaString := True;
+        Exit;
+      end;
+    end;
+    SErro := TENenhum;
+    GravaString := False;
+  end;
+end; {salva uma string de tamanho variável (se arquivo estiver estiver em gravação ou inclusão)}
+
+//===================================== VERSÃO 1.1 (22/05/04)
+
+function TArquivoDireto.GravaStringFixa(s: string; t: integer): boolean;
+var
+  c: integer;
+  a: char;
+begin
+  if (SModo <> TMGravacao) and (SModo <> TMInclusao) then  // 12/03/05 > Inclusão
+  begin
+    SErro := TEModoDiferente;
+    GravaStringFixa := True;
+  end else begin
+    for c := 1 to t do
+    begin
+      {$I-}
+      if c <= Length( s) then a := s[c] else a := ' ';
+      if SSementes then Inc(a, SSementeString);
+      BlockWrite( SArquivo, a, sizeof( a));
+      {$I+}
+      if IOResult <> 0 then
+      begin
+        SErro := TEErroIO;
+        GravaStringFixa := True;
+        Exit;
+      end;
+    end;
+    SErro := TENenhum;
+    GravaStringFixa := False;
+  end;
+end; {salva uma string de tamanho fixo (se arquivo estiver estiver em gravação ou inclusão)}
+
+//=====================================
+
+function TArquivoDireto.Le(nome: string): boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Le := True;
+  end else begin
+    AssignFile( SArquivo, nome);
+    {$I-}
+    Reset( SArquivo, 1);
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SNome := nome;
+      SErro := TENenhum;
+      SModo := TMLeitura;
+      Le := False;
+    end else begin
+      SErro := TEErroIO;
+      Le := True;
+    end;
+  end;
+end; {abre para leitura (se arquivo estiver fechado!)}
+
+//=====================================
+
+function TArquivoDireto.Le: boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Le := True;
+  end else begin
+    if SNome = '' then
+    begin
+      SErro := TESemNome;
+      Le := True;
+    end else begin
+      AssignFile( SArquivo, SNome);
+      {$I-}
+      Reset( SArquivo, 1);
+      {$I+}
+      if IOResult = 0 then
+      begin
+        SErro := TENenhum;
+        SModo := TMLeitura;
+        Le := False;
+      end else begin
+        SErro := TEErroIO;
+        Le := True;
+      end;
+    end;
+  end;
+end; {abre para leitura (se arquivo estiver fechado!)}
+
+//=====================================
+
+function TArquivoDireto.LeBoolean(var b: boolean): boolean;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeBoolean := True;
+  end else begin
+    {$I-}
+    BlockRead( SArquivo, b, sizeof( b));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      LeBoolean := False;
+    end else begin
+      SErro := TEErroIO;
+      LeBoolean := True;
+    end;
+  end;
+end; {lê um valor boolean (se arquivo estiver estiver em leitura)}
+
+//=====================================
+
+function TArquivoDireto.LeInteiro(var i: integer): boolean;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeInteiro := True;
+  end else begin
+    {$I-}
+    BlockRead( SArquivo, i, sizeof( i));
+    if SSementes then i := SSementeInteiro - i;
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      LeInteiro := False;
+    end else begin
+      SErro := TEErroIO;
+      LeInteiro := True;
+    end;
+  end;
+end; {lê um valor inteiro (se arquivo estiver estiver em leitura)}
+
+//===================================== VERSÃO 1.2 (03/02/05)
+
+function TArquivoDireto.Le64(var i: int64): boolean;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    Le64 := True;
+  end else begin
+    {$I-}
+    BlockRead( SArquivo, i, sizeof( i));
+    if SSementes then i := SSementeInteiro - i;
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      Le64 := False;
+    end else begin
+      SErro := TEErroIO;
+      Le64 := True;
+    end;
+  end;
+end; {lê um valor int64 (se arquivo estiver estiver em leitura)}
+
+//=====================================
+
+function TArquivoDireto.LeReal(var r: real): boolean;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeReal := True;
+  end else begin
+    {$I-}
+    BlockRead( SArquivo, r, sizeof( r));
+    if SSementes then r := SSementeReal - r;
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      LeReal := False;
+    end else begin
+      SErro := TEErroIO;
+      LeReal := True;
+    end;
+  end;
+end; {lê um valor real (se arquivo estiver estiver em leitura)}
+
+//===================================== VERSÃO 1.2 (03/02/05)
+
+function TArquivoDireto.LeDouble(var r: double): boolean;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeDouble := True;
+  end else begin
+    {$I-}
+    BlockRead( SArquivo, r, sizeof( r));
+    if SSementes then r := SSementeReal - r;
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SErro := TENenhum;
+      LeDouble := False;
+    end else begin
+      SErro := TEErroIO;
+      LeDouble := True;
+    end;
+  end;
+end; {lê um valor double (se arquivo estiver estiver em leitura)}
+
+//=====================================
+
+function TArquivoDireto.LeString(var s: string): boolean;
+var
+  c, t: integer;
+  a: char;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeString := True;
+  end else begin
+    if LeInteiro ( t) then
+    begin
+      LeString := True;
+      Exit; {nesse caso, SErro será igual o que LeInteiro gerou, TEErroIO provavelmente}
+    end;
+    try
+      SetLength( s, t);
+    except
+      on E: Exception do
+      begin
+        SErro := TEMemoria;
+        LeString := True;
+        Exit;
+      end;
+    end;
+    for c := 1 to t do
+    begin
+      {$I-}
+      BlockRead( SArquivo, a, sizeof( a));
+      if SSementes then Dec(a, SSementeString);
+      s[c] := a;
+      {$I+}
+      if IOResult <> 0 then
+      begin
+        SErro := TEErroIO;
+        LeString := True;
+        Exit;
+      end;
+    end;
+    SErro := TENenhum;
+    LeString := False;
+  end;
+end; {lê uma string de tamanho variável (se arquivo estiver estiver em leitura)}
+
+//===================================== VERSÃO 1.1 (22/05/04)
+
+function TArquivoDireto.LeStringFixa(var s: string; t: integer): boolean;
+var
+  c: integer;
+  a: char;
+begin
+  if SModo <> TMLeitura then
+  begin
+    SErro := TEModoDiferente;
+    LeStringFixa := True;
+  end else begin
+    try
+      SetLength( s, t);
+    except
+      on E: Exception do
+      begin
+        SErro := TEMemoria;
+        LeStringFixa := True;
+        Exit;
+      end;
+    end;
+    for c := 1 to t do
+    begin
+      {$I-}
+      BlockRead( SArquivo, a, sizeof( a));
+      if SSementes then Dec(a, SSementeString);
+      s[c] := a;
+      {$I+}
+      if IOResult <> 0 then
+      begin
+        SErro := TEErroIO;
+        LeStringFixa := True;
+        Exit;
+      end;
+    end;
+    SErro := TENenhum;
+    LeStringFixa := False;
+  end;
+end; {lê uma string de tamanho fixo (se arquivo estiver estiver em leitura)}
+
+//=====================================
+
+procedure TArquivoDireto.ResetSementes;
+begin
+{  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    ResetSementes := True;
+  end else begin}                  // Alteração feita para permitir criptografia "mochila"  (19/02/05 - Ricardo Erick Rebêlo)
+    SSementes := False;
+    SErro := TENenhum;
+{  end;}
+end; {deixa de usar criptografia básica}
+
+//=====================================
+
+procedure TArquivoDireto.SetNome(nome: string);
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+  end else begin
+    SErro := TENenhum;
+    SNome := nome;
+  end;
+end;
+
+//=====================================
+
+procedure TArquivoDireto.SetSementes(i: integer; b: byte; r: real);
+begin
+{  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    SetSementes := False;
+  end else begin}                  // Alteração feita para permitir criptografia "mochila"  (19/02/05 - Ricardo Erick Rebêlo)
+    SSementeInteiro := i;
+    SSementeString := b;
+    SSementeReal := r;
+    SSementes := True;
+    SErro := TENenhum;
+  {end;}
+end; {passa a usar criptografia básica}
+
+//===================================== VERSÃO 1.4 (12/03/05)
+
+function TArquivoDireto.Inclui(nome: string): boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Inclui := True;
+  end else begin
+    AssignFile( SArquivo, nome);
+    {$I-}
+    Reset( SArquivo, 1);
+    Seek( SArquivo, FileSize( SArquivo));
+    {$I+}
+    if IOResult = 0 then
+    begin
+      SNome := nome;
+      SErro := TENenhum;
+      SModo := TMInclusao;
+      Inclui := False;
+    end else begin
+      SErro := TEErroIO;
+      Inclui := True;
+    end;
+  end;
+end; {abre para inclusão (se arquivo estiver fechado!)}
+
+//===================================== VERSÃO 1.4 (12/03/05)
+
+function TArquivoDireto.Inclui: boolean;
+begin
+  if SModo <> TMFechado then
+  begin
+    SErro := TEArquivoAberto;
+    Inclui := True;
+  end else begin
+    if SNome = '' then
+    begin
+      SErro := TESemNome;
+      Inclui := True;
+    end else begin
+      AssignFile( SArquivo, nome);
+      {$I-}
+      Reset( SArquivo, 1);
+      Seek( SArquivo, FileSize( SArquivo));
+      {$I+}
+      if IOResult = 0 then
+      begin
+        SErro := TENenhum;
+        SModo := TMInclusao;
+        Inclui := False;
+      end else begin
+        SErro := TEErroIO;
+        Inclui := True;
+      end;
+    end;
+  end;
+end; {abre para inclusão (se arquivo estiver fechado!)}
+
+end.
