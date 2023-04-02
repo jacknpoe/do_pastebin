@@ -1,0 +1,164 @@
+// ###  A V I S O  ###
+// Os códigos abaixo são LEGADOS e feitos "pra funcionar" em momentos de desespero em compiladores antigos e
+// quando não haviam "engines" e documentação sobre o assunto. Não faça isso em casa
+
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+// ********** DROPS 3 - ZICAU SOFTWARE LIMITADA - ITAJAI, SC - ago/2000 - em Delphi **********
+—————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+NA INICIALIZAÇÃO:
+
+  KeyCode[1] := 13;
+  KeyCode[2] := 32;
+  KeyCode[3] := 37;
+  KeyCode[4] := 38;
+  KeyCode[5] := 39;
+  KeyCode[6] := 40;   // Inicializa o código das teclas interceptadas
+
+  KeyTime[1] := 6;
+  KeyTime[2] := 1;
+  KeyTime[3] := 3;
+  KeyTime[4] := 4;
+  KeyTime[5] := 3;
+  KeyTime[6] := 4;    // Inicializa o tempo das teclas interceptadas
+
+
+
+procedure TPrincipal.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  temp: integer;
+begin
+  If ( Key = 8) AND ( CampoMinado = 144) then
+  begin
+    Inicial.Show;
+    Key := 0;
+  end;
+  If StatusClock = 0  then exit;  // Se o status for parado então sai
+  If Key = 19 then
+  begin
+    FazPause;
+    exit;
+    Key := 0;
+  end;
+  If Pause then exit;
+  For temp := 1 to 6 do           // Para todas as teclas...
+    If ( Key = KeyCode[temp])then // verificamos se o código bate...
+    begin
+      Key := 0;                   // zeramos o caractere...
+      if not KeyPres[temp] then   // e verificamos se não está pressionada
+      begin
+        KeyPres[temp] := True;                              // Se tudo Ok, ela agora está pressionada...
+        KeySoma[temp] := 0;                                  // a soma dos ciclos em StandBy é 0...
+        Key := 0;
+        If (StatusClock = 1) AND (temp <> 2) then ExecutaTeclas( temp);  // e executamos a tecla se o status é normal...
+      end;
+    end;
+end;
+
+
+procedure TPrincipal.FormKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  temp: integer;
+begin
+  For temp := 1 to 6 do          // Para todas as teclas...
+    If Key = KeyCode[temp] then  // verificamos se o código bate...
+    begin
+      Key := 0;                  // zeramos o caractere...
+      KeyPres[temp] := False;    // e então a despressionamos
+    end;
+end;
+
+
+procedure TPrincipal.TimerKeyTimer(Sender: TObject);
+var
+  temp: integer;
+begin
+  If StatusClock = 0  then exit;  // Se o status for parado então sai
+  if Pause then exit;
+  For temp := 1 to 6 do           // Para todas as teclas...
+    If KeyPres[temp] then         // se está pressionada...
+      Inc( KeySoma[temp]);        // incrementa a soma de ciclos
+  If StatusClock = 2  then exit;  // Se o status for bloqueado então sai
+  For temp := 1 to 6 do           // Para todas as teclas...
+    If KeyPres[temp] then         // se está pressionada...
+      If KeySoma[temp] >= KeyTime[temp] then  // e se o tempo já foi...
+      begin
+        Dec( KeySoma[temp], KeyTime[temp]);          // decrementa-se o tempo esperado
+        If StatusClock = 3 then KeySoma[temp] := 0;  // Se estava bloqueado libera-se o buffer do tempo excedido
+        ExecutaTeclas( temp);
+      end;
+ If StatusClock = 3 then StatusClock := 1;   // Se agora o status é saindo de bloqueio, no próximo será normal
+end;
+
+
+procedure TPrincipal.SetNormal;
+var
+  temp: integer;
+begin
+  For temp := 1 to 6 do
+  begin
+    KeyPres[temp] := False;
+    KeySoma[temp] := 0;        // Zera as teclas para evitar pressionamento indevido
+  end;
+  [...]
+end;
+
+
+
+EXEMPLO DE (MAU) USO:
+
+procedure TPrincipal.ExecutaTeclas(Numero: integer);
+var
+  Peca: TPeca1;
+begin
+  if not Jogando then exit;
+  if Pause then exit;
+
+    Peca := TPeca1.Cria;
+    Case Numero of
+      1: begin
+           MProximo := not MProximo;    // A tecla enter muda o próximo
+           Mostradores;                 // E executa os mostradores
+         end;
+      2: begin
+           ExecutaCiclo1;               // O espaço obriga o jogo a executar ciclos rapidamente
+         end;
+      3: begin
+           if Jogo_1.SePossivel( Jogo_1.PAtual, Jogo_1.PosX-1, Jogo_1.PosY) then
+           begin
+             Jogo_1.PosX := Jogo_1.PosX-1;   // se for possível muda a peca para a esquerda
+             Refresca1;
+           end;
+         end;
+      4: begin
+           Peca.CopiaDe( Jogo_1.PAtual);
+           Peca.Gira( antihorario);   // copia e tenta girar a peca
+           if Jogo_1.SePossivel( Peca, Jogo_1.PosX, Jogo_1.PosY) then
+           begin
+             Jogo_1.PAtual.CopiaDe( Peca);  // se for possível muda a peca para no sentido antihorário
+             Refresca1;
+           end;
+         end;
+      5: begin
+           if Jogo_1.SePossivel( Jogo_1.PAtual, Jogo_1.PosX+1, Jogo_1.PosY) then
+           begin
+             Jogo_1.PosX := Jogo_1.PosX+1;   // se for possível muda a peca para a direita
+             Refresca1;
+           end;
+         end;
+    else
+      begin
+        Peca.CopiaDe( Jogo_1.PAtual);
+        Peca.Gira( horario);          // copia e tenta girar a peca
+        if Jogo_1.SePossivel( Peca, Jogo_1.PosX, Jogo_1.PosY) then
+        begin
+          Jogo_1.PAtual.CopiaDe( Peca);     // se for possível muda a peca para no sentido horário
+          Refresca1;
+        end;
+      end;
+    end;
+    Peca.Destroi;
+
+end;
