@@ -1,0 +1,34 @@
+#include<stdio.h>
+
+char tira_espacos( char *origem, char *destino);
+
+/*# MAIN ####################################################*/
+
+int main( void){
+	char inicial[151], final[151], espacos;
+	printf( "\n\nDigite uma frase de ate 150 caracteres:\n");
+	gets( inicial);
+
+	espacos = tira_espacos( inicial, final);
+
+	printf( "\n\nResultado: %s\nEspacos: %d\n", final, espacos);
+}
+
+/*###########################################################*/
+
+char tira_espacos( char *origem, char *destino){
+	char temp = 0, p_origem = 0, p_destino = 0;
+
+	while( origem[ p_origem] != 0){
+		if( origem[ p_origem] == ' ')
+			temp++;
+		else {
+			destino[ p_destino] = origem[ p_origem];
+			p_destino++;
+		}
+		p_origem++;
+	}
+	destino[ p_destino] = 0;
+
+	return temp;
+}
