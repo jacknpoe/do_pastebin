@@ -1,0 +1,15 @@
+create table locacao(
+    cod_grupo integer primary key,
+    livro1 integer,
+    livro2 integer,
+    livro3 integer,
+    dataLocacao date,
+    dataEntrega date,
+    preco float,
+    multa float,
+    pago boolean,
+    FOREIGN KEY(cod_grupo) REFERENCES grupo(cd_codigo),
+    FOREIGN KEY(livro1) REFERENCES produto(cd_codigo),
+    FOREIGN KEY(livro2) REFERENCES produto(cd_codigo),
+    FOREIGN KEY(livro3) REFERENCES produto(cd_codigo)
+)
