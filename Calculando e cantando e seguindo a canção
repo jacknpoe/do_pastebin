@@ -1,0 +1,48 @@
+void calculadora(){
+	char flag_r = 0;
+	
+	comandos(); /*é uma função que coloquei para mostrar os comandos possiveis*/
+	vNum = 0;
+	vDen = 1;
+	printf("Visor: %d\n\n", vNum);
+	
+	do{
+		printf("Operacao: ");
+		scanf(" %c", &opcao);
+		
+		switch(opcao){ /*usei comandos tanto para letras maiusculas como minusculas */
+		case '+':
+			printf("Numerador/Denominador: ");
+			scanf("%d/%d", &num, &den);
+			soma(); flag_r = 0;
+			break;
+		case '-':
+			printf("Numerador/Denominador: ");
+			scanf("%d/%d", &num, &den);
+			subtrair(); flag_r = 0;
+			break;
+		case '*':
+			printf("Numerador/Denominador: ");
+			scanf("%d/%d", &num, &den);
+			multiplicar(); flag_r = 0;
+			break;
+		case '/':
+			printf("Numerador/Denominador: ");
+			scanf("%d/%d", &num, &den);
+			dividir(); flag_r = 0;
+			break;
+		case 'C': case 'c': limpar(); flag_r = 0; break;
+		case 'I': case 'i': inverso(); flag_r = 0; break;
+		case 'S': case 's': simetrico(); flag_r = 0; break;
+		case 'M': case 'm': memoria(); flag_r = 0; break;
+		case 'R': case 'r':
+			if( flag_r == 1) { memoria_limpa(); flag_r = 0;	}
+				else { memoria_call(); flag_r = 1; }
+			break;
+		case 'A': case 'a': memoria_add(); flag_r = 0; break;
+		case 'X': case 'x': memoria_troca(); flag_r = 0; break;
+		default:
+			printf("Opcao Invalida\n\n"); flag_r = 0;
+		}
+	}while(opcao != 'q' && opcao != 'Q'); /*neste menu da calculadora, para sair é a tecla q */
+}
