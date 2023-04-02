@@ -1,0 +1,40 @@
+DELIMITER |
+CREATE OR REPLACE PROCEDURE InserirUsuario(
+	Nome VARCHAR( 50), Senha VARCHAR( 100), Descricao VARCHAR( 500), Inicio DATE, Fim DATE, Inativo TINYINT) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	###### VARIÁVEL CÓDIGO TEMPORÁRIO
+	DECLARE CodigoUsuario INT DEFAULT 0;
+
+	###### COMEÇA A TRANSAÇÃO (E O CÓDIGO REAL) AQUI
+	START TRANSACTION;
+
+	###### ENCONTRA O PRIMEIRO PRÓXIMO CÓDIGO USADO PARA INCLUIR REGISTROS
+	SELECT MAX( CD_Codigo) INTO CodigoUsuario FROM Usuario;
+	SET CodigoUsuario := IFNULL( CodigoUsuario, 0) + 1;
+
+	###### INSERE UM ESTOQUE COM O NOVO CÓDIGO
+	INSERT INTO Usuario ( CD_Codigo, DS_Nome, BN_Senha, DS_Descricao, DT_Inicio, DT_Fim, LG_Inativo)
+		VALUES ( CodigoUsuario, Nome, PASSWORD( Senha), Descricao, Inicio, Fim, Inativo);
+	
+	###### O CÓDIGO REAL TERMINA AQUI, ENTÃO COMMITAMOS A TRANSAÇÃO
+	COMMIT;
+END |
+_______________________________________________________________________________________________________________________________________________________________________________
+
+DELIMITER |
+CREATE OR REPLACE PROCEDURE AlterarSenha( Codigo INTEGER, Senha VARCHAR( 100)) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	UPDATE Usuario SET BN_Senha = PASSWORD( Senha) WHERE CD_Codigo = Codigo;
+END |
+_______________________________________________________________________________________________________________________________________________________________________________
+
+# RETORNA 1 SE A SENHA É CORRETA, 0 SE INCORRETA
+DELIMITER |
+CREATE OR REPLACE FUNCTION CompararSenha( Codigo INTEGER, Senha VARCHAR( 100)) RETURNS TINYINT DETERMINISTIC
+BEGIN
+	DECLARE SenhaRecuperada CHAR( 41);
+
+	SELECT BN_Senha INTO SenhaRecuperada FROM Usuario WHERE CD_Codigo = Codigo;
+
+	Return IF( SenhaRecuperada IS NULL, 0, PASSWORD( Senha) = SenhaRecuperada);
+END |
