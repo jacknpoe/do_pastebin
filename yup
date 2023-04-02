@@ -1,0 +1,15 @@
+int yup(int a,int b)
+{
+    a-=b;
+    if(!a)
+    goto d;
+    if(a<(a-a))
+    goto e;
+    b+=a;
+    goto f;
+d:  if(a!=b)
+    goto e;
+f:  a=~b;
+    goto d;
+e:  return b;
+}
