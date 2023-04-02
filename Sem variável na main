@@ -1,0 +1,10 @@
+#include<iostream>
+
+int &t(void) {
+	static int t=100;
+	return t;
+}
+
+int main(void) { 
+	for( ; std::cout<<t()--<<" ", t() ; );
+}
