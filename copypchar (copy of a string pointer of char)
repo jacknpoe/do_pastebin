@@ -1,0 +1,22 @@
+#include<cstring>
+#include<cstdlib>
+#include<iostream>
+#include<locale>
+
+char* copypchar( char* data) {
+	char *buffer; long size;
+	size = strlen( data);
+	if( ( buffer = (char *) malloc( ( size + 1) * sizeof( char)) ) == NULL) return NULL;
+	memcpy( buffer, data, size+1);
+	return buffer;
+}
+
+int main() {
+	char buffer[201], *nome;
+	setlocale( LC_ALL, "");		// equal caracters in prompt
+	std::cout << "Nome: ";
+	std::cin.getline( buffer, 200);
+	nome = copypchar( buffer);
+	std::cout << "Tamanho do nome: " << strlen( nome) << "\n";
+	std::cout << "Nome: " << nome;
+}
