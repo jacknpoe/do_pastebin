@@ -1,0 +1,276 @@
+//#########################################################################//
+//                                                                         //
+// Ajuste fino para legendas 0.3B (L) 2013 Ricardo Erick Rebêlo (jacknpoe) //
+//                                                                         //
+// (para avis com .srt utilizar programa <origem> <destino> 0.9975         //
+//                                                                         //
+//#########################################################################//
+
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fstream>
+#include <cctype>
+#include <sstream>
+#include <locale.h>
+
+#define SEPARADOR1 ":"
+#define SEPARADOR2 ","
+#define MODULO 360000000
+#define MAXFILENAME 256
+#define MAXTAMLINHA 65536
+#define EXTENSAO ".srt"
+
+using namespace std;
+
+// *** modela tempo, mantém valores e faz conversões de tipos
+class cTempo {
+   long milisegundos;
+   char extenso[ 13], extensoinseguro[ 13];
+protected:
+   void montar_extenso( void);
+   long extenso_to_long( char *);
+public:
+   cTempo( void) { milisegundos = 0; montar_extenso(); };
+   cTempo( char * valor) { milisegundos = extenso_to_long( valor); montar_extenso(); };
+   cTempo( long   valor) { milisegundos = valor; montar_extenso(); };
+   char * as_char( void) { return extensoinseguro; };
+   long   as_long( void) { return milisegundos; };
+   void set_valor( long   valor) { milisegundos = valor; montar_extenso(); };
+   void set_valor( char * valor) { milisegundos = extenso_to_long( valor); montar_extenso(); };
+	cTempo operator=( cTempo valor) { milisegundos = valor.milisegundos; montar_extenso(); return *this; }
+	cTempo operator*=( double valor) { milisegundos *= valor; montar_extenso(); return *this; };
+	cTempo operator/=( double valor) { milisegundos /= valor; montar_extenso(); return *this; };
+} oTempo;
+
+// *** monta o valor por extenso a partir de milisegundos (redução de erro com MODULO)
+void cTempo::montar_extenso( void) {
+	char horas[3], minutos[3], segundos[3], milesimos[4]; int temporario;
+	temporario = milisegundos % MODULO;
+	snprintf( milesimos, 4, "%03d", temporario % 1000); temporario /= 1000;
+	snprintf( segundos, 3, "%02d", temporario % 60); temporario /= 60;
+	snprintf( minutos, 3, "%02d", temporario % 60); temporario /= 60;
+	snprintf( horas, 3, "%02d", temporario);
+
+	strcpy( extenso, horas); strcat( extenso, SEPARADOR1);
+	strcat( extenso, minutos); strcat( extenso, SEPARADOR1);
+	strcat( extenso, segundos); strcat( extenso, SEPARADOR2);
+	strcat( extenso, milesimos);  strcpy( extensoinseguro, extenso);	
+}
+
+// *** retorna o valor em milisegundos a partir de extenso (ignora erros no formato)
+long cTempo::extenso_to_long( char * valor) {
+	char horas[3], minutos[3], segundos[3], milesimos[4];
+
+	horas[0] = valor[0];  horas[1] = valor[1];  horas[2] = 0;
+	minutos[0] = valor[3];  minutos[1] = valor[4];  minutos[2] = 0;
+	segundos[0] = valor[6];  segundos[1] = valor[7];  segundos[2] = 0;
+	milesimos[0] = valor[9];  milesimos[1] = valor[10];  milesimos[2] = valor[11];  milesimos[3] = 0;
+
+	return ( ( atoi( horas) * 60 + atoi( minutos) ) * 60 + atoi( segundos) ) * 1000 + atoi( milesimos) ;
+}
+
+// *** abre arquivos, lê dados, chama conversor, mantém taxa, salva arquivo
+class cAjusteLegenda {
+	ifstream oArqLeitura; ofstream oArqEscrita; double multiplicador;
+	char sArqLeitura[ MAXFILENAME], sArqEscrita[ MAXFILENAME];
+	char sArqLeiturai[ MAXFILENAME], sArqEscritai[ MAXFILENAME];
+private:
+
+// transforma uma string em maiúscula. TODO: utilizar biblioteca padrão
+	void minuscula( char * valor, int maximo){
+		int indice = 0;
+		while( valor[ indice] != 0 and indice < maximo ){
+			valor[ indice] = tolower( valor[ indice]);
+			indice++;
+		};
+	}
+
+// normaliza os nomes de arquivos. TODO: possibilitar outras extenções?
+	void normalizanome( char * nome){
+		int tamanho; char final[5];
+		tamanho = strlen( nome);
+		if( tamanho > 4)
+		{
+			strcpy( final, &nome[ tamanho-4]);
+			minuscula( final, 4);
+			if( strcmp( final, EXTENSAO) == 0) return;
+		}
+		strcat( nome, EXTENSAO);
+	}
+public:
+
+	cAjusteLegenda() { multiplicador = 1; }
+
+// aceita parâmetro para multiplicador (simples)
+	bool set_multiplicador( char * valor ) {
+		return ( ( istringstream ( valor) >> multiplicador) and multiplicador > 0);
+	}
+
+// aceita parâmetros para multiplicador composto
+	bool set_multiplicador( char * diferenca, char * tempo_base) {
+		long i_diferenca, i_tempo_base, tamanho;
+		char por_extenso[] = "0000000000000";
+		if( ( ! ( istringstream ( diferenca) >> i_diferenca)) or i_diferenca == 0) return false;
+		tamanho = strlen( tempo_base);
+		if( tamanho < 12) por_extenso[ 12 - tamanho] = 0; else por_extenso[ 0] = 0;
+		strcat( por_extenso, tempo_base);
+		oTempo.set_valor( por_extenso);
+		i_tempo_base = oTempo.as_long();
+		if( ( i_tempo_base == 0) or ( i_tempo_base <= abs( i_diferenca) ) ) return false;
+		multiplicador = ( double ( i_tempo_base) + double ( i_diferenca) ) / ( double ( i_tempo_base));
+		return true;
+	}
+
+// abre o arquivo de leitura
+	bool abrearquivoleitura( char * nome){
+		strcpy( sArqLeitura, nome);
+		normalizanome( sArqLeitura);
+		strcpy( sArqLeiturai, sArqLeitura);
+		oArqLeitura.open( sArqLeitura, ios::in);
+		return oArqLeitura.is_open();
+	}
+
+// abre o arquivo para escrita
+	bool abrearquivoescrita( char * nome){
+		strcpy( sArqEscrita, nome);
+		normalizanome( sArqEscrita);
+		strcpy( sArqEscritai, sArqEscrita);
+		oArqEscrita.open( sArqEscrita, ios::out); //, ios::nocreate
+		return oArqEscrita.is_open();
+	}
+
+// altera o tempo na linha com  --> 
+	void recalcula( char * cLinha){
+		char * cTempo1, * cTempo2, * cEntre;
+		
+		cTempo1 = strtok( cLinha, " \t" );
+		cEntre  = strtok( NULL, " \t" );
+		cTempo2 = strtok( NULL, " \t" );
+
+		// TODA A MÁGICA DE ALTERAÇÃO DO TEMPO SE DÁ NESSAS QUATRO LINHAS:
+		oTempo.set_valor( cTempo1); oTempo *= multiplicador; cTempo1 = oTempo.as_char();
+		strcpy( cLinha, cTempo1); strcat( cLinha, " --> ");
+		oTempo.set_valor( cTempo2); oTempo *= multiplicador; cTempo2 = oTempo.as_char();
+		strcat( cLinha, cTempo2);
+	}
+	
+	char * get_sArqLeitura( void) { return sArqLeiturai; };
+
+	char * get_sArqEscrita( void) { return sArqEscritai; };
+
+// lê de um arquivo e grava em outro (selecionando as linhas com --> para alteração
+	bool processa( void){
+		char sTeste[ MAXTAMLINHA];
+		while( ! oArqLeitura.eof() ) {
+			oArqLeitura.getline( sTeste, MAXTAMLINHA-1);
+			if( strstr( sTeste, " --> ") != NULL) recalcula( sTeste);
+			oArqEscrita << sTeste << "\n";
+			if( oArqEscrita.bad() or oArqEscrita.fail()) return false;
+		}
+		return true;
+	}
+
+	~cAjusteLegenda() {
+		if( oArqLeitura.is_open() ) oArqLeitura.close();
+		if( oArqEscrita.is_open() ) oArqEscrita.close();
+	}
+
+} oAjusteLegenda;
+
+// *** centraliza todas as mensagens para o usuário e os diálogos (traduzir aqui)
+class cMensagem {
+	char nomeprograma[ MAXFILENAME];
+
+public:
+
+// ajuda (quando não tem parâmetros suficientes)
+	void ajuda( void) {
+		cout << "\nAjuste fino para legendas 0.3B (L) 2013 Ricardo Erick Rebêlo (jacknpoe)";
+		cout << "\n\nSintaxes: 1. " << nomeprograma << " <origem> <destino> <diferença> <tempo base>";
+		cout << "\n          2. " << nomeprograma << " <origem> <destino> <multiplicador>";
+		cout << "\n\norigem: arquivo precisa existir, no formato " << EXTENSAO << ", sem erros.";
+		cout << "\ndestino: " << EXTENSAO << ", não pode ser o mesmo que o arquivo de origem. Será sobrescrito.";
+		cout << "\ndiferença: milissegundos a serem aplicados ao tempo base (comparativo).";
+		cout << "\n           (se negativo adiantará, se positivo atrasará a legenda)";
+		cout << "\ntempo base: momento (HH:MM:SS,mmm) em que a diferença se aplica em 100%.";
+		cout << "\nmultiplicador: número positivo não inteiro pelo qual o tempo será multiplicado.";
+		cout << "\n\nExemplos:";
+		cout << "\n\n1. " << nomeprograma << " teste1 teste2 -9750 00:50:30,000";
+		cout << "\n   ajusta de forma que, em cinquenta minutos e meio de vídeo a legenda seja";
+		cout << "\n   adiantada 9,75 segundos (aproximadamente 99,6782% do tempo)";
+		cout << "\n\n2. " << nomeprograma << " teste1 teste2 0.9975     (padrão para alguns .avi)";
+		cout << "\n   ajusta as legendas de teste1" << EXTENSAO << " em 99,75% do tempo e grava em teste2" << EXTENSAO << ".\n";
+	}
+
+// encontra o nome do executável, sem caminho e sem extenção
+	void set_nomeprograma( char * executavel){
+		int inicio = 0, fim = 0, indice;
+		for( indice = strlen( executavel)-1; indice >= 0 and inicio == 0; indice-- ) {
+			if( executavel[indice] == '.' and fim == 0) fim = indice - 1;
+			if( fim != 0 and inicio == 0 and 
+				( executavel[indice] == '\\' or executavel[indice] == '/' or executavel[indice] == '>' ) )
+					inicio = indice + 1;
+		}
+		if( fim != 0 and inicio <= fim )	{	
+			strcpy( nomeprograma, &executavel[ inicio]);
+			nomeprograma[fim-inicio+1] = 0;
+		} else if ( fim == 0 and inicio == 0 ) strcpy( nomeprograma, executavel);
+		  else strcpy( nomeprograma, "indeterminado");
+	}
+
+// vários tipos de erros e mensagens (auto-explicativas)
+	void erro_multiplicador( char * valor) { 
+		cout << "\nParâmetro '" << valor << "' inválido (precisa ser numérico maior que zero).\n";
+	}
+
+	void erro_multiplicador( char * diferenca, char * tempo_base) {
+		cout << "\nUm ou mais parâmetros '" << diferenca << "' e '"<< tempo_base << "' inválido(s).\n";
+	}
+
+	void erro_abertura( void){
+		cout << "\nArquivo " << oAjusteLegenda.get_sArqLeitura() << " não pode ser aberto.\n";
+	}
+
+	void erro_escrita( void){
+		cout << "\nArquivo " << oAjusteLegenda.get_sArqEscrita() << " não pode ser aberto ou criado.\n";
+	}
+
+	void erro_processo( void){
+		cout << "\nOcorreu um erro no processo de criação do arquivo " << oAjusteLegenda.get_sArqEscrita() << ".\n";
+	}
+
+	void processando( void){
+		cout << "\nProcessando arquivo " << oAjusteLegenda.get_sArqEscrita() << "...\n";
+	}
+
+	void sucesso( void){
+		cout << "\nArquivo " << oAjusteLegenda.get_sArqEscrita() << " gerado com sucesso.\n";
+	}
+} oMensagem;
+
+
+// ***  M A I N  () *******************************************************************
+
+int main( int argc, char* argv[]) {
+	setlocale( LC_ALL, "");		// para todos os caracteres do Dev aparecerem iguais no prompt
+
+	oMensagem.set_nomeprograma( argv[ 0]);
+
+	if( argc < 4) { oMensagem.ajuda(); exit( 1); };
+
+	if( argc == 4) if( ! oAjusteLegenda.set_multiplicador( argv[ 3]) )
+											{ oMensagem.erro_multiplicador( argv[ 3]); exit( 2); }
+
+	if( argc == 5) if( ! oAjusteLegenda.set_multiplicador( argv[ 3], argv[ 4]) )
+											{ oMensagem.erro_multiplicador( argv[ 3], argv[ 4]); exit( 3); }
+
+	if( ! oAjusteLegenda.abrearquivoleitura( argv[ 1]) ) { oMensagem.erro_abertura(); exit( 4); }
+
+	if( ! oAjusteLegenda.abrearquivoescrita( argv[ 2]) ) { oMensagem.erro_escrita(); exit( 5); }
+
+	oMensagem.processando(); if( ! oAjusteLegenda.processa() ) { oMensagem.erro_processo(); exit( 6); }
+
+	oMensagem.sucesso();	return EXIT_SUCCESS;
+}
