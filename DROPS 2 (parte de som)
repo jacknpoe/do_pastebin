@@ -1,0 +1,107 @@
+// PARTE DE SOM
+
+#include <fcntl.h>
+#include <dos.h>
+
+char troquei_ints = 0;
+
+char estado_som = 0;
+char estado_antigo;
+int  contador_efeito, tam_efeito, contador_musica, tam_musica;
+int *pt_efeito, *pt_musica;
+
+int  efect[] = { 440, 880, 440, 880, 1760};	// EXEMPLO DE SOM (NOTAS EM HERTZ, TEMPO = 1 TICK)
+
+void interrupt (*velha_int_1ch)();
+
+void interrupt nova_int_1ch()
+{
+	hora_real++;
+	if( estado_som == 0)
+		nosound();
+	else
+	{
+		if( estado_som == 2)
+		{
+			if( pt_efeito[ contador_efeito] > 0)
+				sound( pt_efeito[ contador_efeito]);
+			else
+				nosound();
+			contador_efeito++;
+			if( contador_efeito == tam_efeito)
+				estado_som = estado_antigo;
+		}
+		else
+			if( pt_musica[ contador_musica] > 0)
+				sound( pt_musica[ contador_musica]);
+			else
+				nosound();
+		contador_musica++;
+		if( contador_musica == tam_musica)
+			contador_musica = 0;
+	}
+
+	(*velha_int_1ch)();
+}
+
+void seta_som_mudo( void)
+{
+	estado_som = 0;
+}
+
+void seta_musica( int *nova_musica, int novo_tam)
+{
+	contador_musica = 0;
+	tam_musica = novo_tam;
+	pt_musica = nova_musica;
+	estado_som = 1;
+}
+
+void seta_efeito( int *novo_efeito, int novo_tam)
+{
+	if( estado_som != 2) estado_antigo = estado_som;
+	contador_efeito = 0;
+	tam_efeito = novo_tam;
+	pt_efeito = novo_efeito;
+	estado_som = 2;
+}
+
+void seta_18( void)	// PROVAVELMENTE NÃO FUNCIONA MAIS, ERA PRO CLOCK EXECUTAR 18x POR SEGUNDO
+{
+	outportb( 0x41, 0xB6);
+	outportb( 0x40, 0xFF);
+	outportb( 0x40, 0xFF);
+}
+
+void seta_64( void)	// PROVAVELMENTE NÃO FUNCIONA MAIS, ERA PRO CLOCK EXECUTAR 64x POR SEGUNDO
+{
+	outportb( 0x41, 0xB6);
+	outportb( 0x40, 0xD3);
+	outportb( 0x40, 0x48);
+}
+
+void inicializa( void)
+{
+	seta_64();
+	velha_int_1ch = getvect( 0x1c);
+	troquei_ints = 1;
+	setvect( 0x1c, nova_int_1ch);
+}
+
+
+void fim_do_programa( void )
+{
+	seta_som_mudo();
+	nosound();
+	seta_18();
+	if( troquei_ints != 0 ) setvect( 0x1c, velha_int_1ch);
+}
+
+void main()
+{
+// SUAS VARIÁVEIS AQUI
+	atexit( fim_do_programa);
+	inicializa();
+
+// SEU CÓDIGO AQUI
+}
