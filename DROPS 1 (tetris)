@@ -1,0 +1,843 @@
+// SÓ COMPILARÁ EM COMPILADORES BORLAND ANTIGOS
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <conio.h>
+#include <graphics.h>
+#include <iostream.h>
+#include <io.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <process.h>
+#include <time.h>
+#include <dos.h>
+
+int  gprintf( int *xloc, int *yloc, char *fmt, ... );
+int  bateu(int alt, int hor, int pec, int rot);
+void cola(int alt, int hor, int pec, int rot);
+void final(void);
+void gameover(void);
+void poe(int alt1, int alt2, float hor, int pec, int rot);
+int  possivel(int alt1, int alt2, int hor, int pec, int rot);
+void score(void);
+void tir1(int alt1, int alt2, int hor, int pec, int rot);
+void tire(int alt1, int alt2, int hor, int pec, int rot);
+/* void troque(void); */
+void cores(int monitor);
+int  inicializa();
+void inicializa2(void);
+int  jogo(void);
+void quadrado(void);
+void iround(void);
+int  desce(void);
+int teclas(int alt1, int alt2, int pec);
+
+
+
+int      cor[9], malha[12][21], round, linhas, prox=1, peca1, cai, horiz, rotacao;
+long int pontos, record=20000;
+char 	 drops[100];
+char     faixa[14804];
+char     dentro[8] = {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff};
+int      ic[7][4][4][4]= {{{{0,1,0,0},
+			    {0,1,1,0},
+			    {0,0,1,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,0},
+			    {1,1,0,0},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,0,0},
+			    {0,1,1,0},
+			    {0,0,1,0},
+			    {0,0,0,0}},
+
+			   {{0,0,1,1},
+			    {0,1,1,0},
+			    {0,0,0,0},
+			    {0,0,0,0}}},
+
+
+			  {{{0,0,1,0},
+			    {0,1,1,0},
+			    {0,1,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,0},
+			    {0,0,1,1},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,0,1,0},
+			    {0,1,1,0},
+			    {0,1,0,0},
+			    {0,0,0,0}},
+
+			   {{1,1,0,0},
+			    {0,1,1,0},
+			    {0,0,0,0},
+			    {0,0,0,0}}},
+
+
+			  {{{1,1,1,0},
+			    {1,0,0,0},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,0},
+			    {0,0,1,0},
+			    {0,0,1,0},
+			    {0,0,0,0}},
+
+			   {{0,0,0,1},
+			    {0,1,1,1},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,0,0},
+			    {0,1,0,0},
+			    {0,1,1,0},
+			    {0,0,0,0}}},
+
+
+			  {{{0,0,1,0},
+			    {0,0,1,0},
+			    {0,1,1,0},
+			    {0,0,0,0}},
+
+			   {{1,0,0,0},
+			    {1,1,1,0},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,0},
+			    {0,1,0,0},
+			    {0,1,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,1},
+			    {0,0,0,1},
+			    {0,0,0,0},
+			    {0,0,0,0}}},
+
+
+			  {{{0,0,0,0},
+			    {0,1,1,0},
+			    {0,1,1,0},
+			    {0,0,0,0}},
+
+			   {{0,0,0,0},
+			    {0,1,1,0},
+			    {0,1,1,0},
+			    {0,0,0,0}},
+
+			   {{0,0,0,0},
+			    {0,1,1,0},
+			    {0,1,1,0},
+			    {0,0,0,0}},
+
+			   {{0,0,0,0},
+			    {0,1,1,0},
+			    {0,1,1,0},
+			    {0,0,0,0}}},
+
+
+			  {{{0,0,0,0},
+			    {1,1,1,1},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,0,0},
+			    {0,1,0,0},
+			    {0,1,0,0},
+			    {0,1,0,0}},
+
+			   {{0,0,0,0},
+			    {1,1,1,1},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,0,1,0},
+			    {0,0,1,0},
+			    {0,0,1,0},
+			    {0,0,1,0}}},
+
+
+			  {{{0,0,1,0},
+			    {0,1,1,0},
+			    {0,0,1,0},
+			    {0,0,0,0}},
+
+			   {{0,1,0,0},
+			    {1,1,1,0},
+			    {0,0,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,0,0},
+			    {0,1,1,0},
+			    {0,1,0,0},
+			    {0,0,0,0}},
+
+			   {{0,1,1,1},
+			    {0,0,1,0},
+			    {0,0,0,0},
+			    {0,0,0,0}}}};
+
+
+
+main()		// versão 2013
+{
+	unsigned int temp=0;
+	if (inicializa()==1) return 1;
+	randomize();
+	quadrado();
+	while( 1)
+	{
+		inicializa2();
+		while(kbhit()) getch();
+		temp=getch();
+		if (temp==27) break;
+		temp=jogo();
+		if (temp==1) final();
+		if (temp==0) gameover();
+	}
+	closegraph();
+	return 0;
+}
+
+/* Funcao inicializa ************************************** */
+
+int inicializa()
+{
+	int monitor = DETECT, cartao;
+	initgraph(&monitor,&cartao,"");
+	if (!((monitor<5 && monitor>0) || (monitor>7 && monitor<10)))
+	{
+		closegraph();
+		printf("Sua placa n„o pode exibir a resolu‡„o exigida pelo programa.\n");
+		printf("DROPS (R) s¢ roda em placas CGA, EGA, VGA, ATT400 e MCGA.\n");
+		return 1;
+	}
+	if (monitor == 1) setgraphmode(CGAHI);
+	if (monitor == 2) setgraphmode(MCGAMED);
+	if (monitor == 3) setgraphmode(EGALO);
+	if (monitor == 4) setgraphmode(EGA64LO);
+	if (monitor == 8) setgraphmode(ATT400MED);
+	if (monitor == 9) setgraphmode(VGALO);
+	cores(monitor);
+	return 0;
+}
+
+
+/* Funcao cores ******************************************* */
+
+void cores(int monitor)
+{
+	if (monitor == 4 || monitor == 3 || monitor == 9)
+	{
+		printf("Monocrom†tico ou Colorido?");
+		char collor;
+		while(!kbhit());
+		collor = getche();
+		if (collor == 'M' || collor == 'm')
+		{
+			cor[0] = 8;
+			cor[1] = 2;
+			cor[2] = 2;
+			cor[3] = 2;
+			cor[4] =15;
+			cor[5] = 8;
+			cor[6] = 0;
+			cor[7] = 2;
+			cor[8] =15;
+		}
+		else
+		{
+			cor[0] = 1;
+			cor[1] = 3;
+			cor[2] = 2;
+			cor[3] = 9;
+			cor[4] = 3;
+			cor[5] = 4;
+			cor[6] = 0;
+			cor[7] =14;
+			cor[8] =15;
+		}
+	}
+	else
+	{
+		cor[0] = 1;
+		cor[1] = 0;
+		cor[2] = 1;
+		cor[3] = 1;
+		cor[4] = 1;
+		cor[5] = 1;
+		cor[6] = 0;
+		cor[7] = 1;
+		cor[8] = 1;
+	}
+}
+
+
+/* Funcao inicializa2 ************************************* */
+
+void inicializa2(void)
+{
+	int x;
+	clearviewport();
+	settextstyle(GOTHIC_FONT, HORIZ_DIR, 15);
+	setcolor(cor[0]);
+	settextjustify(CENTER_TEXT,BOTTOM_TEXT);
+	for(x=-3;x<2;x++)
+	{
+		outtextxy(getmaxx()/2+x-2,89,"DROPS");
+	}
+	setcolor(cor[3]);
+	outtextxy(getmaxx()/2,90,"DROPS");
+	settextstyle(SMALL_FONT, HORIZ_DIR, 9);
+	setcolor(cor[8]);
+	outtextxy(getmaxx()/2, 199,"DROPS versao 2.0 - ZiCauSoft 1993");
+	outtextxy(getmaxx()/2, 200,"           ~                      ");
+	settextstyle(DEFAULT_FONT, HORIZ_DIR, 1);
+	outtextxy(getmaxx()/2, 140,"Pressione Qualquer Tecla");
+	setcolor(cor[0]);
+	rectangle(218,128,421,143);
+	rectangle(216,126,423,145);
+	setcolor(cor[1]);
+	rectangle(217,127,422,144);
+	rectangle(215,125,424,146);
+}
+
+
+/* Funcao quadrado **************************************** */
+
+void quadrado(void)
+{
+	setcolor(cor[3]);
+	setfillpattern(dentro,cor[3]);
+	bar(0,0,19,7);
+	setcolor(cor[4]);
+	line(2,1,15,1);
+	line(2,1,2,5);
+	line(3,1,3,5);
+	line(18,7,18,1);
+	line(19,7,19,1);
+	line(19,7,1,7);
+	setcolor(cor[0]);
+	line(0,0,18,0);
+	line(0,0,0,6);
+	line(1,1,1,6);
+	line(16,6,16,2);
+	line(17,6,17,2);
+	line(17,6,4,6);
+	getimage(0,0,19,7,drops);
+}
+
+
+/* Funcao jogo ******************************************** */
+
+int jogo(void)
+{
+	int peca,vert1,vert2,vert3,t,deu,num;
+	float horiz2;
+	cai=0;
+	round=1;
+	pontos=0;
+	volta_round:;
+		iround();
+		while(kbhit()) getch();
+		sorteia:;
+			peca=peca1;
+			horiz=4;
+			vert1=0;
+			vert2=4;
+			peca1=random(7);
+			rotacao=0;
+			setfillpattern(dentro,cor[6]);
+			bar(351,120,548,168);
+			vert3=15;
+			horiz2=17.1;
+			if (peca1==2)
+			{
+				horiz2=17.6;
+				vert2=7;
+			}
+			if (peca1==4) vert2=0;
+			if (prox==1) poe(vert3,vert2,horiz2,peca1,0);
+			looping:;
+				vert2=0;
+				for(t=0;t<4;t++)
+				{
+					vert2+=2;
+					poe(vert1,vert2,horiz,peca,rotacao);
+					tir1(vert1,vert2-2,horiz,peca,rotacao);
+					if(teclas(vert1,vert2,peca)==1)return 2;
+					if (cai==1)
+					{
+						tir1(vert1,vert2,horiz,peca,rotacao);
+						vert2=8;
+						tire(vert1-1,vert2,horiz,peca,rotacao);
+						poe(vert1,vert2,horiz,peca,rotacao);
+						break;
+					}
+					else delay(55-3*round);
+				}
+			vert1=vert1+1;
+			if (bateu(vert1,horiz,peca,rotacao)>0) goto colar;
+			goto looping;
+		colar:;
+		cai=0;
+		cola(vert1,horiz,peca,rotacao);
+		pontos+=40;
+		if(record<pontos)record=pontos;
+		score();
+		deu=0;
+		for(t=1;t<11;t++)deu=deu+malha[t][3];
+		if(deu>0)return 0;
+		num=desce();
+		if(num>0)
+		{
+			if(num==1)pontos+=200;
+			if(num==2)pontos+=600;
+			if(num==3)pontos+=1200;
+			if(num==4)pontos+=2500;
+			linhas-=num;
+			if(linhas<0)linhas=0;
+			if(record<pontos)record=pontos;
+			score();
+			if(linhas==0)
+			{
+				if(round==10)return 1;
+				pontos+=(long int)5000*round;
+				round++;
+				if(record<pontos)record=pontos;
+				goto volta_round;
+			}
+		}
+		goto sorteia;
+}
+
+
+/* Funcao iround ****************************************** */
+
+void iround(void)
+{
+	int x,y,a,b,t,r;
+	linhas=25;
+	peca1=random(7);
+	clearviewport();
+	settextstyle(TRIPLEX_FONT,HORIZ_DIR,5);
+	settextjustify(CENTER_TEXT,CENTER_TEXT);
+	setcolor(cor[5]);
+	for(x=-1;x<1;x++)
+	{
+		for(y=-1;y<1;y++)
+		{
+			a=getmaxx()/2+x;
+			b=80+y;
+			gprintf(&a,&b,"FASE %i",round);
+		}
+	}
+	while(kbhit()) getch();
+	delay(1500);
+	clearviewport();
+	setcolor(cor[2]);
+	rectangle(50,0,589,185);
+	settextstyle(DEFAULT_FONT,HORIZ_DIR,1);
+	settextjustify(RIGHT_TEXT,BOTTOM_TEXT);
+	setcolor(cor[4]);
+	outtextxy(590,198,"DROPS versao 2.0 - ZiCauSoft 1993");
+	outtextxy(590,197,"~                      ");
+	setfillpattern(dentro,cor[0]);
+	bar(71,9,90,39);
+	bar(291,9,310,39);
+	setfillpattern(dentro,cor[3]);
+	bar(71,41,90,176);
+	bar(91,169,290,176);
+	bar(291,41,310,176);
+	setfillpattern(dentro,cor[5]);
+	bar(331,9,568,16);
+	bar(331,17,350,168);
+	bar(549,17,568,168);
+	bar(331,169,568,176);
+	setcolor(cor[8]);
+	settextstyle(SMALL_FONT,HORIZ_DIR,6);
+	settextjustify(LEFT_TEXT,TOP_TEXT);
+	outtextxy(364,18,"PONTOS :");
+	outtextxy(364,38,"LINHAS :");
+	outtextxy(364,58,"FASE :");
+	outtextxy(364,78,"RECORDE :");
+	outtextxy(364,103,"PROXIMO :");
+	line(387,106,390,103);
+	score();
+	for(t=0;t<21;t++)
+	{
+		for(r=0;r<12;r++)
+		{
+			malha[r][t]=0;
+		}
+	}
+	for(t=0;t<21;t++)
+	{
+		malha[0][t]=1;
+		malha[11][t]=1;
+	}
+	for(r=1;r<11;r++)
+	{
+		malha[r][20]=1;
+	}
+}
+
+
+/* Funcao gameover **************************************** */
+
+void gameover(void)
+{
+	int x,y,a,b;
+	clearviewport();
+	settextstyle(TRIPLEX_FONT,HORIZ_DIR,6);
+	settextjustify(CENTER_TEXT,CENTER_TEXT);
+	setcolor(cor[5]);
+	for(x=-1;x<1;x++)
+	{
+		for(y=-1;y<1;y++)
+		{
+			a=getmaxx()/2+x;
+			b=80+y;
+			gprintf(&a,&b,"FIM DE JOGO!");
+		}
+	}
+	while(kbhit()) getch();
+	delay(1500);
+}
+
+
+/* Funcao final ******************************************* */
+
+void final(void)
+{
+	int x,y,a,b;
+	setfillpattern(dentro,cor[6]);
+	for(x=0;x<10;x++) for(y=0;y<16;y++)
+	{
+		bar(y*40,x*20,y*40+39,x*20+19);
+		delay(10);
+	}
+	setcolor(cor[5]);
+	settextstyle(SMALL_FONT,HORIZ_DIR,7);
+	settextjustify(CENTER_TEXT,TOP_TEXT);
+	outtextxy(320,5,"PARABENS, VOCE CONSEGUIU, COM SEUS REFLEXOS E");
+	outtextxy(320,25,"SUA HABILIDADE, CHEGAR AO FINAL DE UMA DIFICIL");
+	outtextxy(320,45,"VERSAO DE TETRIS. BY CAU E ZIZO:");
+	settextstyle(GOTHIC_FONT,HORIZ_DIR,15);
+	line(116,8,119,5);
+	line(209,8,212,5);
+	line(212,5,215,8);
+	line(549,28,552,25);
+	line(182,48,185,46);
+	line(185,46,187,48);
+	line(187,48,190,46);
+	setcolor(cor[0]);
+	outtextxy(319,30,"DROPS");
+	outtextxy(320,30,"DROPS");
+	outtextxy(318,30,"DROPS");
+	outtextxy(321,30,"DROPS");
+	outtextxy(317,30,"DROPS");
+	setcolor(cor[3]);
+	outtextxy(322,31,"DROPS");
+	delay(10000);
+	clearviewport();
+	settextstyle(SMALL_FONT,HORIZ_DIR,7);
+	setcolor(cor[7]);
+	outtextxy(320,0,"Programado, Estruturado, Desenhado,");
+	outtextxy(320,20,"Projetado e Testado by:");
+	outtextxy(320,105,"Obrigados Especiais para:");
+	settextstyle(TRIPLEX_FONT,HORIZ_DIR,4);
+	setcolor(cor[5]);
+	outtextxy(320,40,"CAU e ZIZO");
+	outtextxy(320,125,"RO, RAFA, BOCON e");
+	outtextxy(320,155,"MAMMA OF CAU");
+	delay(8000);
+	clearviewport();
+	settextstyle(TRIPLEX_FONT,HORIZ_DIR,8);
+	settextjustify(CENTER_TEXT,CENTER_TEXT);
+	setcolor(cor[5]);
+	for(x=-1;x<2;x++)
+	{
+		for(y=-1;y<2;y++)
+		{
+			a=getmaxx()/2+x;
+			b=70+y;
+			gprintf(&a,&b,"FIM");
+		}
+	}
+	while(kbhit()) getch();
+	delay(4500);
+}
+
+
+/* Funcao gprintf ***************************************** */
+
+int gprintf( int *xloc, int *yloc, char *fmt, ... )
+{
+  va_list  argptr;
+  char str[140];
+  int cnt;
+
+  va_start( argptr, fmt );
+
+  cnt = vsprintf( str, fmt, argptr );
+  outtextxy( *xloc, *yloc, str );
+  *yloc += textheight( "H" ) + 2;
+
+  va_end( argptr );
+
+  return( cnt );
+
+}
+
+
+/* Funcao score ******************************************* */
+
+void score(void)
+{
+	int a,b;
+	setcolor(cor[6]);
+	settextstyle(SMALL_FONT,HORIZ_DIR,6);
+	settextjustify(RIGHT_TEXT,TOP_TEXT);
+	a=538;
+	b=18;
+	setfillpattern(dentro,cor[7]);
+	bar(470,22,538,34);
+	gprintf(&a,&b,"%li",pontos);
+	b=38;
+	bar(470,42,538,54);
+	gprintf(&a,&b,"%i",linhas);
+	b=58;
+	bar(470,62,538,74);
+	gprintf(&a,&b,"%i",round);
+	b=78;
+	bar(470,82,538,94);
+	gprintf(&a,&b,"%li",record);
+}
+
+
+/* Funcao poe ********************************************* */
+
+void poe(int alt1, int alt2, float hor, int pec, int rot)
+{
+	int x,x1,y,y1,t,r;
+	y=alt1*8+alt2+9;
+	x=hor*20+71;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			if(ic[pec][rot][t][r]==1)
+			{
+				y1=y+t*8;
+				x1=x+r*20;
+				putimage(x1,y1,drops,COPY_PUT);
+			}
+		}
+	}
+}
+
+
+/* Funcao tir1 ******************************************** */
+
+void tir1(int alt1, int alt2, int hor, int pec, int rot)
+{
+	int x,x1,y,y1,t,r,a;
+	y=alt1*8+alt2+9;
+	x=hor*20+71;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			if(t==0) a=0;
+			else a=ic[pec][rot][t-1][r];
+			if(ic[pec][rot][t][r]==1 && a==0)
+			{
+				x1=x+r*20;
+				y1=y+t*8;
+				setcolor(cor[6]);
+				rectangle(x1,y1,x1+19,y1+1);
+			}
+		}
+	}
+}
+
+
+/* Funcao tire ******************************************** */
+
+void tire(int alt1, int alt2, int hor, int pec, int rot)
+{
+	int x,x1,y,y1,t,r;
+	y=alt1*8+alt2+9;
+	x=hor*20+71;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			if(ic[pec][rot][t][r]==1)
+			{
+				x1=x+r*20;
+				y1=y+t*8;
+				setfillpattern(dentro,cor[6]);
+				bar(x1,y1,x1+19,y1+7);
+			}
+		}
+	}
+}
+
+
+/* Funcao bateu ******************************************* */
+
+int bateu(int alt,int hor, int pec, int rot)
+{
+	int t,r,x1,y1,bat;
+	bat=0;
+	hor--;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			x1=hor+t+1;
+			y1=alt+r+1;
+			if(ic[pec][rot][r][t]==1)bat=bat+malha[x1][y1];
+		}
+	}
+	hor++;
+	return bat;
+}
+
+
+/* Funcao desce ******************************************* */
+
+int desce(void)
+{
+	int num=0,tot,t,r,tt,rr;
+	for(t=4;t<20;t++)
+	{
+		tot=0;
+		for(r=1;r<11;r++) if(malha[r][t]>0) tot++;
+		if(tot==10) goto desca;
+		volta_desca:;
+	}
+	return num;
+	desca:;
+	for(tt=t;tt>3;tt--) for(rr=1;rr<11;rr++) malha[rr][tt]=malha[rr][tt-1];
+	num=num+1;
+	getimage(91,31,290,8+8*t,faixa);
+	putimage(91,39,faixa,COPY_PUT);
+	goto volta_desca;
+}
+
+
+/* Funcao cola ******************************************** */
+
+void cola(int alt, int hor, int pec, int rot)
+{
+	int x1,y1,t,r;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			if(ic[pec][rot][r][t]==1) goto cole;
+			volta_cole:;
+		}
+	}
+	return;
+	cole:;
+	x1=hor+t;
+	y1=alt+r;
+	malha[x1][y1]=1;
+	goto volta_cole;
+}
+
+
+/* Funcao teclas ****************************************** */
+
+int teclas(int alt1, int alt2, int pec)
+{
+	char a1=NULL,a2=NULL;
+	int rt1,hor1,cont=0;
+	while(kbhit())
+	{
+		a2=a1;
+		a1=getch();
+		cont=1;
+	}
+	if(cont==0)return 0;
+	if(a1==32)cai=1;
+	if(a1==27)return 1;
+	if(a1==13)prox=1+(prox==1);
+	if(a2==0 && a1==75)
+	{
+		hor1=horiz-1;
+		if(possivel(alt1,alt2,hor1,pec,rotacao)==0)
+		{
+			tire(alt1,alt2,horiz,pec,rotacao);
+			horiz=hor1;
+			poe(alt1,alt2,horiz,pec,rotacao);
+		}
+	}
+	if(a2==0 && a1==77)
+	{
+		hor1=horiz+1;
+		if(possivel(alt1,alt2,hor1,pec,rotacao)==0)
+		{
+			tire(alt1,alt2,horiz,pec,rotacao);
+			horiz=hor1;
+			poe(alt1,alt2,horiz,pec,rotacao);
+		}
+	}
+	if(a2==0 && a1==80)
+	{
+		rt1=rotacao+1;
+		if(rt1==4)rt1=0;
+		if(possivel(alt1,alt2,horiz,pec,rt1)==0)
+		{
+			tire(alt1,alt2,horiz,pec,rotacao);
+			rotacao=rt1;
+			poe(alt1,alt2,horiz,pec,rotacao);
+		}
+	}
+	return 0;
+
+}
+
+
+/* Funcao possivel **************************************** */
+
+int possivel(int alt1, int alt2, int hor, int pec, int rot)
+{
+	int poss,t,r,y1,x1;
+	poss=0;
+	if(alt2==8) goto segunda;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			x1=t+hor;
+			y1=alt1+r;
+			if(((x1<0 || y1<0) || (x1>11 || y1>20)) && ic[pec][rot][r][t]==1)poss=1;
+			else if(ic[pec][rot][r][t]==1)poss=poss+malha[x1][y1];
+		}
+	}
+	segunda:;
+	for(t=0;t<4;t++)
+	{
+		for(r=0;r<4;r++)
+		{
+			x1=t+hor;
+			y1=alt1+r+1;
+			if(((x1<0 || y1<0) || (x1>11 || y1>20)) && ic[pec][rot][r][t]==1)poss=1;
+			else if(ic[pec][rot][r][t]==1)poss=poss+malha[x1][y1];
+		}
+	}
+	return poss;
+}
