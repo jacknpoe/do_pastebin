@@ -1,0 +1,6 @@
+BEGIN
+	SELECT * FROM
+		( SELECT count(*) as quantidade, CD_Estoque, CD_Produto
+			FROM EstoqueItem GROUP BY CD_Estoque, CD_Produto ) as SomaItens
+		WHERE quantidade > 1;
+END
