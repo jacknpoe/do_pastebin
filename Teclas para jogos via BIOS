@@ -1,0 +1,150 @@
+// (código completo em http://pastebin.com/QDKRaefq)
+//
+// CÓDIGOS <SCANCODE> DE PRESSIONAR E SOLTAR DE ALGUMAS TECLAS
+// 72 / 200 = para cima
+// 75 / 203 = para esquerda
+// 77 / 205 = para direita
+// 80 / 208 = para baixo
+// 01 / 129 = esc
+// 57 / 185 = espaço
+// 28 / 156 = enter
+
+// mais (em hexa, para o segundo número, acrescentar 0x80 ou 128 decimal):
+//  http://www.ee.bgu.ac.il/~microlab/MicroLab/Labs/ScanCodes.htm
+
+#include <dos.h>	// AQUI SE SEMEIA A DISCÓRDIA
+
+char troquei_ints = 0;
+
+// ------- inportb para dev c++ ---------------------------
+unsigned char inportb(unsigned int port) {
+unsigned char ret;
+asm volatile("inb %%dx,%%al":"=a" (ret):"d"(port));
+return ret;
+}
+
+// -------- outportb para dev c++ ---------------------------- 
+inline void outportb(unsigned int port, unsigned char value) {
+asm volatile("outb %%al,%%dx": :"d"(port),"a" (value));
+}
+
+unsigned int  estado_tecla[4];
+unsigned int  tempo_tecla[4];
+unsigned int  press_tecla[4];
+unsigned int  hora_real = 0;
+unsigned char auxiliar;
+unsigned char scancode;
+
+void interrupt (*velha_int_09h)();
+void interrupt (*velha_int_1ch)();
+void interrupt (*velha_int_1bh)();
+
+void interrupt nova_int_1bh()
+{
+}
+
+void interrupt nova_int_09h()
+{
+	scancode = inportb( 0x60);
+	switch (scancode)
+	{
+		case  72: {	if( estado_tecla[0] == 0) press_tecla[0] = 1;	// PRA CIMA
+					estado_tecla[0] = 1; }
+					break;
+		case 200: {	estado_tecla[0] = 0;
+					tempo_tecla[0] = 0; }
+					break;
+		case  77: {	if( estado_tecla[1] == 0) press_tecla[1] = 1;	// DIREITA
+					estado_tecla[1] = 1; }
+					break;
+		case 205: {	estado_tecla[1] = 0;
+					tempo_tecla[1] = 0; }
+					break;
+		case  80: {	if( estado_tecla[2] == 0) press_tecla[2] = 1;	// PRA BAIXO
+					estado_tecla[2] = 1; }
+					break;
+		case 208: {	estado_tecla[2] = 0;
+					tempo_tecla[2] = 0; }
+					break;
+		case  75: {	if( estado_tecla[3] == 0) press_tecla[3] = 1;	// ESQUERDA
+					estado_tecla[3] = 1; }
+					break;
+		case 203: {	estado_tecla[3] = 0;
+					tempo_tecla[3] = 0; }
+					break;
+	}
+	if( ( ( ( scancode > 70) & ( scancode < 82)) | ( ( scancode > 198) & ( scancode < 210))) | scancode == 225)
+	{
+		auxiliar = inportb( 0x61);
+		outportb( 0x61, auxiliar | 0x80);
+		outportb( 0x61, auxiliar);
+		outportb( 0x20, 0x20);
+	}
+	else (*velha_int_09h)();
+}
+
+void interrupt nova_int_1ch()
+{
+	hora_real++;
+
+	if( estado_tecla[0] == 1)
+	{
+		tempo_tecla[0] += 1;
+		if( tempo_tecla[0] > 11)
+		{
+			tempo_tecla[0] -= 12;
+			press_tecla[0] = 1;
+		}
+	}
+	if( estado_tecla[1] == 1)
+	{
+		tempo_tecla[1] += 1;
+		if( tempo_tecla[1] > 8)
+		{
+			tempo_tecla[1] -= 9;
+			press_tecla[1] = 1;
+		}
+	}
+	if( estado_tecla[2] == 1)
+	{
+		tempo_tecla[2] += 1;
+		if( tempo_tecla[2] > 11)
+		{
+			tempo_tecla[2] -= 12;
+			press_tecla[2] = 1;
+		}
+	}
+	if( estado_tecla[3] == 1)
+	{
+		tempo_tecla[3] += 1;
+		if( tempo_tecla[3] > 8)
+		{
+			tempo_tecla[3] -= 9;
+			press_tecla[3] = 1;
+		}
+	}
+
+	(*velha_int_1ch)();
+}
+
+
+NO ENTRADA DO JOGO, COLOCAR:
+	if( troquei_ints == 0 )
+	{
+		velha_int_09h = getvect( 0x09);
+		velha_int_1ch = getvect( 0x1c);
+		velha_int_1bh = getvect( 0x1b);
+		troquei_ints = 1;
+	}
+	setvect( 0x1c, nova_int_1ch);
+	setvect( 0x09, nova_int_09h);
+	setvect( 0x1b, nova_int_1bh);
+
+NA SAÍDA DO JOGO, COLOCAR:
+
+	if( troquei_ints != 0 )
+	{
+		setvect( 0x09, velha_int_09h);
+		setvect( 0x1c, velha_int_1ch);
+		setvect( 0x1b, velha_int_1bh);
+	}
