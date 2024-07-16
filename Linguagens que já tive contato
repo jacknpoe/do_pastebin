@@ -120,6 +120,7 @@ MoonScript
 Arduino
 Virtual Breadboard
 XC=BASIC
+Cython
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
