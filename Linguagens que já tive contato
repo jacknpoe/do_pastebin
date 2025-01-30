@@ -3,7 +3,7 @@ LINGUAGENS EM QUE PROGRAMEI (MAIS OU MENOS NA SEQUÊNCIA CORRETA, EXCETO DIALETO
 - com * as que foram pra só pra trabalhos de faculdade COMO O tcc
 - com @ as em que desenvolvi profissionalmente nos últimos anos
 
-BASIC (AppleSoft, TRS-80, CP-200, MSX, BASICA, GW-BASIC, QuickBasic, Visual BASIC, Visual Basic .NET)
+BASIC (AppleSoft, TRS-80, CP-200, MSX, BASICA, GW-BASIC, QuickBasic, Visual BASIC, Visual Basic .NET, BBC Basic, True BASIC, Decimal BASIC, Yabasic, Turbo Basic)
 xBase (III, IV, ...)@
 binário (sim, binário, não assembly) Z-80
 Clipper
@@ -134,7 +134,6 @@ ReasonML
 MSX Turbo Pascal
 Dragon
 Frink
-BBC Basic
 Q#
 Windows PowerShell
 CPL
@@ -145,11 +144,8 @@ Ch
 Node.js
 GameMaker Language
 PL/SQL
-True BASIC
 PureBasic
-Decimal BASIC
 Squint
-Yabasic
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
