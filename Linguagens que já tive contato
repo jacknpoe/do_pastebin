@@ -7,7 +7,7 @@ BASIC (AppleSoft, TRS-80, CP-200, MSX, BASICA, GW-BASIC, QuickBasic, Visual BASI
 xBase (III, IV, ...)@
 binário (sim, binário, não assembly) Z-80
 Clipper
-Pascal (original e turbo)
+Pascal (Component, Delphi, ESPL, Free, Lazarus, MSX Turbo, Oxygene, PascalABC .NET, Pascalzim, Super, Turbo)
 assembly x86
 C@
 COBOL*
@@ -18,7 +18,6 @@ Ada*
 Object Pascal@
 SQL (MySQL/SQL Server, SQLite)@
 pSQL@
-SuperPascal
 Super Fortran* (exemplo no TCC)
 ML* (exemplo no TCC)
 VFP@
@@ -51,7 +50,6 @@ Common Lisp
 Scheme
 Elixir
 Erlang
-Pascalzim
 VisuALG
 Modula-2
 Prolog
@@ -109,7 +107,6 @@ PascalABC.NET
 Alice
 Ballerina
 Idris
-Oxygene
 ReScript
 Euphoria
 Icon
@@ -131,7 +128,6 @@ X10
 WLanguage
 Bend
 ReasonML
-MSX Turbo Pascal
 Dragon
 Frink
 Q#
