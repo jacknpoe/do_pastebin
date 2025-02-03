@@ -9,12 +9,12 @@ binário (sim, binário, não assembly) Z-80
 Clipper
 Pascal (Component, Delphi, ESPL, Free, Lazarus, MSX Turbo, Oxygene, PascalABC .NET, Pascalzim, Super, Turbo)
 assembly x86
-C@
+C (ANSI, Turbo, Unified Parallel)@
 COBOL*
-C++@
-Fortran*
-LISP*
-Ada*
+C++ (ANSI, Ch, Turbo)@
+Fortran
+LISP
+Ada
 Object Pascal@
 SQL (MySQL/SQL Server, SQLite)@
 pSQL@
@@ -136,7 +136,6 @@ CPL
 Pony
 PureScript
 Red
-Ch
 Node.js
 GameMaker Language
 PL/SQL
