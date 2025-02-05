@@ -11,7 +11,7 @@ Pascal (Component, Delphi, ESPL, Free, Lazarus, MSX Turbo, Oxygene, PascalABC .N
 assembly x86
 C (ANSI, Turbo, Unified Parallel)@
 COBOL*
-C++ (ANSI, Ch, Turbo)@
+C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
 Fortran
 LISP
 Ada
