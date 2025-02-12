@@ -24,7 +24,7 @@ VFP@
 Visual Basic for Applications (hard, documentação ISO-DOC)@
 C#@
 Java
-JavaScript@
+JavaScript@ (+ Node.js, React Native)
 PHP@
 Python@
 brainfuck (uma vez só, e nunca mais)
@@ -136,7 +136,6 @@ CPL
 Pony
 PureScript
 Red
-Node.js
 GameMaker Language
 PL/SQL
 Squint
@@ -146,7 +145,6 @@ ESPL
 Transact-SQL
 Arden
 NetRexx
-React Native
 RAPID
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
