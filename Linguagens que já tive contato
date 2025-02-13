@@ -13,7 +13,7 @@ C (ANSI, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
 Fortran
-LISP
+LISP (Autom Common)
 Ada
 Object Pascal@
 SQL (MySQL/SQL Server, SQLite)@
@@ -46,7 +46,6 @@ GDScript
 Portugol Studio
 Flutter
 Perl
-Common Lisp
 Scheme
 Elixir
 Erlang
