@@ -16,13 +16,12 @@ Fortran
 LISP (Auto, Common, IS, New, Otus, Visual)
 Ada
 Object Pascal@
-SQL (MySQL/SQL Server, SQLite)@
-pSQL@
+SQL (My, Server, Lite, Postgre, PL)@
 Super Fortran* (exemplo no TCC)
 ML (exemplo no TCC)
 VFP@
 Visual Basic for Applications (hard, documentação ISO-DOC)@
-C#@ (+MAUI)
+C# (+MAUI, Rhino)@
 Java
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
 PHP@
@@ -136,12 +135,10 @@ Pony
 PureScript
 Red
 GameMaker Language
-PL/SQL
 Squint
 DrScheme
 SuperCollider
 ESPL
-Transact-SQL
 Arden
 Rexx (NetRexx, Object Rexx)
 RAPID
