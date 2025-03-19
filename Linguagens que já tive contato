@@ -3,7 +3,7 @@ LINGUAGENS EM QUE PROGRAMEI (MAIS OU MENOS NA SEQUÊNCIA CORRETA, EXCETO DIALETO
 - com * as que foram pra só pra trabalhos de faculdade COMO O tcc
 - com @ as em que desenvolvi profissionalmente nos últimos anos
 
-BASIC (AppleSoft, B4X, BBC, CP200, Decimal, Free, GW, Mercury, MSX, Pure, QB64, TRS-80, True, Turbo, twin, VBA, Visual, Visual .NET, XC=, Xojo, Ya, Z) 
+BASIC (AppleSoft, B4X, BBC, CP200, Decimal, Free, GW, Mercury, MSX, Pure, QB64, RhinoScript, TRS-80, True, Turbo, twin, VBA, Visual, Visual .NET, XC=, Xojo, Ya, Z) 
 xBase (III, IV, ...)@
 binário (sim, binário, não assembly) Z-80
 Clipper
@@ -26,7 +26,7 @@ C#@ (+MAUI)
 Java
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
 PHP@
-Python@
+Python@ (+ RhinoPython)
 brainfuck (uma vez só, e nunca mais)
 Scratch
 Node-RED@
