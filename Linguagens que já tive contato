@@ -25,7 +25,7 @@ C# (+MAUI, Rhino)@
 Java
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
 PHP@
-Python@ (+ RhinoPython)
+Python (+ Bython, Cython, Jython, Rhino, RhinoIron)@
 brainfuck (uma vez só, e nunca mais)
 Scratch
 Node-RED@
@@ -74,7 +74,6 @@ SML
 Nim
 Golo
 Xtend
-Jython
 Fantom
 Tcl
 Raku
@@ -108,14 +107,12 @@ Idris
 ReScript
 Euphoria
 Icon (+ Unicon)
-Bython
 Rapira
 SETL
 MoonScript
 Arduino
 Virtual Breadboard
 XC=BASIC
-Cython
 DataWeave
 Umple
 WolframScript
