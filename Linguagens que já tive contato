@@ -4,7 +4,6 @@ LINGUAGENS EM QUE PROGRAMEI (MAIS OU MENOS NA SEQUÊNCIA CORRETA, EXCETO DIALETO
 - com @ as em que desenvolvi profissionalmente nos últimos anos
 
 BASIC (AppleSoft, B4X, BBC, CP200, Decimal, Free, GW, Mercury, MSX, Pure, QB64, RhinoScript, TRS-80, True, Turbo, twin, VBA, Visual, Visual .NET, XC=, Xojo, Ya, Z) 
-xBase (III, IV, ...)@
 binário (sim, binário, não assembly) Z-80
 Clipper
 Pascal (Component, Delphi, ESPL, Free, Lazarus, MSX Turbo, Mystic, Oberon-2, Object Pascal, Oxygene, PascalABC .NET, Pascalzim, Super, Turbo)
@@ -19,7 +18,7 @@ Object Pascal@
 SQL (My, Server, Lite, Postgre, PL)@
 Super Fortran* (exemplo no TCC)
 ML (exemplo no TCC)
-dBase (2019, Harbour, Visual FoxPro, X#)@
+dBase (2019, Harbour, Visual FoxPro, X#xBase (III, IV, ...))@
 Visual Basic for Applications (hard, documentação ISO-DOC)@
 C# (+MAUI, Rhino)@
 Java
