@@ -19,7 +19,7 @@ Object Pascal@
 SQL (My, Server, Lite, Postgre, PL)@
 Super Fortran* (exemplo no TCC)
 ML (exemplo no TCC)
-VFP@
+dBase (2019, Harbour, Visual FoxPro, X#)@
 Visual Basic for Applications (hard, documentação ISO-DOC)@
 C# (+MAUI, Rhino)@
 Java
@@ -89,9 +89,7 @@ QB64
 S-Lang
 Genie
 Vala
-X#
 Crystal
-Harbour
 Zig
 Squirrel
 Ring
