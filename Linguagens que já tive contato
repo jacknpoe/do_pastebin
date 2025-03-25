@@ -17,7 +17,7 @@ Ada
 Object Pascal@
 SQL (My, Server, Lite, Postgre, PL)@
 Super Fortran* (exemplo no TCC)
-ML (exemplo no TCC)
+ML (Alice, Caml, OCaml, ReasonML, SML) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...))@
 Visual Basic for Applications (hard, documentação ISO-DOC)@
 C# (+MAUI, Rhino)@
@@ -66,10 +66,8 @@ CoffeeScript
 AutoIt
 twinBASIC
 Haxe
-OCaml
 ColdFusion Markup Language
 Yeti
-SML
 Nim
 Golo
 Xtend
@@ -98,7 +96,6 @@ Lean
 Clean
 Miranda
 PascalABC.NET
-Alice
 Ballerina
 Idris
 ReScript
@@ -119,7 +116,6 @@ Unified Parallel C
 X10
 WLanguage
 Bend
-ReasonML
 Dragon
 Frink
 Q#
