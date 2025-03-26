@@ -68,9 +68,9 @@ export class Juros{
 
 		for(let i: number = 0; i < this.Quantidade; i++){
 			if(this.Composto){
-				acumulador += this.Pesos[i] / ((1 + juros / 100) ** (this.Pagamentos[i] / this.Periodo));
+				acumulador += this.Pesos[i] / ((1.0 + juros / 100.0) ** (this.Pagamentos[i] / this.Periodo));
 			} else{
-				acumulador += this.Pesos[i] / (1 + juros / 100 * this.Pagamentos[i] / this.Periodo);
+				acumulador += this.Pesos[i] / (1.0 + juros / 100.0 * this.Pagamentos[i] / this.Periodo);
 			}
 		}
 
