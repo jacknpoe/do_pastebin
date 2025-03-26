@@ -85,8 +85,9 @@ export class Juros{
 
 		let minimoJuros: number = 0.0;
 		let medioJuros: number = 0.0;
+
 		if(acrescimoComoValorOriginal){
-			acrescimo = 100 * (pesoTotal / acrescimo - 1.0);
+			acrescimo = 100.0 * (pesoTotal / acrescimo - 1.0);
 			if(acrescimo <= 0.0) return 0.0;
 		}
 
