@@ -12,7 +12,7 @@ C (ANSI, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
 Fortran
-LISP (Auto, Common, Emacs, IS, New, Otus, Visual)
+LISP (Arc, Auto, Common, Emacs, IS, New, Otus, Visual)
 Ada
 Object Pascal@
 SQL (My, Server, Lite, Postgre, PL)@
