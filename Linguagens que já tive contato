@@ -43,7 +43,7 @@ GDScript
 Portugol Studio
 Flutter
 Perl
-Scheme
+Scheme (+DrScheme, Kawa)
 Elixir
 Erlang
 VisuALG
@@ -125,7 +125,6 @@ PureScript
 Red
 GameMaker Language
 Squint
-DrScheme
 SuperCollider
 ESPL
 Arden
