@@ -1,28 +1,28 @@
 #include <iostream>   // cout
 #include <cstdlib>  // abs
 
-#define MAXDIF 1e-16
+#define MAXEXP 21
 #define MAXLN 100
 
-// essa função é especial para expoentes inteiros, usada em exp()
-double power_int(double base, long long expoente) {
-	if (expoente < 0) return power_int(1 / base, expoente * -1);
-	if (expoente == 0) return 1;
-	if (expoente % 2 == 0) return power_int(base * base, expoente / 2);
-	return base * power_int(base * base, (expoente - 1) / 2);
-}
+// essa função é especial para expoentes inteiros
+//double power_int(double base, long long expoente) {
+//	if (expoente < 0) return power_int(1 / base, expoente * -1);
+//	if (expoente == 0) return 1;
+//	if (expoente % 2 == 0) return power_int(base * base, expoente / 2);
+//	return base * power_int(base * base, (expoente - 1) / 2);
+//}
 
 // retorna a constante e elevado a uma potência double
 double exp(double x) {
-	double acumulador = 1.0, anterior = 0.0;
-	long long n = 0, fatorial = 1, indice = 1;
-	while (true) {
+	double acumulador = 1.0, anterior = 0.0, potencia = x;
+	long long n = 0, fatorial = 1;
+	for(int indice = 1; indice <= MAXEXP; indice++) {
 		anterior = acumulador;
 		fatorial *= indice;
-		acumulador = acumulador + power_int(x, indice) / fatorial;
-		if(acumulador - anterior < MAXDIF) return acumulador;
-		indice += 1;
+		acumulador = acumulador + potencia / fatorial;
+		potencia *= x;
 	}
+	return acumulador;
 }
 
 // retorna o logaritmo natural de um double (precisa para números menores do que dez, absolutamente inútil para núneros maiores que 100)
@@ -46,17 +46,18 @@ double power(double base, double expoente) {
 // alguns testes
 int main() {
 	std::cout.precision(15);
-	std::cout << "2 ^ 3 = " << power_int(2, 3) << "\n";
-	std::cout << "3 ^ 5 = " << power_int(3, 5) << "\n";
-	std::cout << "2 ^ 10 = " << power_int(2, 10) << "\n";
-	std::cout << "10 ^ 15 = " << power_int(10, 15) << "\n";
-	std::cout << "3 ^ 4 = " << power_int(3, 4) << "\n";
-	std::cout << "0.5 ^ 2 = " << power_int(0.5, 2) << "\n";
+//	std::cout << "2 ^ 3 = " << power_int(2, 3) << "\n";
+//	std::cout << "3 ^ 5 = " << power_int(3, 5) << "\n";
+//	std::cout << "2 ^ 10 = " << power_int(2, 10) << "\n";
+//	std::cout << "10 ^ 15 = " << power_int(10, 15) << "\n";
+//	std::cout << "3 ^ 4 = " << power_int(3, 4) << "\n";
+//	std::cout << "0.5 ^ 2 = " << power_int(0.5, 2) << "\n";
 	std::cout << "exp(1) = " << exp(1) << "\n";
 	std::cout << "exp(3) = " << exp(3) << "\n";
 	std::cout << "ln(0.5) = " << ln(0.5) << "\n";
 	std::cout << "ln(3) = " << ln(3) << "\n";
 	std::cout << "1.03 ^ 0.5 = " << power(1.03, 0.5) << "\n";
 	std::cout << "1.06 ^ 5 = " << power(1.06, 5) << "\n";
+	std::cout << "1.03 ^ 120 = " << power(1.03, 120) << "\n";
 	system( "PAUSE");
 }
