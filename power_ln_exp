@@ -14,10 +14,9 @@
 
 // retorna a constante e elevado a uma potência double
 double exp(double x) {
-	double acumulador = 1.0, anterior = 0.0, potencia = x;
+	double acumulador = 1.0, potencia = x;
 	long long n = 0, fatorial = 1;
 	for(int indice = 1; indice <= MAXEXP; indice++) {
-		anterior = acumulador;
 		fatorial *= indice;
 		acumulador = acumulador + potencia / fatorial;
 		potencia *= x;
