@@ -1,9 +1,15 @@
+// power(base, expoente) usando exp (e elevado a x) e ln (logarítmo de x na base e) ambos com séries de Taylor
+// veja nos exemplos de power() as precisões, em casas decimais, porque essas séries são apemnas aproximações
+// são úteis em percentuais (<=5%) e número de períodos (<=120) triviais (quanto menores, maior a precisão)
+// power_int é uma função mais precisa, mas ela é para os casos em que a parcela/periodo é um número inteiro
+// ela também calcula com bases negativas (power() e ln() não foram projetadas para aceitarem bases negativas)
+
 #include <iostream>   // cout
 
 #define MAXEXP 20
 #define MAXLN 100
 
-// essa função é especial para expoentes inteiros
+// essa função é especial para expoentes inteiros (optar por inteiros pode aumentar a precisão, a base pode ser negativa)
 double power_int(double base, long long expoente) {
 	if (expoente < 0) return power_int(1 / base, expoente * -1);
 	if (expoente == 0) return 1;
@@ -11,7 +17,7 @@ double power_int(double base, long long expoente) {
 	return base * power_int(base * base, (expoente - 1) / 2);
 }
 
-// retorna a constante e elevado a uma potência double (é uma aproximação)
+// retorna a constante e elevada a uma potência double (é uma aproximaçãom=, verifique os exemplos de power() e testes)
 double exp(double x) {
 	double acumulador = 1.0, potencia = x;
 	long long n = 0, fatorial = 1;
@@ -23,10 +29,10 @@ double exp(double x) {
 	return acumulador;
 }
 
-// retorna o logaritmo natural de um double (aproximação, precisa para números menores do que dez, absolutamente inútil para núneros maiores que 100)
+// retorna o logaritmo natural de um double (é uma aproximaçãom=, verifique os exemplos de power() e testes)
 double ln(double x) {
-	if(x < 0.0) return 0.0;  // coloque aqui o que você quer que retorne quando x for negativo
-	if(x > 1.0) return ln(1 / x) * -1;
+//	if(x < 0.0) return 0.0;  // coloque aqui o que você quer que retorne quando x for negativo (por enquanto, apenas retorna absurdos)
+	if(x > 1.0 || x < -1.0) return ln(1 / x) * -1;  // || x < -1.0 não evita que o retorno não faça nenhum sentido
 	x -= 1;
 	double acumulador = 0.0, potencia = x;
 	long long sinal = 1;
@@ -37,7 +43,8 @@ double ln(double x) {
 	return acumulador;
 }
 
-// calcula base elevado a expoente, usando ln() e exp() (aproximação, veja a precisão nos testes)
+// calcula base elevado a expoente, usando ln() e exp() (aproximação, veja a precisão dos exemplos abaixo e testes)
+// 6% ^ 5 = 15 casas, 3% ^ 60 = 15 casas, 3% ^ 120 = 7 casas, 5% ^ 60 = 7 casas, 5% ^ 120 = 3 casas, 10% ^ 60 = 3 casas
 double power(double base, double expoente) {
 	return exp(expoente * ln(base));
 }
@@ -45,21 +52,34 @@ double power(double base, double expoente) {
 // alguns testes
 int main() {
 	std::cout.precision(15);
-	std::cout << "2 ^ 3 = " << power_int(2, 3) << "\n";
-	std::cout << "3 ^ 5 = " << power_int(3, 5) << "\n";
-	std::cout << "2 ^ 10 = " << power_int(2, 10) << "\n";
-	std::cout << "10 ^ 15 = " << power_int(10, 15) << "\n";
-	std::cout << "1.03 ^ 3 = " << power_int(1.03, 3) << "\n";
-	std::cout << "0.5 ^ 2 = " << power_int(0.5, 2) << "\n";
-	std::cout << "exp(1) = " << exp(1) << "\n";
-	std::cout << "exp(3) = " << exp(3) << "\n";
-	std::cout << "ln(0.5) = " << ln(0.5) << "\n";
-	std::cout << "ln(3) = " << ln(3) << "\n";
-	std::cout << "1.03 ^ 0.5 = " << power(1.03, 0.5) << "\n";  // 14 casas decimais
-	std::cout << "1.06 ^ 5 = " << power(1.06, 5) << "\n";  // 15 casas decimais
-	std::cout << "1.03 ^ 120 = " << power(1.03, 120) << "\n";  // 7 casas decimais
-	std::cout << "1.05 ^ 60 = " << power(1.05, 60) << "\n";	 // 7 casas decimais
-	std::cout << "1.05 ^ 120 = " << power(1.05, 120) << "\n";  // 3 casas decimais
-	std::cout << "1.1 ^ 60 = " << power(1.1, 60) << "\n";  // 3 casas decimais
+	std::cout << "2 ^ 3 = " << power_int(2, 3) << std::endl;
+	std::cout << "-3 ^ 5 = " << power_int(-3, 5) << std::endl;
+	std::cout << "-2 ^ 10 = " << power_int(-2, 10) << std::endl;
+	std::cout << "10 ^ 15 = " << power_int(10, 15) << std::endl;
+	std::cout << "1.03 ^ 5 = " << power_int(1.03, 3) << std::endl;
+	std::cout << "0.5 ^ 2 = " << power_int(0.5, 2) << std::endl << std::endl;
+	std::cout << "exp(1) = " << exp(1) << std::endl;
+	std::cout << "exp(-0.5) = " << exp(-0.5) << std::endl;
+	std::cout << "exp(-2) = " << exp(-2) << std::endl;
+	std::cout << "exp(3) = " << exp(3) << std::endl << std::endl;
+	std::cout << "ln(0.5) = " << ln(0.5) << std::endl;
+	std::cout << "ln(-0.5) = " << ln(-0.5) << std::endl;
+	std::cout << "ln(-2) = " << ln(-2) << std::endl;
+	std::cout << "ln(3) = " << ln(3) << std::endl << std::endl;
+	std::cout << "1.03 ^ 0.5 = " << power(1.03, 0.5) << std::endl << std::endl;
+	std::cout << "I 1.06 ^ 5 = " << power_int(1.06, 5) << std::endl;
+	std::cout << "D 1.06 ^ 5 = " << power(1.06, 5) << std::endl << std::endl;
+	std::cout << "I 1.03 ^ 60 = " << power_int(1.03, 60) << std::endl;
+	std::cout << "D 1.03 ^ 60 = " << power(1.03, 60) << std::endl << std::endl;
+	std::cout << "I 1.03 ^ 120 = " << power_int(1.03, 120) << std::endl;
+	std::cout << "D 1.03 ^ 120 = " << power(1.03, 120) << std::endl << std::endl;
+	std::cout << "I 1.05 ^ 60 = " << power_int(1.05, 60) << std::endl;
+	std::cout << "D 1.05 ^ 60 = " << power(1.05, 60) << std::endl << std::endl;
+	std::cout << "I 1.05 ^ 120 = " << power_int(1.05, 120) << std::endl;
+	std::cout << "D 1.05 ^ 120 = " << power(1.05, 120) << std::endl << std::endl;
+	std::cout << "I 1.1 ^ 60 = " << power_int(1.1, 60) << std::endl;
+	std::cout << "D 1.1 ^ 60 = " << power(1.1, 60) << std::endl << std::endl;
+	std::cout << "I -1.1 ^ 60 = " << power_int(-1.1, 60) << std::endl;
+	std::cout << "D -1.1 ^ 60 = " << power(-1.1, 60) << std::endl << std::endl;
 	system( "PAUSE");
 }
