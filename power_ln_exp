@@ -17,7 +17,7 @@ double power_int(double base, long long expoente) {
 	return base * power_int(base * base, (expoente - 1) / 2);
 }
 
-// retorna a constante e elevada a uma potência double (é uma aproximaçãom=, verifique os exemplos de power() e testes)
+// retorna a constante e elevada a uma potência double (é uma aproximação, verifique os exemplos de power() e testes)
 double exp(double x) {
 	double acumulador = 1.0, potencia = x;
 	long long n = 0, fatorial = 1;
