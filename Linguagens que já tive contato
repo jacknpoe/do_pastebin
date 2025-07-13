@@ -11,12 +11,11 @@ assembly x86
 C (ANSI, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
-Fortran
+Fortran (90, Ratfor, Super)
 LISP (Arc, Auto, Common, Emacs, ILOS, IS, New, Otus, Visual)
 Ada
 Object Pascal@
 SQL (My, Server, Lite, Postgre, PL)@
-Super Fortran* (exemplo no TCC)
 ML (Alice, Caml, OCaml, ReasonML, SML, SML/NJ) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)@
 C# (+MAUI, Rhino, SnapDevelop)@
