@@ -185,10 +185,11 @@ Langur
 Epsilon Object Language
 Z
 Forth (G, VFX 64)
-sh (Ba, c, Da, fi, k, POSIX, z)
+sh (Ba, Da, fi, k, POSIX, z)
 Yorick
 Nickle
 HolyC
+csh
 Futhark
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
