@@ -1,0 +1,75 @@
+#include <string>
+#include <iostream>
+#include <cmath>
+
+// CLASSE PAI "base"
+class base {
+	public:
+	void dezPrimeiros( void);
+	virtual std::string nome(void) {};
+	virtual long enesimo( long ordem) {};
+};
+
+void base::dezPrimeiros( void){
+	std::cout << nome() << ": ";
+	for( int i = 1; i <= 10; i++)
+		std::cout << enesimo( i) << " ";
+	std::cout << std::endl;
+}
+
+// CLASSE FILHA "dobro"
+class dobro: public base {
+	public:
+		virtual std::string nome( void);
+		virtual long enesimo( long ordem);
+};
+std::string dobro::nome( void){ return "Dobro"; }
+long dobro::enesimo( long ordem){
+	return 2 * ordem;
+}
+
+// CLASSE FILHA "quadrado"
+class quadrado: public base {
+	public:
+		virtual std::string nome( void);
+		virtual long enesimo( long ordem);
+};
+std::string quadrado::nome( void){ return "Quadrado"; }
+long quadrado::enesimo( long ordem){
+	return pow(ordem, 2);
+}
+
+// CLASSE FILHA "doiselevado"
+class doiselevado: public base {
+	public:
+		virtual std::string nome( void);
+		virtual long enesimo( long ordem);
+};
+std::string doiselevado::nome( void){ return "Dois elevado"; }
+long doiselevado::enesimo( long ordem){
+	return pow(2, ordem);
+}
+
+// CLASSE FILHA "fatorial"
+class fatorial: public base {
+	public:
+		virtual std::string nome( void);
+		virtual long enesimo( long ordem);
+};
+std::string fatorial::nome( void){ return "Fatorial"; }
+long fatorial::enesimo( long ordem){
+	long temp = 1;
+	for(int i = 2; i <= ordem; i++) temp *= i;
+	return temp;
+}
+
+int main(){
+	base* objeto[4];
+	objeto[0] = new dobro();
+	objeto[1] = new quadrado();
+	objeto[2] = new doiselevado();
+	objeto[3] = new fatorial();
+	
+	for( int i = 0; i < 4; i++)
+		objeto[i]->dezPrimeiros();
+}
