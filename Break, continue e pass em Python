@@ -1,0 +1,30 @@
+# break
+def exemplo_break(numero):
+    for temp in range(1,numero):
+        if temp == 5:
+            break
+        print(temp)
+
+
+# continue
+def exemplo_continue(numero):
+    for temp in range(1,numero):
+        if temp == 5:
+            continue
+        print(temp)
+
+
+#pass
+def exemplo_pass(numero):
+    for temp in range(1,numero):
+        if temp % 2:
+            pass
+        else:
+            print(temp)
+
+
+# Main
+if __name__ == '__main__':
+    exemplo_break(10)
+    exemplo_continue(10)
+    exemplo_pass(10)
