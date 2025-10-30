@@ -1,0 +1,38 @@
+#include <stdlib.h>	// malloc
+#include <stdio.h>	// printf/fgets
+#include <locale.h>	// setlocale
+
+char* concatenapchar( char* dado1, char* dado2) {
+	char *buffer;
+	long tamanho1, tamanho2, iterador;
+	
+	for( tamanho1 = 0; ; tamanho1++) if( dado1[tamanho1] == 0) break;
+	for( tamanho2 = 0; ; tamanho2++) if( dado2[tamanho2] == 0) break;
+
+	buffer = (char *) malloc( ( tamanho1 + tamanho2 - 1) * sizeof( char));
+	if( buffer == NULL) return NULL;
+
+	for( iterador = 0; iterador < tamanho1-1; iterador++)
+		buffer[iterador] = dado1[iterador];
+
+	for( iterador = 0; iterador < tamanho2; iterador++)
+		buffer[tamanho1 + iterador - 1] = dado2[iterador];
+ 	
+	return buffer;
+}
+
+int main() {
+	char buffer1[201], buffer2[201], *concatenada;
+	
+	setlocale( LC_ALL, "C");		// caracteres acentuados
+	
+	printf( "String 1: ");
+	fgets( buffer1, 200, stdin);
+
+	printf( "String 2: ");
+	fgets( buffer2, 200, stdin);
+
+	concatenada = concatenapchar( buffer1, buffer2);
+
+	printf( "Concatenada: %s\n", concatenada);
+}
