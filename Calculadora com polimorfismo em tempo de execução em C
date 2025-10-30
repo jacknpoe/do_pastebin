@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <locale.h>
+
+double soma(double num1, double num2) { return num1 + num2; }
+double subtracao(double num1, double num2) { return num1 - num2; }
+double multiplicacao(double num1, double num2) { return num1 * num2; }
+double divisao(double num1, double num2) { return num1 / num2; }
+
+int main() {
+	double numero1, numero2;
+	int operacaoSelecionada;
+
+	double (*operacoes[4]) (double num1, double num2);
+	operacoes[0] = soma;
+	operacoes[1] = subtracao;
+	operacoes[2] = multiplicacao;
+	operacoes[3] = divisao;
+	
+	setlocale( LC_ALL, "");		// caracteres acentuados
+
+	printf("Escolha uma operação: 0: adição, 1: subtração, 2: multiplicação, 3: divisão: ");
+	scanf("%i", &operacaoSelecionada);
+	if(operacaoSelecionada < 0 || operacaoSelecionada > 3) {
+		printf("Operação incorreta!\n");
+		return -1;
+	}
+
+	printf("Número 1: ");
+	scanf("%lf", &numero1);
+
+	printf("Número 2: ");
+	scanf("%lf", &numero2);
+	
+	printf("Resultado: %f\n", (*operacoes[operacaoSelecionada])(numero1, numero2));
+}
