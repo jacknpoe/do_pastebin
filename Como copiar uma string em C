@@ -1,0 +1,30 @@
+#include <stdlib.h>	// malloc
+#include <stdio.h>	// printf/fgets
+#include <locale.h>	// setlocale
+
+char* copiapchar( char* dado) {
+	char *buffer;
+	long tamanho, iterador;
+	
+	for( tamanho = 0; ; tamanho++) if( dado[tamanho] == 0) break;
+
+	buffer = (char *) malloc( ( tamanho + 1) * sizeof( char));
+	if( buffer == NULL) return NULL;
+
+	for( iterador = 0; iterador <= tamanho; iterador++)
+		buffer[iterador] = dado[iterador];
+ 	
+	return buffer;
+}
+
+int main() {
+	char buffer[201], *nome;
+	
+	setlocale( LC_ALL, "C");		// caracteres acentuados
+	printf( "Nome: ");
+	fgets( buffer, 200, stdin);
+
+	nome = copiapchar( buffer);
+
+	printf( "Nome: %s\n", nome);
+}
