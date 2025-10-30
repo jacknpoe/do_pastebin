@@ -1,0 +1,57 @@
+#include <iostream>
+#include <locale.h>
+
+using namespace std;
+
+// CLASSE PAI "Operacao"
+class Operacao {
+	public:	virtual double operacao(double num1, double num2) {};
+};
+
+// CLASSES FILHAS
+class Soma: public Operacao {
+	public: virtual double operacao(double num1, double num2) { return num1 + num2; };
+};
+
+class Subtracao: public Operacao {
+	public: virtual double operacao(double num1, double num2) { return num1 - num2; };
+};
+
+class Multiplicacao: public Operacao {
+	public: virtual double operacao(double num1, double num2) { return num1 * num2; };
+};
+
+class Divisao: public Operacao {
+	public: virtual double operacao(double num1, double num2) { return num1 / num2; };
+};
+
+// MAIN
+int main(){
+	double numero1, numero2;
+	int operacaoSelecionada;
+
+	Operacao* operacoes[4];
+	operacoes[0] = new Soma();
+	operacoes[1] = new Subtracao();
+	operacoes[2] = new Multiplicacao();
+	operacoes[3] = new Divisao();
+
+	setlocale( LC_ALL, "");		// caracteres acentuados
+
+	cout << "Escolha uma operação: 0: adição, 1: subtração, 2: multiplicação, 3: divisão: ";
+	cin >> operacaoSelecionada;
+	if(operacaoSelecionada < 0 || operacaoSelecionada > 3) {
+		cout << "Operação incorreta!" << endl;
+		return -1;
+	}
+	
+	cout << "Número 1: ";
+	cin >> numero1;
+
+	cout << "Número 2: ";
+	cin >> numero2;
+	
+	cout << "Resultado: " << operacoes[operacaoSelecionada]->operacao(numero1, numero2) << endl;
+	
+	return 0;
+}
