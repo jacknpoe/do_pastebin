@@ -1,0 +1,17 @@
+# INCLUI UM USUÁRIO
+INSERT INTO usuario (s_nome, b_senha) VALUES (nome, SHA2(senha, 256));
+
+_____________________________________________________________________________________________________________________________
+
+
+# RETORNA 1 SE A SENHA É CORRETA, 0 SE INCORRETA
+DELIMITER |
+CREATE OR REPLACE FUNCTION compararSenha(codigo INTEGER, senha VARCHAR(100)) RETURNS TINYINT DETERMINISTIC
+BEGIN
+	DECLARE senhaRecuperada CHAR(64);
+
+	SELECT b_senha INTO senhaRecuperada FROM usuario WHERE n_codigo = codigo;
+
+	Return IF(senhaRecuperada IS NULL, 0, SHA2(senha, 256) = senhaRecuperada);
+END |
+
