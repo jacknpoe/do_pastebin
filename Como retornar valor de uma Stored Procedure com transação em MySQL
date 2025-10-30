@@ -1,0 +1,60 @@
+###### FUNÇÃO QUE FUNCIONA
+DELIMITER |
+CREATE OR REPLACE FUNCTION Transfere(origem INT, destino INT) RETURNS DECIMAL(15,2) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	DECLARE Total DECIMAL(15,2);
+
+	SELECT saldo FROM conta WHERE codigo = origem INTO Total;
+	UPDATE conta SET saldo = saldo + Total WHERE codigo = destino;
+	UPDATE conta SET saldo = 0 WHERE codigo = origem;
+
+	RETURN Total;
+END |
+
+
+
+###### PROCEDIMENTO QUE FUNCIONA
+DELIMITER |
+CREATE OR REPLACE PROCEDURE Transfere(origem INT, destino INT) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	DECLARE Total DECIMAL(15,2);
+
+	START TRANSACTION READ WRITE;
+	SELECT saldo FROM conta WHERE codigo = origem INTO Total;
+	UPDATE conta SET saldo = saldo + Total WHERE codigo = destino;
+	UPDATE conta SET saldo = 0 WHERE codigo = origem;
+	COMMIT;
+END |
+	
+
+###### FUNÇÃO QUE NÃO FUNCIONA
+DELIMITER |
+CREATE OR REPLACE FUNCTION Transfere(origem INT, destino INT) RETURNS DECIMAL(15,2) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	DECLARE Total DECIMAL(15,2);
+
+	START TRANSACTION READ WRITE;
+	SELECT saldo FROM conta WHERE codigo = origem INTO Total;
+	UPDATE conta SET saldo = saldo + Total WHERE codigo = destino;
+	UPDATE conta SET saldo = 0 WHERE codigo = origem;
+	COMMIT;
+
+	RETURN Total;
+END | 
+
+
+###### PROCEDIMENTO QUE FUNCIONA COM RETORNO
+DELIMITER |
+CREATE OR REPLACE PROCEDURE Transfere(origem INT, destino INT, OUT Total DECIMAL(15,2)) DETERMINISTIC MODIFIES SQL DATA
+BEGIN
+	START TRANSACTION READ WRITE;
+	SELECT saldo FROM conta WHERE codigo = origem INTO Total;
+	UPDATE conta SET saldo = saldo + Total WHERE codigo = destino;
+	UPDATE conta SET saldo = 0 WHERE codigo = origem;
+	COMMIT;
+END |
+
+
+###### COMO CHAMAR O PROCEDIMENTO
+CALL Transfere( 1, 2, @total);
+SELECT @total;
