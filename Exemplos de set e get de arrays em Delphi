@@ -1,0 +1,80 @@
+unit Classe;
+
+interface
+
+Type
+TClasse = class
+  private
+    fQuantidade: integer;
+    fPagamentos: array of integer;
+    fPesos: array of double;
+  public
+    function GetQuantidade: integer;
+    procedure SetQuantidade(valor: integer);
+    function GetPagamentos(indice: integer): integer;
+    procedure SetPagamentos(indice: integer; valor: integer);
+    function GetPesos(indice: integer): double;
+    procedure SetPesos(indice: integer; valor: double);
+  published
+    property Quantidade: integer read GetQuantidade write SetQuantidade;
+    property Pagamentos[indice: integer]: integer read GetPagamentos write SetPagamentos;
+    property Pesos[indice: integer]: double read GetPesos write SetPesos;
+end;
+
+implementation
+
+function TClasse.GetQuantidade: integer;
+begin
+  result := fQuantidade;
+end;
+
+procedure TClasse.SetQuantidade(valor: integer);
+begin
+  if (valor < 0) then
+  begin
+    exit;
+  end;
+  fQuantidade := valor;
+  SetLength(fPagamentos, valor);
+  SetLength(fPesos, valor);
+end;
+
+function TClasse.GetPagamentos(indice: integer): integer;
+begin
+  if (indice < 0) or (indice >= fQuantidade) then
+  begin
+    result := 0;
+    exit;
+  end;
+  result := fPagamentos[indice];
+end;
+
+procedure TClasse.SetPagamentos(indice: integer; valor: integer);
+begin
+  if (indice < 0) or (indice >= fQuantidade) then
+  begin
+    exit;
+  end;
+  fPagamentos[indice] := valor;
+end;
+
+function TClasse.GetPesos(indice: integer): double;
+begin
+  if (indice < 0) or (indice >= fQuantidade) then
+  begin
+    result := 0.0;
+    exit;
+  end;
+  result := fPesos[indice];
+end;
+
+procedure TClasse.SetPesos(indice: integer; valor: double);
+begin
+  if (indice < 0) or (indice >= fQuantidade) then
+  begin
+    exit;
+  end;
+  fPesos[indice] := valor;
+end;
+
+end.
