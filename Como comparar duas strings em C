@@ -1,0 +1,33 @@
+#include <stdio.h>	 // printf/fgets
+#define TAM 200
+
+int comparapchar( char* string1, char* string2) {
+	long iterador = 0;
+	
+    while(1) {
+        if(string1[iterador] < string2[iterador]) return -1;
+          // um caracter da string1 é menor
+        if(string1[iterador] > string2[iterador]) return 1;
+          // um caracter da string2 é menor
+        if(string1[iterador] == 0 && string2[iterador] == 0) return 0;
+          // se chegou ao fim das duas, são iguais
+        iterador++;
+    }
+}
+
+int main() {
+	char buffer1[TAM+1], buffer2[TAM+1];
+    int resultado;
+	
+	printf("String 1: ");
+	fgets(buffer1, TAM, stdin);
+
+	printf("String 2: ");
+	fgets(buffer2, TAM, stdin);
+
+	resultado = comparapchar(buffer1, buffer2);
+
+    if(resultado < 0) printf("A primeira string é menor.\n");
+    if(resultado > 0) printf("A segunda string é menor.\n");
+    if(resultado == 0) printf("As duas strings são iguais.\n");
+}
