@@ -1,0 +1,56 @@
+;; FOO
+
+;; globals
+(defvar Quantidade 3)
+(defvar Composto 1)
+(defvar Periodo 30.0)
+(defvar Pagamentos '(30.0 60.0 90.0))
+(defvar Pesos '(1.0 1.0 1.0))
+
+;; function to sums Pesos()
+(defun getPesoTotal()
+  (_getPesoTotal(- Quantidade 1))
+)
+
+;; recursive function who REALLY sum Pesos()
+(defun _getPesoTotal(valor)
+  (if (= valor 0)
+    (nth 0 Pesos)
+    (+ (nth valor Pesos) (_getPesoTotal(- valor 1)))
+  )
+)
+
+;; this function doesn't works (it's incomplete either)
+(defun jurosParaAcrescimo(juros)
+  (if (or (or (<= juros 0.0) (<= Quantidade 0)) (<= Periodo 0.0))
+    0.0
+    (
+      (let pesoTotal (getPesoTotal))
+      (if (<= pesoTotal 0)
+        0.0
+        6.0  ;; FAKE, while I don't write the real calculation
+      )
+    )
+  )
+)
+
+;; tests
+(princ "Peso total = ")
+(write (getPesoTotal)) ;; this works
+(terpri)
+(princ "Acrescimo = ")
+(write (jurosParaAcrescimo 3.0)) ;; this doesn't works
+
+; ERROR:
+; file: D:/Lisp/juros.lisp
+; in: DEFUN JUROSPARAACRESCIMO
+;     ((SETQ PESOTOTAL (GETPESOTOTAL))
+;      (IF (<= PESOTOTAL 0)
+;          0.0
+;          6.0))
+;
+; caught ERROR:
+;   illegal function call
+;
+; compilation unit finished
+;   caught 1 ERROR condition
