@@ -1,0 +1,94 @@
+#include <time.h>
+#include <stdio.h>
+#include <locale.h>
+
+#define ITERACOES 200000000
+#define CORTEFATORIAL 20
+
+long fatorial_recursivo( long n) {
+  if(n == 0)
+    return 1;
+  else
+    return n * fatorial_recursivo(n-1);
+}
+
+inline long fatorial_recursivo_inline( long n)
+	{ return n ? n * fatorial_recursivo_inline(n-1) : 1; }
+
+long fatorial_for( long n) {
+	long temp = 1, indice;
+	for( indice = 1; indice <= n; indice++) temp *= indice;
+	return temp;
+}
+
+inline long fatorial_for_inline( long n) {
+	long temp = 1, indice;
+	for( indice = 1; indice <= n; indice++) temp *= indice;
+	return temp;
+}
+
+inline long fatorial_foo( long n) {
+	long temp = 1, indice;
+	for( indice = 1; indice <= n; indice++) temp *= indice;
+	return temp;
+}
+
+int main() {
+	clock_t clock1, clock2;
+	long acumulador, indice;
+
+    setlocale( LC_ALL, "");     // para imprimir corretamente caracteres em português
+    
+	printf("Resolução: %d tiques por segundo.\n\n", CLOCKS_PER_SEC);
+	printf("Por favor, configure o ambiente antes de continuar e aperte enter.\n");
+	getchar();
+	printf("\n");
+
+	// Fatorial Foo para evitar algum desvio de performance
+	acumulador = 0;
+	clock1 = clock();
+	for( indice = 0; indice < ITERACOES; indice++)
+		acumulador += fatorial_foo( indice % CORTEFATORIAL);
+	clock2 = clock();
+
+	printf("Fatorial foo: %1.3fs (%d)\n", ((double) clock2 - clock1 ) / CLOCKS_PER_SEC, acumulador);
+
+	// Fatorial Recursivo
+	acumulador = 0;
+	clock1 = clock();
+	for( indice = 0; indice < ITERACOES; indice++)
+		acumulador += fatorial_recursivo( indice % CORTEFATORIAL);
+	clock2 = clock();
+
+	printf("Fatorial recursivo: %1.3fs (%d)\n", ((double) clock2 - clock1) / CLOCKS_PER_SEC, acumulador);
+
+	// Fatorial Recursivo Inline
+	acumulador = 0;
+	clock1 = clock();
+	for( indice = 0; indice < ITERACOES; indice++)
+		acumulador += fatorial_recursivo_inline( indice % CORTEFATORIAL);
+	clock2 = clock();
+
+	printf("Fatorial recursivo inline: %1.3fs (%d)\n", ((double) clock2 - clock1) / CLOCKS_PER_SEC, acumulador);
+
+	// Fatorial For
+	acumulador = 0;
+	clock1 = clock();
+	for( indice = 0; indice < ITERACOES; indice++)
+		acumulador += fatorial_for( indice % CORTEFATORIAL);
+	clock2 = clock();
+
+	printf("Fatorial for: %1.3fs (%d)\n", ((double) clock2 - clock1) / CLOCKS_PER_SEC, acumulador);
+
+	// Fatorial For Inline
+	acumulador = 0;
+	clock1 = clock();
+	for( indice = 0; indice < ITERACOES; indice++)
+		acumulador += fatorial_for_inline( indice % CORTEFATORIAL);
+	clock2 = clock();
+
+	printf("Fatorial for inline: %1.3fs (%d)\n", ((double) clock2 - clock1 ) / CLOCKS_PER_SEC, acumulador);
+
+	printf("\n");
+	getchar();
+}
