@@ -1,0 +1,33 @@
+using System;
+
+class Animal {
+    virtual public string move() {
+        return "anda";
+    }
+}
+
+class Cobra : Animal {
+    override public string move() {
+        return "rasteja";
+    }
+}
+
+class Peixe : Animal {
+    override public string move() {
+        return "nada";
+    }
+}
+
+class Aula34 {
+    static void Main(string[] args)     {
+        Cobra cobra = new Cobra();
+        Peixe peixe = new Peixe();
+
+        info("cobra", cobra);
+        info("peixe", peixe);
+    }
+
+    static void info(string nome, Animal animal) {
+        Console.WriteLine("O {0} {1}.", nome, animal.move());
+    }
+}
