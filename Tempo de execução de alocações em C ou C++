@@ -1,0 +1,60 @@
+#include <iostream>  // cout
+#include <cstdlib>  // allocs
+#include <time.h>  // clock
+#include <locale>  // setlocale
+
+#define ITERACOES 1000000
+
+int main() {
+	clock_t clock1, clock2;
+	char *buffer1, *buffer2;
+
+	std::cout.precision(4);
+	setlocale( LC_ALL, "");		// caracteres acentuados
+
+	std::cout << "Resolução: " << CLOCKS_PER_SEC << " tiques por segundo." << std::endl;
+
+	clock1 = clock();
+	for( int indice = 1; indice <= ITERACOES; indice++)
+	{
+		buffer1 = (char *) malloc( indice);
+		buffer1[indice-1] = indice;
+		buffer2 = (char *) malloc( indice);
+		buffer2[indice-1] = indice;
+		free( buffer1);
+		free( buffer2);
+	}
+	clock2 = clock();
+
+	std::cout << "Malloc: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	clock1 = clock();
+	for( int indice = 1; indice <= ITERACOES; indice++)
+	{
+		buffer1 = (char *) calloc( indice, 1);
+		buffer1[indice-1] = indice;
+		buffer2 = (char *) calloc( indice, 1);
+		buffer2[indice-1] = indice;
+		free( buffer1);
+		free( buffer2);
+	}
+	clock2 = clock();
+
+	std::cout << "Calloc: " << double( ( clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+
+	buffer1 = (char *) malloc( 1);
+	buffer2 = (char *) malloc( 1);
+	clock1 = clock();
+	for( int indice = 1; indice <= ITERACOES; indice++)
+	{
+		buffer1 = (char *) realloc( buffer1, indice);
+		buffer1[indice-1] = indice;
+		buffer2 = (char *) realloc( buffer2, indice);
+		buffer2[indice-1] = indice;
+	}
+	free( buffer1);
+	free( buffer2);
+	clock2 = clock();
+
+	std::cout << "Realloc: " << double( (clock2 - clock1 )) / CLOCKS_PER_SEC << "s" << std::endl;
+}
