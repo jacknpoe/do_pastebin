@@ -1,0 +1,37 @@
+// define os valores de um parcelamento
+
+#include <stdio.h> // printf/scanf
+#include <stdlib.h>  // malloc/free
+
+int main() {
+	long centavos, numero, iterador, atual, *parcelas;
+    double reais;
+
+    // pede um valor do total em reais
+	printf("Valor total em reais: ");
+	scanf("%lf", &reais);
+    centavos = reais * 100;  // calcular em centavos é "redondo"
+
+    // pede o número de parcelas
+	printf("Número de parcelas: ");
+	scanf("%ld", &numero);
+
+    // aloca o número de parcelas
+    parcelas = (long *) malloc(numero * sizeof(long));
+
+    // determina o valor de cada parcela, sempre deduzindo do total o que já foi calculado
+    for(iterador = numero - 1; iterador >= 0; iterador--) {
+        atual = centavos / (iterador + 1);  // o valor atual é a parte inteira da divisão
+        parcelas[iterador] = atual;
+        centavos -= atual;  // aqui, na última iteração, será exatamente a quantidade que faltava
+    }
+
+    // imprime cada parcela
+    for(iterador = 0; iterador < numero; iterador++) {
+    	printf("Parcela %d: R$ %.2f.\n", iterador + 1, ((double) parcelas[iterador]) / 100.0);
+    }
+
+    // libera a memória e sai do programa com o código 0 (sucesso)
+    free(parcelas);
+    return 0;
+}
