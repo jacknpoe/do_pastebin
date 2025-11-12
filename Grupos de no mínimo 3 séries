@@ -1,0 +1,39 @@
+// separa as séries de exercícios em grupos entre 5 e 3 séries e quando tomar água
+// essa versão tenta fazer os grupos com o mínimo de séries possível (ao menos 3)
+
+#include <stdio.h> // printf/scanf
+#include <stdlib.h>  // malloc/free
+
+int main() {
+	int series, grupos, iterador, atual, *quant;
+
+    // pede um valor do total de séries
+	printf("Total de séries: ");
+	scanf("%i", &series);
+
+    // calcula quantos grupos de séries serão feitos (ao menos 1)
+    grupos = series / 3 > 0 ? series / 3 : 1;
+
+    // aloca o número de grupos de inteiros para quant
+    quant = (int *) malloc(grupos * sizeof(int));
+
+    // determina quantas séries cada grupo vai ter, de trás para a frente
+    // a ideia é dividir a quantidade de séreies que falta pelo número de grupos que falta
+    for(iterador = grupos - 1; iterador >= 0; iterador--) {
+        atual = series / (iterador + 1);  // a quantidasde atual é a parte inteira da divisão
+        quant[iterador] = atual;
+        series -= atual;  // aqui, na última iteração, será exatamente a quantidade que faltava
+    }
+
+    // imprime o número de grupos
+	printf("Grupos: %d.\n", grupos);
+
+    // imprime cada grupo e quantas séries, e quando beber água
+    for(iterador = 0; iterador < grupos; iterador++) {
+    	printf("Grupo %d: %d séries.\nBeba água!\n", iterador + 1, quant[iterador]);
+    }
+
+    // libera a memória e sai do programa com o código 0 (sucesso)
+    free(quant);
+    return 0;
+}
