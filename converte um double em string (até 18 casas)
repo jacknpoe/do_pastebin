@@ -1,0 +1,66 @@
+// conversão de números double em char*
+// Versão: 0.1: 18/09/2025: inicial, funcional e para zeros e menores que 1
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h> 
+
+#define TAMANHOBUFFER 20   // esse é o tamanho do "buffer" de doubletostr (não contando com o caracter ASCII(0)) [é limitado ao tamanho de unsigned long long]
+
+// essa função de exponenciação é especial para expoentes inteiros
+double power_int(double base, int expoente) {
+	if (expoente < 0) return power_int(1 / base, expoente * -1);   // quando "expoente" é negativo, o resultado é 1 / "base" elevado ao valor absoluto do "expoente"
+	if (expoente == 0) return 1;   // quando "expoente" é zero, o resultado é um
+	if (expoente % 2 == 0) return power_int(base * base, expoente / 2);   // quando "expoente" é divisível por dois, o resultado é "base"² elevado ao "expoente" / 2
+	return base * power_int(base * base, (expoente - 1) / 2);    // quando "expoente" não é divisível por dois, o resultado é "base" * ("base"² elevado a ("expoente" - 1) / 2)
+}
+
+// essa função converte um double "valor" em um char* com o número de "casas" decimais
+// "casas" não pode ser maior do que 18, porque senão sai lixo
+// funciona quando os dígitos vão até próximo a 9.223.372.036.854.775.807 por causa da conversão entre double e unsigned long long
+char* doubletostr(double valor, int casas) {
+    if (casas > 18) casas = 18;   // depois de 18, estoura digitos (mas veja que, na prática, só tem precisão de 15 a 17 casas)
+    unsigned long long digitos = valor * power_int(10.0, casas) + 0.5;   // aqui, criamos um inteiro com os "digitos" rotacionados por "casas"
+    char buffer[TAMANHOBUFFER + 1];   // "buffer" guardará o char* enquanto digitos ainda estiver sendo utilizado
+    char* retorno;   // no final, esse ponteiro apontará para uma localização na memória alocada dinamicamente com o resultado
+    buffer[TAMANHOBUFFER] = 0;   // inserimos o marcador de final do char* na posição final do "buffer"
+    int atual = TAMANHOBUFFER - 1;   // o primeiro dígito (a partir da direita) será na posição anterior ao final do "buffer"
+
+    while (atual >= 0 && (digitos > 0 || (casas > 0 && atual + casas >= TAMANHOBUFFER - 1 ))) {   // enquanto houver dígitos e espaço no buffer, iremos processar os dígitos
+        buffer[atual] = '0' + digitos % 10;   // pega o dígito mais a direita que ainda estiver em "digitos" e coloca em "buffer"
+        digitos = digitos / 10;   // retira o dígito mais à direita (dividir por zero um inteiro faz exatamente isso)
+        atual--;   // movemos a posição atual no "buffer" um dígito
+        if (atual + casas == TAMANHOBUFFER - 1 && atual >= 0 && casas > 0) {   // verificamos se agora é para colocar a vírgula no lugar
+            buffer[atual] = ',';   // coloca a vírgula na posição atual
+            atual--;   // move a posição atual no "buffer" uma vírgula
+            if (digitos == 0) {   // se, antes da vírgula, não existirem mais dígitos
+                buffer[atual] = '0';   // coloca um zero antes da vírgula
+                atual--;   // move a posição atual no "buffer" uma vírgula
+            }
+        }
+    }
+
+    if (atual == TAMANHOBUFFER - 1) {   // se o número for 0
+        buffer[atual] = '0';   // inclui o 0
+        atual--;   // move a posição atual 
+    }
+
+    retorno = (char*) malloc((TAMANHOBUFFER - atual) * sizeof(char));   // agora alocamos dinamicamente para poder ser resultado da função
+    if (retorno == NULL) return NULL;   // se não conseguir alocar, retorna NULL (embora, na prática, isso nunca deve acontecer)
+    strcpy(retorno, buffer + atual + 1);   // copia apenas os dígitos (e eventual vírgula) para o char* alocado dinamicamente
+
+    return retorno;   // retorna o char* alocado dimamicamente
+}
+
+int main() {
+	printf("Potência: %f\n", power_int(10.0, 15));
+    printf("Extenso: %s\n", doubletostr(123.45678905, 7));
+    printf("Extenso: %s\n", doubletostr(123.45, 10));
+    printf("Extenso: %s\n", doubletostr(123.45, 1));
+    printf("Extenso: %s\n", doubletostr(0.000123, 10));
+    printf("Extenso: %s\n", doubletostr(1.12345678901234567890, 19));
+    printf("Extenso: %s\n", doubletostr(9223372036854775807, 0));
+    printf("Extenso: %s\n", doubletostr(123456789012345678.9, 1));
+	return 0;
+}
