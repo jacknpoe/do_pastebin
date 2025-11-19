@@ -15,14 +15,14 @@ copy() {
     # check the exit code of the rsync command and update the counters of successes and fails
     if [ $? -eq 0 ]; then
         successes=$((successes + 1))
-        echo "  (\"$folder\" copy completed successfully)"
+        echo "   (\"$folder\" copy completed successfully)"
     else
         fails=$((fails + 1))
-        echo "  (\"$folder\" copy failed)"
+        echo "   (\"$folder\" copy failed)"
     fi
 
     elps_cp_time=$((SECONDS - ini_cp_time))
-    echo "  (time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && echo
+    echo "   (time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && echo
 }
 
 dest_folder=$1
