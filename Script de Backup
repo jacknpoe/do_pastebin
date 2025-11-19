@@ -15,8 +15,13 @@ copia() {
     echo "  (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)"
 }
 
-# pede o nome da pasta, senão será backup_AAAA_MM_DD_HH_MM_SS
-read -p "Nome da pasta do backup (nada para 'backup_AAAA_MM_DD_HH_MM_SS'): " nome_da_pasta
+nome_da_pasta=$1
+
+# se faltar o nome da pasta como argumento, pede ao usuário
+if [[ -z "$nome_da_pasta" ]]; then
+    # pede o nome da pasta, senão será backup_AAAA_MM_DD_HH_MM_SS
+    read -p "Nome da pasta do backup (nada para 'backup_AAAA_MM_DD_HH_MM_SS'): " nome_da_pasta
+fi
 
 # essas pastas são as maiores entre as candidatas a backup, que deve ser feito eventualmente
 # veja que não espera teclar enter, apenas teclar s ou outra tecla já continua
