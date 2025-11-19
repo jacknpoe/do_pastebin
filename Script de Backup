@@ -1,0 +1,87 @@
+#!/bin/bash
+
+######### script de backup das pastas importantes do usuário jacknpoe (+ páginas em htdocs) #########
+
+# essa função resume muita coisa para facilitar a cópia de pastas
+copia() {
+    local origem=$1
+
+    tempo_ini_cp=$SECONDS
+    pasta=$(basename "$origem")
+    copia_atual=$((copia_atual + 1))
+    echo "$copia_atual: copiando de \"$pasta\"..."
+    rsync -a --no-links "$origem" "$caminho_pasta" > /dev/null
+    tempo_dec_cp=$((SECONDS - tempo_ini_cp))
+    echo "  (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)"
+}
+
+# pede o nome da pasta, senão será backup_AAAA_MM_DD_HH_MM_SS
+read -p "Nome da pasta do backup (nada para 'backup_AAAA_MM_DD_HH_MM_SS'): " nome_da_pasta
+
+# essas pastas são as maiores entre as candidatas a backup, que deve ser feito eventualmente
+# veja que não espera teclar enter, apenas teclar s ou outra tecla já continua
+read -n 1 -r -p "Copiar também 'do dropbox'? (s/n): " r_dropbox
+echo
+
+read -n 1 -r -p "Copiar também 'Linguagens'? (s/n): " r_linguages
+echo
+
+read -n 1 -r -p "Copiar também 'Músicas'? (s/n): " r_musicas
+echo && echo
+
+# guarda o tempo inicial para cálculo de duração do backup
+tempo_inicial=$SECONDS
+
+# variável para encontrar qual é o número da pasta em copia()
+copia_atual=0
+
+# se o nome da pasta estiver vazio, cria um nome padrão backup_AAAA_MM_DD_HH_MM_SS
+if [[ -z "$nome_da_pasta" ]]; then
+    # o nome da pasta é "backup_AAAA_MM_DD_HH_MM_SS"
+    data_atual=$(date +'%Y_%m_%d_%H_%M_%S')
+    nome_da_pasta="backup_$data_atual"
+fi
+echo "Iniciando backup em: \"$nome_da_pasta\""
+
+# monta o nome completo do caminha da pasta, para echo, criação de diretório e cópias
+caminho_pasta="/media/jacknpoe/115GB/$nome_da_pasta"
+
+# cria a pasta de backup
+echo "Criando pasta de backup em: \"$caminho_pasta\"" && echo
+mkdir -p "$caminho_pasta"
+
+###################### as cópias em si ##########################
+
+copia "/home/jacknpoe/Documentos"
+
+if [[ "$r_dropbox" == "s" ]]; then
+    copia "/home/jacknpoe/do dropbox"
+fi
+
+copia "/home/jacknpoe/DOS"
+
+copia "/home/jacknpoe/DownsWin"
+
+copia "/opt/lampp/htdocs"
+
+copia "/home/jacknpoe/Imagens"
+
+copia "/home/jacknpoe/Juros"
+
+if [[ "$r_linguagens" == "s" ]]; then
+    copia "/home/jacknpoe/Linguagens"
+fi
+
+copia "/home/jacknpoe/Vídeos/locais"
+
+if [[ "$r_musicas" == "s" ]]; then
+    copia "/home/jacknpoe/Músicas"
+fi
+
+copia "/home/jacknpoe/Executáveis/scripts"
+
+#################################################################
+
+# calcula o tempo final e a duração do backup e mostra o tempo decorrido
+tempo_decorrido=$((SECONDS - tempo_inicial))
+echo && echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
