@@ -23,7 +23,7 @@ read -p "Nome da pasta do backup (nada para 'backup_AAAA_MM_DD_HH_MM_SS'): " nom
 read -n 1 -r -p "Copiar também 'do dropbox'? (s/n): " r_dropbox
 echo
 
-read -n 1 -r -p "Copiar também 'Linguagens'? (s/n): " r_linguages
+read -n 1 -r -p "Copiar também 'Linguagens'? (s/n): " r_linguagens
 echo
 
 read -n 1 -r -p "Copiar também 'Músicas'? (s/n): " r_musicas
