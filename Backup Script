@@ -55,8 +55,8 @@ fails=0
 
 #iIf the folder name is empty, create a default name: backup_YYYY_MM_DD_HH_MM_SS
 if [[ -z "$dest_folder" ]]; then
-    data_atual=$(date +'%Y_%m_%d_%H_%M_%S')
-    dest_folder="backup_$data_atual"
+    current_date=$(date +'%Y_%m_%d_%H_%M_%S')
+    dest_folder="backup_$current_date"
 fi
 echo "Beginning backup in: \"$dest_folder\""
 
