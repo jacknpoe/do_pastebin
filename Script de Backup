@@ -15,14 +15,14 @@ copia() {
     # Verifica o código de saída do comando rsync e atualiza os contadores de sucesso e falha
     if [ $? -eq 0 ]; then
         sucessos=$((sucessos + 1))
-        echo "  (cópia de \"$pasta\" concluída com sucesso)"
+        echo "   (cópia de \"$pasta\" concluída com sucesso)"
     else
         falhas=$((falhas + 1))
-        echo "  (falha na cópia de \"$pasta\")"
+        echo "   (falha na cópia de \"$pasta\")"
     fi
 
     tempo_dec_cp=$((SECONDS - tempo_ini_cp))
-    echo "  (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
+    echo "   (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
 }
 
 nome_da_pasta=$1
