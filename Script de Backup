@@ -11,8 +11,18 @@ copia() {
     copia_atual=$((copia_atual + 1))
     echo "$copia_atual: copiando de \"$pasta\"..."
     rsync -a --no-links "$origem" "$caminho_pasta" > /dev/null
+
+    # Verifica o código de saída do comando rsync e atualiza os contadores de sucesso e falha
+    if [ $? -eq 0 ]; then
+        sucessos=$((sucessos + 1))
+        echo "  (cópia de \"$pasta\" concluída com sucesso)"
+    else
+        falhas=$((falhas + 1))
+        echo "  (falha na cópia de \"$pasta\")"
+    fi
+
     tempo_dec_cp=$((SECONDS - tempo_ini_cp))
-    echo "  (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)"
+    echo "  (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
 }
 
 nome_da_pasta=$1
@@ -39,6 +49,10 @@ tempo_inicial=$SECONDS
 
 # variável para encontrar qual é o número da pasta em copia()
 copia_atual=0
+
+# variáveis que guardam sucessos e falhas
+sucessos=0
+falhas=0
 
 # se o nome da pasta estiver vazio, cria um nome padrão backup_AAAA_MM_DD_HH_MM_SS
 if [[ -z "$nome_da_pasta" ]]; then
@@ -89,4 +103,5 @@ copia "/home/jacknpoe/Executáveis/scripts"
 
 # calcula o tempo final e a duração do backup e mostra o tempo decorrido
 tempo_decorrido=$((SECONDS - tempo_inicial))
-echo && echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
+echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
+echo "Backup finalizado com $sucessos cópias bem-sucedidas e $falhas falhas."
