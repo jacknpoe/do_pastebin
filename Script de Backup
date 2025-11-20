@@ -12,17 +12,32 @@ copia() {
     echo "$copia_atual: copiando de \"$pasta\"..."
     rsync -a --no-links "$origem" "$caminho_pasta" > /dev/null
 
+    # esses espaços servem para alinhar a saída do script, dependendo do número da cópia atual
+    if [ $copia_atual -gt 9 ]; then
+        if [ $copia_atual -gt 99 ]; then    
+            if [ $copia_atual -gt 999 ]; then    
+                espaco="      "
+            else
+                espaco="     "
+            fi
+        else
+            espaco="    "
+        fi
+    else
+        espaco="   "
+    fi
+
     # Verifica o código de saída do comando rsync e atualiza os contadores de sucesso e falha
     if [ $? -eq 0 ]; then
         sucessos=$((sucessos + 1))
-        echo "   (cópia de \"$pasta\" concluída com sucesso)"
+        echo "$espaco(cópia de \"$pasta\" concluída com sucesso)"
     else
         falhas=$((falhas + 1))
-        echo "   (falha na cópia de \"$pasta\")"
+        echo "$espaco(falha na cópia de \"$pasta\")"
     fi
 
     tempo_dec_cp=$((SECONDS - tempo_ini_cp))
-    echo "   (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
+    echo "$espaco(tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
 }
 
 # pega o nome da pasta do argumento, se houver
