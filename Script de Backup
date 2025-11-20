@@ -25,6 +25,7 @@ copia() {
     echo "   (tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
 }
 
+# pega o nome da pasta do argumento, se houver
 nome_da_pasta=$1
 
 # se faltar o nome da pasta como argumento, pede ao usuário
