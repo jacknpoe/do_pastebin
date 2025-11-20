@@ -1,4 +1,4 @@
--#!/bin/bash
+#!/bin/bash
 
 ######### Backup script for important folders of the user jacknpoe (+ pages in htdocs) #########
 
@@ -10,6 +10,7 @@ copy() {
     folder=$(basename "$origin")
     present_copy=$((present_copy + 1))
     echo "$present_copy: copying from \"$folder\"..."
+    echo "$present_copy: copying from \"$folder\"..." >> "$log_file"
     rsync -a --no-links "$origin" "$dest_path" > /dev/null
 
     # these spaces are used to align the script output, depending on the current copy number
@@ -31,13 +32,16 @@ copy() {
     if [ $? -eq 0 ]; then
         successes=$((successes + 1))
         echo "$space(\"$folder\" copy completed successfully)"
+        echo "$space(\"$folder\" copy completed successfully)" >> "$log_file"
     else
         fails=$((fails + 1))
         echo "$space(\"$folder\" copy failed)"
+        echo "$space(\"$folder\" copy failed)" >> "$log_file"
     fi
 
     elps_cp_time=$((SECONDS - ini_cp_time))
     echo "$space(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && echo
+    echo "$space(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" >> "$log_file" && echo >> "$log_file"
 }
 
 # gets the folder name from the argument, if any
@@ -83,6 +87,12 @@ dest_path="/media/jacknpoe/115GB/$dest_folder"
 echo "Creating backup folder in: \"$dest_path\"" && echo
 mkdir -p "$dest_path"
 
+# creates the backup log file
+log_file="$dest_path/backup_log.txt"
+echo "---------------------------------------------------">> "$log_file"
+echo "Backup log started on: $(date)" >> "$log_file"
+echo "---------------------------------------------------">> "$log_file" && echo >> "$log_file"
+
 ###################### the copies per se ##########################
 
 copy "/home/jacknpoe/Documentos"
@@ -120,7 +130,9 @@ copy "/home/jacknpoe/Executáveis/scripts"
 # calculates the end time and duration of the backup and displays the elapsed time
 elapsed_time=$((SECONDS - initial_time))
 echo "Execution time: $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds."
+echo "Execution time: $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds." >> "$log_file"
 echo "Backup done with $successes sucesses and $fails fails."
+echo "Backup done with $successes sucesses and $fails fails." >> "$log_file" && echo >> "$log_file"
 
 # returns 0 if there were no failures, or more than 0 if there were failures
 exit $fails
