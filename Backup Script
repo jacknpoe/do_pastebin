@@ -25,6 +25,7 @@ copy() {
     echo "   (time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && echo
 }
 
+# gets the folder name from the argument, if any
 dest_folder=$1
 
 # if the folder name is missing as an argument, it prompts the user.
