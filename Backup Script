@@ -34,7 +34,7 @@ if [[ -z "$dest_folder" ]]; then
 fi
 
 # these folders are the largest among the candidates for backup, which should be done eventually
-# note that it doesn't wait to press enter; just pressing 's' or another key continues
+# note that it doesn't wait to press enter; just pressing 'y' or another key continues
 read -n 1 -r -p "Copy 'do dropbox' too? (y/n): " r_dropbox
 echo
 
