@@ -14,8 +14,8 @@ copia() {
 
     # esses espaços servem para alinhar a saída do script, dependendo do número da cópia atual
     if [ $copia_atual -gt 9 ]; then
-        if [ $copia_atual -gt 99 ]; then    
-            if [ $copia_atual -gt 999 ]; then    
+        if [ $copia_atual -gt 99 ]; then
+            if [ $copia_atual -gt 999 ]; then
                 espaco="      "
             else
                 espaco="     "
@@ -97,6 +97,8 @@ copia "/home/jacknpoe/DOS"
 
 copia "/home/jacknpoe/DownsWin"
 
+copia "/home/jacknpoe/Vídeos/Gravações de tela"
+
 copia "/opt/lampp/htdocs"
 
 copia "/home/jacknpoe/Imagens"
@@ -121,3 +123,6 @@ copia "/home/jacknpoe/Executáveis/scripts"
 tempo_decorrido=$((SECONDS - tempo_inicial))
 echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
 echo "Backup finalizado com $sucessos cópias bem-sucedidas e $falhas falhas."
+
+# retorna 0 se não houve falhas, ou mais de 0 se houve falhas
+exit $falhas
