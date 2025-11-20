@@ -12,7 +12,128 @@ copy() {
     echo "$present_copy: copying from \"$folder\"..."
     rsync -a --no-links "$origin" "$dest_path" > /dev/null
 
+    # check the exit code of the rsync command and update the counters of successes and fails-#!/bin/bash
+
+######### Backup script for important folders of the user jacknpoe (+ pages in htdocs) #########
+
+# this function summarizes many things to make copying folders easier
+copy() {
+    local origin=$1
+
+    ini_cp_time=$SECONDS
+    folder=$(basename "$origin")
+    present_copy=$((present_copy + 1))
+    echo "$present_copy: copying from \"$folder\"..."
+    rsync -a --no-links "$origin" "$dest_path" > /dev/null
+
+    # these spaces are used to align the script output, depending on the current copy number
+    if [ $present_copy -gt 9 ]; then
+        if [ $present_copy -gt 99 ]; then    
+            if [ $present_copy -gt 999 ]; then    
+                space="      "
+            else
+                space="     "
+            fi
+        else
+            space="    "
+        fi
+    else
+        space="   "
+    fi
+
     # check the exit code of the rsync command and update the counters of successes and fails
+    if [ $? -eq 0 ]; then
+        successes=$((successes + 1))
+        echo "$space(\"$folder\" copy completed successfully)"
+    else
+        fails=$((fails + 1))
+        echo "$space(\"$folder\" copy failed)"
+    fi
+
+    elps_cp_time=$((SECONDS - ini_cp_time))
+    echo "$space(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && echo
+}
+
+# gets the folder name from the argument, if any
+dest_folder=$1
+
+# if the folder name is missing as an argument, it prompts the user
+if [[ -z "$dest_folder" ]]; then
+    read -p "Backup folder name (nothing to 'backup_YYYY_MM_DD_HH_MM_SS'): " dest_folder
+fi
+
+# these folders are the largest among the candidates for backup, which should be done eventually
+# note that it doesn't wait to press enter; just pressing 'y' or another key continues
+read -n 1 -r -p "Copy 'do dropbox' too? (y/n): " r_dropbox
+echo
+
+read -n 1 -r -p "Copy 'Linguagens' too? (y/n): " r_linguagens
+echo
+
+read -n 1 -r -p "Copy 'Músicas' too? (y/n): " r_musicas
+echo && echo
+
+# keep the initial time for backup duration calculation
+initial_time=$SECONDS
+
+# variable to find the folder number in copy()
+present_copy=0
+
+# variables that store successes and fails
+successes=0
+fails=0
+
+#iIf the folder name is empty, create a default name: backup_YYYY_MM_DD_HH_MM_SS
+if [[ -z "$dest_folder" ]]; then
+    current_date=$(date +'%Y_%m_%d_%H_%M_%S')
+    dest_folder="backup_$current_date"
+fi
+echo "Beginning backup in: \"$dest_folder\""
+
+# assembles the full path name of the folder, for echo, directory creation, and copies
+dest_path="/media/jacknpoe/115GB/$dest_folder"
+
+# creates the backup folder
+echo "Creating backup folder in: \"$dest_path\"" && echo
+mkdir -p "$dest_path"
+
+###################### the copies per se ##########################
+
+copy "/home/jacknpoe/Documentos"
+
+if [[ "$r_dropbox" == "y" ]]; then
+    copy "/home/jacknpoe/do dropbox"
+fi
+
+copy "/home/jacknpoe/DOS"
+
+copy "/home/jacknpoe/DownsWin"
+
+copy "/opt/lampp/htdocs"
+
+copy "/home/jacknpoe/Imagens"
+
+copy "/home/jacknpoe/Juros"
+
+if [[ "$r_linguagens" == "y" ]]; then
+    copy "/home/jacknpoe/Linguagens"
+fi
+
+copy "/home/jacknpoe/Vídeos/locais"
+
+if [[ "$r_musicas" == "y" ]]; then
+    copy "/home/jacknpoe/Músicas"
+fi
+
+copy "/home/jacknpoe/Executáveis/scripts"
+
+#################################################################
+
+# calculates the end time and duration of the backup and displays the elapsed time
+elapsed_time=$((SECONDS - initial_time))
+echo "Execution time: $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds."
+echo "Backup done with $successes sucesses and $fails fails."
+
     if [ $? -eq 0 ]; then
         successes=$((successes + 1))
         echo "   (\"$folder\" copy completed successfully)"
