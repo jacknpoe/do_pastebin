@@ -10,6 +10,7 @@ copia() {
     pasta=$(basename "$origem")
     copia_atual=$((copia_atual + 1))
     echo "$copia_atual: copiando de \"$pasta\"..."
+    echo "$copia_atual: copiando de \"$pasta\"..." >> "$log_arquivo"
     rsync -a --no-links "$origem" "$caminho_pasta" > /dev/null
 
     # esses espaços servem para alinhar a saída do script, dependendo do número da cópia atual
@@ -31,13 +32,16 @@ copia() {
     if [ $? -eq 0 ]; then
         sucessos=$((sucessos + 1))
         echo "$espaco(cópia de \"$pasta\" concluída com sucesso)"
+        echo "$espaco(cópia de \"$pasta\" concluída com sucesso)" >> "$log_arquivo"
     else
         falhas=$((falhas + 1))
         echo "$espaco(falha na cópia de \"$pasta\")"
+        echo "$espaco(falha na cópia de \"$pasta\")" >> "$log_arquivo"
     fi
 
     tempo_dec_cp=$((SECONDS - tempo_ini_cp))
     echo "$espaco(tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && echo
+    echo "$espaco(tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" >> "$log_arquivo" && echo >> "$log_arquivo"
 }
 
 # pega o nome da pasta do argumento, se houver
@@ -85,6 +89,12 @@ caminho_pasta="/media/jacknpoe/115GB/$nome_da_pasta"
 echo "Criando pasta de backup em: \"$caminho_pasta\"" && echo
 mkdir -p "$caminho_pasta"
 
+# cria o arquivo de log do backup
+log_arquivo="$caminho_pasta/backup_log.txt"
+echo "-------------------------------------------------------">> "$log_arquivo"
+echo "Log do backup iniciado em: $(date)" >> "$log_arquivo"
+echo "-------------------------------------------------------">> "$log_arquivo" && echo >> "$log_arquivo"
+
 ###################### as cópias em si ##########################
 
 copia "/home/jacknpoe/Documentos"
@@ -122,7 +132,9 @@ copia "/home/jacknpoe/Executáveis/scripts"
 # calcula o tempo final e a duração do backup e mostra o tempo decorrido
 tempo_decorrido=$((SECONDS - tempo_inicial))
 echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
+echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos." >> "$log_arquivo"
 echo "Backup finalizado com $sucessos cópias bem-sucedidas e $falhas falhas."
+echo "Backup finalizado com $sucessos cópias bem-sucedidas e $falhas falhas." >> "$log_arquivo" && echo >> "$log_arquivo"
 
 # retorna 0 se não houve falhas, ou mais de 0 se houve falhas
 exit $falhas
