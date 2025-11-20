@@ -1,4 +1,4 @@
-#!/bin/bash
+-#!/bin/bash
 
 ######### Backup script for important folders of the user jacknpoe (+ pages in htdocs) #########
 
@@ -28,13 +28,13 @@ copy() {
 # gets the folder name from the argument, if any
 dest_folder=$1
 
-# if the folder name is missing as an argument, it prompts the user.
+# if the folder name is missing as an argument, it prompts the user
 if [[ -z "$dest_folder" ]]; then
     read -p "Backup folder name (nothing to 'backup_YYYY_MM_DD_HH_MM_SS'): " dest_folder
 fi
 
-# these folders are the largest among the candidates for backup, which should be done eventually.
-# note that it doesn't wait to press enter; just pressing 's' or another key continues.
+# these folders are the largest among the candidates for backup, which should be done eventually
+# note that it doesn't wait to press enter; just pressing 's' or another key continues
 read -n 1 -r -p "Copy 'do dropbox' too? (y/n): " r_dropbox
 echo
 
@@ -61,7 +61,7 @@ if [[ -z "$dest_folder" ]]; then
 fi
 echo "Beginning backup in: \"$dest_folder\""
 
-# assembles the full path name of the folder, for echo, directory creation, and copies.
+# assembles the full path name of the folder, for echo, directory creation, and copies
 dest_path="/media/jacknpoe/115GB/$dest_folder"
 
 # creates the backup folder
