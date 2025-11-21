@@ -42,6 +42,7 @@ dest_folder=$1
 
 # if the folder name is missing as an argument, it prompts the user
 if [[ -z "$dest_folder" ]]; then
+    # it asks for the folder name, otherwise it will be backup_YYYY_MM_DD_HH_MM_SS
     read -p "Backup folder name (nothing to 'backup_YYYY_MM_DD_HH_MM_SS'): " dest_folder
 fi
 
