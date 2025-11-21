@@ -135,6 +135,8 @@ copia "/home/jacknpoe/Executáveis/scripts"
 # calcula o tempo final e a duração do backup e mostra o tempo decorrido
 tempo_decorrido=$((SECONDS - tempo_inicial))
 d_echo "Tempo de execução: $((tempo_decorrido / 60)) minutos e $((tempo_decorrido % 60)) segundos."
+
+# mostra o resumo final de sucessos e falhas
 d_echo "Backup finalizado com $sucessos cópias bem-sucedidas e $falhas falhas."
 echo >> "$log_arquivo"
 
