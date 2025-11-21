@@ -20,31 +20,21 @@ copy() {
     rsync -a --no-links "$origin" "$dest_path" > /dev/null
 
     # these spaces are used to align the script output, depending on the current copy number
-    if [ $present_copy -gt 9 ]; then
-        if [ $present_copy -gt 99 ]; then
-            if [ $present_copy -gt 999 ]; then
-                space="      "
-            else
-                space="     "
-            fi
-        else
-            space="    "
-        fi
-    else
-        space="   "
-    fi
+    digits=${#present_copy}
+    size=$(($digits + 2))
+    spaces=$(printf "%0.s " $(seq 1 $size))
 
     # check the exit code of the rsync command and update the counters of successes and fails
     if [ $? -eq 0 ]; then
         successes=$((successes + 1))
-        d_echo "$space(\"$folder\" copy completed successfully)"
+        d_echo "$spaces(\"$folder\" copy completed successfully)"
     else
         fails=$((fails + 1))
-        d_echo "$space(\"$folder\" copy failed)"
+        d_echo "$spaces(\"$folder\" copy failed)"
     fi
 
     elps_cp_time=$((SECONDS - ini_cp_time))
-    d_echo "$space(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && d_echo
+    d_echo "$spaces(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && d_echo
 }
 
 # gets the folder name from the argument, if any
@@ -92,9 +82,9 @@ mkdir -p "$dest_path"
 
 # creates the backup log file
 log_file="$dest_path/backup_log.txt"
-echo "---------------------------------------------------">> "$log_file"
+echo "---------------------------------------------------" >> "$log_file"
 echo "Backup log started on: $(date)" >> "$log_file"
-echo "---------------------------------------------------">> "$log_file" && echo >> "$log_file"
+echo "---------------------------------------------------" >> "$log_file" && echo >> "$log_file"
 
 ###################### the copies per se ##########################
 
