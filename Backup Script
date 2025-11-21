@@ -133,6 +133,8 @@ copy "/home/jacknpoe/Executáveis/scripts"
 # calculates the end time and duration of the backup and displays the elapsed time
 elapsed_time=$((SECONDS - initial_time))
 d_echo "Execution time: $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds."
+
+# shows the final summary of successes and fails
 d_echo "Backup done with $successes sucesses and $fails fails."
 echo >> "$log_file"
 
