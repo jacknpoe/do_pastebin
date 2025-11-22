@@ -5,7 +5,11 @@
 # this function performs echo and log simultaneously
 d_echo() {
     local message=$1
+
+    # echo to the terminal
     echo "$message"
+
+    # log to the file
     echo "$message" >> "$log_file"
 }
 
@@ -13,10 +17,19 @@ d_echo() {
 copy() {
     local origin=$1
 
+    # keeps the initial time for copy duration calculation
     ini_cp_time=$SECONDS
-    folder=$(basename "$origin")
+
+    # increments the current copy number
     present_copy=$((present_copy + 1))
+
+    # separates only the folder name, ignoring the path
+    folder=$(basename "$origin")
+
+    # informs the start of the copy
     d_echo "$present_copy: copying from \"$folder\"..."
+
+    # performs the copy with rsync, without symbolic links
     rsync -a --no-links "$origin" "$dest_path" > /dev/null
 
     # these spaces are used to align the script output, depending on the current copy number
@@ -33,6 +46,7 @@ copy() {
         d_echo "$spaces(\"$folder\" copy failed)"
     fi
 
+    # calculates the elapsed time of the copy and informs
     elps_cp_time=$((SECONDS - ini_cp_time))
     d_echo "$spaces(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && d_echo
 }
@@ -81,8 +95,10 @@ dest_path="/media/jacknpoe/115GB/$dest_folder"
 echo "Creating backup folder in: \"$dest_path\"" && echo
 mkdir -p "$dest_path"
 
-# creates the backup log file
+# name and path of the backup log file
 log_file="$dest_path/backup_log.txt"
+
+# header of the log file
 echo "---------------------------------------------------" >> "$log_file"
 echo "Backup log started on: $(date)" >> "$log_file"
 echo "---------------------------------------------------" >> "$log_file" && echo >> "$log_file"
