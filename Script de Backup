@@ -83,7 +83,6 @@ falhas=0
 
 # se o nome da pasta estiver vazio, cria um nome padrão backup_AAAA_MM_DD_HH_MM_SS
 if [[ -z "$nome_da_pasta" ]]; then
-    # o nome da pasta é "backup_AAAA_MM_DD_HH_MM_SS"
     data_atual=$(date +'%Y_%m_%d_%H_%M_%S')
     nome_da_pasta="backup_$data_atual"
 fi
