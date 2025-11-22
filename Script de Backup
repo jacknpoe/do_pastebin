@@ -5,7 +5,11 @@
 # essa função faz echo e log ao mesmo tempo
 d_echo() {
     local mensagem=$1
+
+    # echo no terminal
     echo "$mensagem"
+
+    # log no arquivo
     echo "$mensagem" >> "$log_arquivo"
 }
 
@@ -13,10 +17,19 @@ d_echo() {
 copia() {
     local origem=$1
 
+    # guarda o tempo inicial para cálculo da duração da cópia
     tempo_ini_cp=$SECONDS
-    pasta=$(basename "$origem")
+
+    # incrementa o número da cópia atual
     copia_atual=$((copia_atual + 1))
+
+    # separa somente o nome da pasta, ignorando o caminho
+    pasta=$(basename "$origem")
+
+    # informa o início da cópia
     d_echo "$copia_atual: copiando de \"$pasta\"..."
+
+    # faz a cópia com rsync, sem links simbólicos
     rsync -a --no-links "$origem" "$caminho_pasta" > /dev/null
 
     # esses espaços servem para alinhar a saída do script, dependendo do número da cópia atual
@@ -33,6 +46,7 @@ copia() {
         d_echo "$espacos(falha na cópia de \"$pasta\")"
     fi
 
+    # calcula o tempo decorrido da cópia e informa
     tempo_dec_cp=$((SECONDS - tempo_ini_cp))
     d_echo "$espacos(tempo: $((tempo_dec_cp / 60)) minutos e $((tempo_dec_cp % 60)) segundos)" && d_echo
 }
@@ -82,8 +96,10 @@ caminho_pasta="/media/jacknpoe/115GB/$nome_da_pasta"
 echo "Criando pasta de backup em: \"$caminho_pasta\"" && echo
 mkdir -p "$caminho_pasta"
 
-# cria o arquivo de log do backup
+# nome e caminho do arquivo de log do backup
 log_arquivo="$caminho_pasta/backup_log.txt"
+
+# cabeçalho do arquivo de log
 echo "-------------------------------------------------------" >> "$log_arquivo"
 echo "Log do backup iniciado em: $(date)" >> "$log_arquivo"
 echo "-------------------------------------------------------" >> "$log_arquivo" && echo >> "$log_arquivo"
