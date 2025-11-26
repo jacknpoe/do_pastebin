@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# compila o arquivo no primeiro parâmetro
+
+arquivo=$1  # esse será o nome do arquivo sem extensão, que será o destino final
+origem="$arquivo.asm"  # esse é o arquivo de origem (fonte)
+objeto="$arquivo.o"  # esse é o arquivo objeto intermediário
+
+# compila o arquivo assembly com nasm
+nasm -f elf64 "$origem" -o "$objeto"
+
+if [ $? -ne 0 ]; then  # se der erro ao compilar
+    echo "Erro na compilação do arquivo $origem"
+    exit 1
+fi
+
+# linka o arquivo objeto para gerar o executável final
+ld "$objeto" -o "$arquivo"
+
+if [ $? -ne 0 ]; then  # se der erro ao linkar
+    echo "Erro ao linkar o arquivo $objeto"
+    exit 1
+fi
+
+# remove o arquivo objeto intermediário
+rm "$objeto"
+
+if [ $? -ne 0 ]; then  # se der erro ao apagar o arquivo
+    echo "Erro ao apagar o arquivo $objeto"
+    exit 1
+fi
+
+# finaliza com sucesso
+echo "Arquivo compilado: $arquivo"
+exit 0
