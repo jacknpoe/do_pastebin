@@ -1,0 +1,61 @@
+#include "DHT.h"
+#include "LiquidCrystal_I2C.h"
+
+#define DHTPIN 2    // Define o pino digital onde o DATA está conectado (troque para outros pinos)
+#define DHTTYPE DHT11   // Define o tipo de sensor, que é o DHT11
+
+DHT dht(DHTPIN, DHTTYPE);  // objeto sensor DHT111
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);  // objeto do Cristal Líquido 16x2 I2C
+
+void setup() {
+  dht.begin(); // Inicia o sensor DHT
+
+  LCD.init();  // inicia o Cristal Líquido
+  LCD.backlight();  //liga a luz de fundo
+}
+
+void loop() {
+  // Lê a umidade em percentual
+  float umidade = dht.readHumidity();
+
+  // Se a leitura falhar, exibe uma mensagem de erro no Cristal Líquido
+  if (isnan(umidade)) {
+    LCD.clear();
+    LCD.setCursor(0, 0);
+    LCD.print( "Falha ao ler");
+    LCD.setCursor(0, 1);
+    LCD.print( "a umidade");
+    delay(1500);
+    return;
+  }
+
+  // Exibe a Umidade no Cristal Liquido
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print( "Umidade:");
+  LCD.setCursor(0, 1);
+  LCD.print( String(umidade) + "%");
+  delay(1500);
+
+  // Lê a temperatura em Celsius
+  float temperatura = dht.readTemperature();
+
+  // Se a leitura falhar, exibe uma mensagem de erro no Cristal Líquido
+  if (isnan(temperatura)) {
+    LCD.clear();
+    LCD.setCursor(0, 0);
+    LCD.print( "Falha ao ler");
+    LCD.setCursor(0, 1);
+    LCD.print( "a temperatura");
+    delay(1500);
+    return;
+  }
+
+  // Exibe a Temperatura no Cristal Líquido
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print( "Temperatura:");
+  LCD.setCursor(0, 1);
+  LCD.print( String(temperatura) + "*C");
+  delay(1500);
+}
