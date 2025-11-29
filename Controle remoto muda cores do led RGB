@@ -1,0 +1,77 @@
+// Controle Remoto IR e RGB
+// cores no módulo RGB KY-016
+  
+#include <IRremote.hpp>
+
+// o pino dois é para o IR
+#define PINO 2
+// usa pinos digitais PWM para RGB
+#define r_led 9
+#define g_led 10
+#define b_led 11
+
+// função que recebe RGB e envia para os pinos PWM
+void cor(int rValor, int gValor, int bValor) {
+    analogWrite(r_led, rValor);
+    analogWrite(g_led, gValor);
+    analogWrite(b_led, bValor);
+}
+
+void setup()
+{  
+  IrReceiver.begin(PINO, ENABLE_LED_FEEDBACK);
+  pinMode(r_led, OUTPUT);
+  pinMode(g_led, OUTPUT);
+  pinMode(b_led, OUTPUT);  
+}  
+   
+void loop()  
+{
+  unsigned long resultado;
+  
+  // if (IR.decode(&resultado))
+  if(IrReceiver.decode())
+  {
+    // resultado = IrReceiver.decodedIRData.value;
+    resultado = IrReceiver.decodedIRData.decodedRawData;
+    
+    if (IrReceiver.decodedIRData.protocol != UNKNOWN)     
+    {
+      switch(resultado)
+      {
+        case 0xF30CFF00: // 1 vermelho
+          cor(255, 0, 0);
+          break;
+        case 0xE718FF00: // 2 verde
+          cor(0, 255, 0);
+          break;
+        case 0xA15EFF00: // 3 azul
+          cor(0, 0, 255);
+          break;
+        case 0xF708FF00: // 4 ciano
+          cor(0, 255, 255);
+          break;
+        case 0xE31CFF00: // 5 magenta
+          cor(255, 0, 255);
+          break;
+        case 0xA55AFF00: // 6 amarelo
+          cor(255, 255, 0);
+          break;
+        case 0xBD42FF00: // 7 vermelho escuro
+          cor(128, 0, 0);
+          break;
+        case 0xAD52FF00: // 8 verde escuro
+          cor(0, 128, 0);
+          break;
+        case 0xB54AFF00: // 9 azul escuro (nos meus testes desliga o led)
+          cor(0, 0, 128);
+          break;
+        case 0xE916FF00: // 0 desliga
+          cor(0, 0, 0);
+          break;
+      }
+    }
+    
+    IrReceiver.resume(); // para ler o próximo valor
+  }
+}
