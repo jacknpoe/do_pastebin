@@ -1,0 +1,19 @@
+// bater palma para mudar o estado de um led (com informações para debugagem)
+
+#define PINOSENSOR 2
+#define PINOLED 4
+
+void setup() {
+ pinMode( PINOSENSOR, INPUT);
+ pinMode( PINOLED, OUTPUT);
+ Serial.begin( 9600);
+}
+
+void  loop() {
+  if( digitalRead( PINOSENSOR)){
+    digitalWrite( PINOLED, ! digitalRead( PINOLED));
+    Serial.print( "REAÇÃO: ");
+    Serial.println( digitalRead( PINOLED) ? "LIGADA" : "DESLIGADA");
+    delay( 500);
+  }
+}
