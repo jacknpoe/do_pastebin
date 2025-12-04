@@ -1,0 +1,51 @@
+#include <LiquidCrystal_I2C.h>
+#include <RtcDS1302.h>
+
+// pinos do relógio
+#define pinoRST 9 //Pino RST
+#define pinoDATA 10 //Pino DAT
+#define pinoCLOCK 11 //Pino CLK
+
+
+// VCC = 5V, GND = GND, RST = 11, CLOCK = 12, DATA = 13
+ThreeWire pinos( pinoDATA, pinoCLOCK, pinoRST);  // estrutura dos pinos do relógio
+RtcDS1302<ThreeWire> RTC( pinos);  // objeto do relógio
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C( 0x27, 16, 2);  // objeto do Cristal Líquido 16x2 I2C
+
+void setup() {
+  RTC.Begin();  // inicia relógio
+  RTC.SetIsWriteProtected( false);  // para poder alterar o relógio
+  RTC.SetIsRunning( true);  // coloca o relógio para "correr"
+  RtcDateTime tempo = RtcDateTime( __DATE__, __TIME__);  // pega a data e a hora do compilador
+  RTC.SetDateTime( tempo);  // e coloca no relógio
+
+  LCD.init();  // inicia o Cristal Líquido
+  LCD.backlight();  //liga a luz de fundo
+}
+
+void loop() {
+  RtcDateTime agora = RTC.GetDateTime();  // pega o tempo de agora
+
+  // pega DD/MM/AAAA
+  String dia = (( agora.Day() < 10) ? "0" : "") + String( agora.Day());
+  String mes = (( agora.Month() < 10) ? "0" : "") + String( agora.Month());
+  String ano = (( agora.Year() < 10) ? "0" : "") + String( agora.Year());
+
+  // pega HH:MM:SS
+  String hora = (( agora.Hour() < 10) ? "0" : "") + String( agora.Hour());
+  String minuto = (( agora.Minute() < 10) ? "0" : "") + String( agora.Minute());
+  String segundo = (( agora.Second() < 10) ? "0" : "") + String( agora.Second());
+
+  // mostra a data
+  LCD.setCursor(0, 0);
+  LCD.print("Data: " + dia + "/" + mes + "/" + ano);
+
+  // mostra a hora
+  LCD.setCursor(1, 1);
+  LCD.print("Hora: " + hora + ":" + minuto + ":" + segundo);
+
+  // um delay que é um compromisso entre exatidão e processamento
+  delay( 200);
+
+  // não tem clear() no LCD porque não é necessário e iria fazer piscar
+} 
