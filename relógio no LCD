@@ -6,8 +6,7 @@
 #define pinoDATA 10 //Pino DAT
 #define pinoCLOCK 11 //Pino CLK
 
-
-// VCC = 5V, GND = GND, RST = 11, CLOCK = 12, DATA = 13
+// VCC = 5V, GND = GND, RST = 9, DATA = 10, CLOCK = 11
 ThreeWire pinos( pinoDATA, pinoCLOCK, pinoRST);  // estrutura dos pinos do relógio
 RtcDS1302<ThreeWire> RTC( pinos);  // objeto do relógio
 LiquidCrystal_I2C LCD = LiquidCrystal_I2C( 0x27, 16, 2);  // objeto do Cristal Líquido 16x2 I2C
