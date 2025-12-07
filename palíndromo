@@ -1,0 +1,32 @@
+#include <stdio.h>  // printf/fgets
+#define TAM 200  // tamanho máximo das strings
+
+long tamanhopchar( char* string) {
+    long tamanho;
+
+    for( tamanho = 0; ; tamanho++)
+        if( string[tamanho] == 0 || string[tamanho] == 10)
+            return tamanho;
+}
+
+int palindromopchar( char* string) {
+    long tamanho = tamanhopchar( string);
+
+    for( long iterador = 0; iterador < tamanho / 2; iterador++) 
+        if( string[iterador] != string[tamanho - iterador - 1] )
+            return 0;  // não é palíndromo
+
+    return 1;  // é palíndromo
+}
+
+int main() {
+    char buffer[TAM+1];
+    int resultado;
+	
+	printf("String: ");
+	fgets(buffer, TAM, stdin);
+
+    resultado = palindromopchar(buffer);
+
+    printf("A string %s um palíndromo.\n", (resultado ? "é" : "não é"));
+}
