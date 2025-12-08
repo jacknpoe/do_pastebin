@@ -1,0 +1,49 @@
+#define pA 2
+#define pB 3
+#define pC 4
+#define pD 5
+#define pE 6
+#define pF 7
+#define pG 8
+#define pDP 9
+#define com_cathodo 0
+#define com_anodo 1
+
+int pinos[] { pA, pB, pC, pD, pE, pF, pG, pDP};
+bool modoSegmento = com_cathodo;
+
+byte numeros[10][8] {
+  { 1, 1, 1, 1, 1, 1, 0, 0},  // 0
+  { 0, 1, 1, 0, 0, 0, 0, 0},  // 1
+  { 1, 1, 0, 1, 1, 0, 1, 0},  // 2
+  { 1, 1, 1, 1, 0, 0, 1, 0},  // 3
+  { 0, 1, 1, 0, 0, 1, 1, 0},  // 4
+  { 1, 0, 1, 1, 0, 1, 1, 0},  // 5
+  { 1, 0, 1, 1, 1, 1, 1, 0},  // 6
+  { 1, 1, 1, 0, 0, 0, 0, 0},  // 7
+  { 1, 1, 1, 1, 1, 1, 1, 0},  // 8
+  { 1, 1, 1, 1, 0, 1, 1, 0}   // 9
+};
+
+void setup() {
+  for( int indice = 0; indice < 8; indice++)
+    pinMode( pinos[indice], OUTPUT);
+}
+
+void setModo( bool modo) {
+  for( int indice = 0; indice < 8; indice++)
+    digitalWrite( pinos[indice], modo);
+}
+
+void imprime( int numero) {
+  setModo( modoSegmento);
+  for( int indice = 0; indice < 8; indice++)
+    digitalWrite( pinos[indice], numeros[numero][indice]);
+}
+
+void loop() {
+  for( int indice = 0; indice < 10; indice++) {
+    imprime( indice);
+    delay( 1000);
+  }
+}
