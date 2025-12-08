@@ -1,0 +1,36 @@
+#include <SPI.h>            
+#include <MFRC522.h>
+#include <LiquidCrystal_I2C.h>
+
+#define PINO_SS 10
+#define PINO_RST 9
+
+MFRC522 leitor( PINO_SS, PINO_RST);  // leitor RFID
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);  // objeto do Cristal Líquido 16x2 I2C
+
+void setup() {
+  SPI.begin();  // inicia comunicação SPI bus, eu não tenho a menor ideia do que isso faz, mas está nos exemplos sem explicação
+  leitor.PCD_Init();  // inicia o leitor
+  LCD.init();  // inicia o Cristal Líquido
+  LCD.backlight();  //liga a luz de fundo
+}
+
+void loop() {
+  String cartao = "";
+  if( leitor.PICC_IsNewCardPresent())  // se um novo cartão foi apresentado
+  {
+    if( leitor.PICC_ReadCardSerial())  // lê o serial do cartão
+    {
+      for(int indice = 0; indice < leitor.uid.size; indice++)  // acumula os hexadecimais do cartão em "cartao"
+        cartao = cartao + ( leitor.uid.uidByte[indice] < 0x10 ? "A" : "") + String( leitor.uid.uidByte[indice], HEX);
+
+      LCD.clear();
+      LCD.setCursor(0, 0);
+      LCD.print( "UID:");
+      LCD.setCursor(0, 1);
+      LCD.print( cartao);
+
+      delay( 1000);
+    }
+  }
+}
