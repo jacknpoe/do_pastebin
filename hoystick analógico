@@ -1,0 +1,43 @@
+#include <LiquidCrystal_I2C.h>  // para cristal líquido 16x2 I2C
+
+// pinos para X, Y e botão
+#define PINO_X A0
+#define PINO_Y A1
+#define PINO_B A2
+
+short MEIO_X, MEIO_Y;  // vão guardar os valores de X e Y quando o joystick está parado
+short x, y;  // le() vai prencher esses dados
+byte botao;  // idem
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);  // o objeto cristal líquidp
+
+void setup() {
+  // os pinos serão INPUT (no caso do botão, só funciona com INPUT_PULLUP)
+  pinMode( PINO_X, INPUT);
+  pinMode( PINO_Y, INPUT);
+  pinMode( PINO_B, INPUT_PULLUP);
+
+  MEIO_X = analogRead( PINO_X);  // guarda valor do joystick parado
+  MEIO_Y = analogRead( PINO_Y);  // idem
+
+  LCD.init();  // inicia cristal líquido
+  LCD.backlight();  // liga a luz do cristal líquido
+}
+
+// lê os dados dos pinos x, y e botao
+void le() {
+  x = analogRead( PINO_X) - MEIO_X;  // deduz o valor do joystick parado
+  y = analogRead( PINO_Y) - MEIO_Y;  // idem
+  botao = ( digitalRead( PINO_B) == 0);  // se voltar 0, o botão está pressionado
+}
+
+void loop() {
+  le();  // lê x, y e botao
+
+  LCD.clear();  // limpa o cristal líquidp
+  LCD.setCursor( 0, 0);  // primeira linha
+  LCD.print( "X: " + String(x) + ", Y: "+ String(y));  // imprime x e y
+  LCD.setCursor( 0, 1);  // segunda linha
+  LCD.print( "Botao: " + String(botao ? "LIGADO" : "DESLIGADO"));  // estado do botão
+
+  delay( 200);  // para não ficar limpando o cristal líquido que piscaria demais
+}
