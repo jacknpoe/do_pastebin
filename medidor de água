@@ -1,0 +1,34 @@
+#include <LiquidCrystal_I2C.h>  // para usar cristal líquido I2C 16x2
+
+#define PINO_FORCA 2
+#define PINO_SINAL A0
+
+int anterior = 0;  // guarda o valor da leitura anterior enquanto está executando loop()
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);  // objeto cristal líquido
+
+void setup() {
+  pinMode( PINO_FORCA, OUTPUT);  // o pino de força é de saída
+  digitalWrite( PINO_FORCA, LOW);  // e fica desligado quando não está sendo usado
+
+  LCD.init();  // inicia o cristal líquido
+  LCD.backlight();  // acente a luz do cristal líquido
+}
+
+void loop() {
+  int medido;
+
+  digitalWrite( PINO_FORCA, HIGH);  // liga o sensor
+  delay( 10);  // tempo de espera para maior precisão
+  medido = analogRead( PINO_SINAL);  // medição via pino de sinal
+  digitalWrite( PINO_FORCA, LOW);  // desliga o sensor
+
+  LCD.clear();  // limpa o cristal líqudo
+  LCD.setCursor( 0, 0);  // primeira linha
+  LCD.print( "Anterior: " + String( anterior));  // imprime o anterior
+  LCD.setCursor( 0, 1);  // segunda linha
+  LCD.print( "Atual: " + String( medido));  // imprime o atual
+
+  anterior = medido;  // na próxima chamada de loop(), o valor que acabamos de medir será o anterior
+  delay( 990);  // vai atualizar o cristal líquido a cada segundo
+}
