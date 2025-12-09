@@ -22,7 +22,7 @@ void loop() {
     if( leitor.PICC_ReadCardSerial())  // lê o serial do cartão
     {
       for(int indice = 0; indice < leitor.uid.size; indice++)  // acumula os hexadecimais do cartão em "cartao"
-        cartao = cartao + ( leitor.uid.uidByte[indice] < 0x10 ? "A" : "") + String( leitor.uid.uidByte[indice], HEX);
+        cartao = cartao + ( leitor.uid.uidByte[indice] < 0x10 ? "0" : "") + String( leitor.uid.uidByte[indice], HEX);
 
       LCD.clear();
       LCD.setCursor(0, 0);
