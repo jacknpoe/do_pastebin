@@ -1,0 +1,49 @@
+#include <LiquidCrystal_I2C.h>  // inclui a biblioteca que gerencia o LCD (classe LiquidCrystal_I2C)
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);  // cria um objeto LCD da classe LiquidCrystal_I2C
+
+// PACMAN com a boca aberta
+uint8_t aberto[] = {
+  0b01110,
+  0b11011,
+  0b11110,
+  0b11100,
+  0b11100,
+  0b11110,
+  0b11111,
+  0b01110 };
+
+// PACMAN com a boca fechada
+uint8_t fechado[] = {
+  0b01110,
+  0b11011,
+  0b11111,
+  0b11111,
+  0b11111,
+  0b11111,
+  0b11111,
+  0b01110 };
+
+void setup() {
+  LCD.init();  // inicializa o LCD
+  LCD.backlight();  // liga a luz de fundo do LCD
+  LCD.createChar( 0, aberto);  // define o PACMAN com a boca aberta como o caracter 0
+  LCD.createChar( 1, fechado);  // define o PACMAN com a boca fechada como o caracter 1
+  LCD.clear();  // limpa o LCD
+}
+
+void loop() {
+  for( int linha = 0; linha < 2; linha++) {  // vai mostrar primeiro na primeira linha, depois na segunda
+    for( int coluna = 0; coluna < 17; coluna++) {  // da coluna 0 à 15 (a 16 será só para apagar o PACMAN)
+      if( coluna > 0) {  // apaga o PACMAN na posição anterior, se ele não estiver na posição 0
+        LCD.setCursor( coluna - 1, linha);  // coloca o cursor na posição anterior
+        LCD.print( " ");  // apaga o PACMAN
+      }
+      if( coluna < 16) {  // desenha o PACMAN na posição atual, se não for 16 (que é para apagar o PACMAN)
+        LCD.setCursor( coluna, linha);  // coloca o cursor na posição atual
+        LCD.write( byte( coluna % 2));  // posições pares imprimem PACMAN com a boca aberta e ímpares com a boca fechada (0/1)
+        delay( 250);  // espera 1/4 de segundo (fica bom em vídeo, mas você pode querer aumentar
+      }
+    }    
+  }
+}
