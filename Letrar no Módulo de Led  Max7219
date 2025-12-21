@@ -1,0 +1,86 @@
+#include "LedControl.h"
+#define MODULOS 1  // se tiver mais que um módulo, pode ser alterado aqui, mas tem que altera desenha()
+
+LedControl led = LedControl( 2, 4, 3, MODULOS);  // objeto controle do led
+
+byte letras[6][8] = {
+  {     // A
+    0b00000000,
+    0b00111100,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b00000000
+  }, {  // B
+    0b00000000,
+    0b01111100,
+    0b01100110,
+    0b01111100,
+    0b01100110,
+    0b01100110,
+    0b01111100,
+    0b00000000
+  }, {  // C
+    0b00000000,
+    0b00111100,
+    0b01100110,
+    0b01100000,
+    0b01100000,
+    0b01100110,
+    0b00111100,
+    0b00000000
+  }, {  // D
+    0b00000000,
+    0b01111100,
+    0b01100110,
+    0b01100110,
+    0b01100110,
+    0b01100110,
+    0b01111100,
+    0b00000000
+  }, {  // E
+    0b00000000,
+    0b01111110,
+    0b01100000,
+    0b01111100,
+    0b01100000,
+    0b01100000,
+    0b01111110,
+    0b00000000
+  }, {  // F
+    0b00000000,
+    0b01111110,
+    0b01100000,
+    0b01111100,
+    0b01100000,
+    0b01100000,
+    0b01100000,
+    0b00000000
+  }
+};
+
+// mostra uma letra no módulo 0 (alterar para mais módulos)
+void desenha( byte buffer[]) {
+  for( int linha = 0; linha < 8; linha++) {
+    for( int coluna = 0; coluna < 8; coluna++) {
+      led.setLed(0, linha, coluna, bitRead( buffer[ linha], 7 - coluna));
+    }
+  }
+}
+
+void setup() {
+  for( int indice = 0; indice < MODULOS; indice++) {
+    led.shutdown( indice, false); 
+    led.setIntensity( indice, 8);
+    led.clearDisplay( indice);  // essas inicializações eu peguei da Internet, não sei o que fazem
+  }
+}  
+  
+void loop() {
+  for( int indice = 0; indice < 6; indice++) {
+    desenha( letras[ indice]);  // para mostrar as letras de "A" a "F"
+    delay( 1000);
+  }
+}
