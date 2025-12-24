@@ -15,7 +15,7 @@ Fortran (90, Ratfor, Super)
 LISP (Arc, Auto, Common, Emacs, Eus, ILOS, IS, New, Otus, Visual)
 Ada
 Object Pascal@
-SQL (My, Server, Lite, Postgre, PL)@
+SQL (db2, My, Lite, PL, Postgre, Server)@
 ML (Alice, Caml, OCaml, ReasonML, SML, SML/NJ) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)@
 C# (+MAUI, Rhino, SnapDevelop)@
