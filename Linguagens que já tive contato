@@ -198,6 +198,66 @@ Aldor
 SaC
 S4A
 
+EQUIVALENTES
+
+Amstrad BASIC = Locomotive BASIC
+Archimedes BBC BASIC = MEMOTECH MTX 512 BBC BASIC
+Boa = Node.js
+Bourne shell = POSIX sh
+bsh = Java
+Cerberus X = Monkey 2
+Chez Scheme = Scheme
+ClosureScript = Squint
+Coffee = CoffeeScript
+CPC = Locomotive BASIC
+CPython = Python
+Dragon 32 BASIC = TRS-80 BASIC
+Free Pascal = Pascal
+Gambit = Scheme
+gawk = awk
+Generic Java = Java
+Gerbil Scheme = Kawa/Steel
+GNU Bourne-Again Shell = Bash
+Guile = Kawa/Scheme/Steel
+HashLink = Haxe
+IBM PC BASIC A = GW-BASIC 
+Intel Fortran Compiler = Fortran
+Iodine = Java
+IronPython - Python
+JRuby = Ruby
+Korn Shell = ksh
+Linden Scripting Language = LSL
+MariaDB = MySQL
+MirBSD Korn Shell = ksh
+mksh = POSIX sh
+Monkey X = Monkey 2
+nawk = awk
+Oberon-07 = Oberon-2
+Objective Caml = OCaml
+oksh = POSIX sh
+PC-BASIC = GW-BASIC
+Pizza = Java
+PoSh = Windows PowerShell
+Pretty C = C
+PRO*C = C
+QB45 = QB64
+QBasic 1.1 = QB64
+QuickC = Turbo C
+QuickPascal = Turbo Pascal
+Reason = ReasonML
+SCM = Scheme
+SICP = DrScheme
+Squeak = Smalltalk
+STclos = Gauche/Kawa/Scheme/Steel
+SYCL = Intel oneAPI DPC++
+tcsh = csh
+TOM = Java
+Turing+ = Turing
+XLISP = Common Lisp
+XLispStat = Common Lisp
+XOTcl = Tcl
+YLISP = Common Lisp
+
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
 Nem incluo os conversores de scripts ou linguagens de marcação que eu mesmo tive que criar, como:
