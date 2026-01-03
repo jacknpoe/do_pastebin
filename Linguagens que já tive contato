@@ -184,7 +184,7 @@ Monkey C
 Langur
 Epsilon Object Language
 Z
-Forth (G, p, VFX 64)
+Forth (G, p, SP, VFX 64)
 sh (Ba, Da, k, POSIX, z)
 Yorick
 Nickle
@@ -226,10 +226,13 @@ Iodine = Java
 IronPython - Python
 JRuby = Ruby
 Korn Shell = ksh
+LibreOffice Basic = OpenOffice Basic
 Linden Scripting Language = LSL
 MariaDB = MySQL
+Microsoft Office Visual Basic for Applications = OpenOffice Basic
 MirBSD Korn Shell = ksh
 mksh = POSIX sh
+MMB4L = MMBasic
 Monkey X = Monkey 2
 nawk = awk
 Oberon-07 = Oberon-2
@@ -253,6 +256,7 @@ SYCL = Intel oneAPI DPC++
 tcsh = csh
 TOM = Java
 Turing+ = Turing
+WPS Office Visual Basic for Applications = OpenOffice Basic
 XLISP = Common Lisp
 XLispStat = Common Lisp
 XOTcl = Tcl
