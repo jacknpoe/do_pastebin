@@ -184,7 +184,7 @@ Monkey C
 Langur
 Epsilon Object Language
 Z
-Forth (G, p, SP, VFX 64)
+Forth (p, SP, VFX 64)
 sh (Ba, Da, k, POSIX, z)
 Yorick
 Nickle
@@ -217,6 +217,7 @@ Gambit = Scheme
 gawk = awk
 Generic Java = Java
 Gerbil Scheme = Kawa/Steel
+GForth = pForth
 GNU Bourne-Again Shell = Bash
 Guile = Kawa/Scheme/Steel
 HashLink = Haxe
