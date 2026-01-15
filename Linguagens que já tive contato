@@ -199,6 +199,7 @@ SaC
 S4A
 rc
 es
+Légua
 
 EQUIVALENTES
 
@@ -213,6 +214,7 @@ ClosureScript = Squint
 Coffee = CoffeeScript
 CPC = Locomotive BASIC
 CPython = Python
+Delégua = Égua
 Dragon 32 BASIC = TRS-80 BASIC
 Free Pascal = Pascal
 Gambit = Scheme
