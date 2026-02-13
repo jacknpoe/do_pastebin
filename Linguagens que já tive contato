@@ -22,7 +22,7 @@ C# (+MAUI, Rhino, SnapDevelop)@
 Java (+ Judo)
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
 PHP@ (+ Hack)
-Python (+ Bython, Cython, Jython, Micro, Rhino, RhinoIron)@
+Python (+ Bython, Cython, Jinja, Jython, Micro, Rhino, RhinoIron)@
 brainfuck (uma vez só, e nunca mais)
 Scratch
 Node-RED@
@@ -130,7 +130,6 @@ Rexx (Net, Object, Regina)
 RAPID
 LiveCode
 ABC
-Jinja
 AutoHotKey
 XPL0
 Vim script
