@@ -226,6 +226,7 @@ Chez Scheme = Scheme
 CHICKEN = Scheme
 ClosureScript = Squint
 Coffee = CoffeeScript
+ColdFusion Markup Language / CFML = CFScript
 CPC = Locomotive BASIC
 CPython = Python
 CSNOBOL4 = SNOBOL4
