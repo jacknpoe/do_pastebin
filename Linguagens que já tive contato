@@ -21,7 +21,7 @@ dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)
 C# (+MAUI, Rhino, SnapDevelop)@
 Java (+ Judo)
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
-PHP@
+PHP@ (+ Hack)
 Python (+ Bython, Cython, Jython, Micro, Rhino, RhinoIron)@
 brainfuck (uma vez só, e nunca mais)
 Scratch
@@ -292,7 +292,6 @@ AngelScript
 Ape
 lox (jlox Ahmad-Faraj implementation)
 Falcon
-Hack
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
