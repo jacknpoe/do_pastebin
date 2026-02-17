@@ -8,7 +8,7 @@ binário (sim, binário, não assembly) Z-80
 Clipper
 Pascal (Component, Delphi, DelphiWebScript, ESPL, Free, Lazarus, MSX Turbo, Mystic, Oberon-2, Object, Oxygene, ABC .NET, Super, Turbo, UCSD (Apple /// implementation), zim)
 assembly x86
-C (ANSI, Cilk, Turbo, Unified Parallel)@
+C (ANSI, Cilk, Embedded for ARM Cortex-M, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
 Fortran (90, Ratfor, Super)
