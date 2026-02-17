@@ -10,7 +10,7 @@ Pascal (Component, Delphi, DelphiWebScript, ESPL, Free, Lazarus, MSX Turbo, Myst
 assembly x86
 C (ANSI, Cilk, Embedded for ARM Cortex-M, Turbo, Unified Parallel)@
 COBOL
-C++ (ANSI, Ch, Intel oneAPI DPC++, Turbo)@
+C++ (ANSI, Ch, Embedded for ARM Cortex-M, Intel oneAPI DPC++, Turbo)@
 Fortran (90, Ratfor, Super)
 LISP (Arc, Auto, Cake, Common, Emacs, Eus, Frennel, ILOS, IS, New, Otus, Visual)
 Ada
