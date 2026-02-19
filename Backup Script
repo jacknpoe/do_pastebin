@@ -29,13 +29,20 @@ copy() {
     # informs the start of the copy
     d_echo "$present_copy: copying from \"$folder\"..."
 
-    # performs the copy with rsync, without symbolic links
-    rsync -a --no-links "$origin" "$dest_path" > /dev/null
-
     # these spaces are used to align the script output, depending on the current copy number
     digits=${#present_copy}
     size=$(($digits + 2))
     spaces=$(printf "%0.s " $(seq 1 $size))
+
+    # first check if the source exists (ChatGPT)
+    if [[ ! -d "$origin" ]]; then
+        fails=$((fails + 1))
+        d_echo "$espacos(folder \"$pasta\" does not exist)"
+        return
+    fi
+
+    # performs the copy with rsync, without symbolic links (+ ChatGPT)
+    rsync -a --no-links "$origin" "$dest_path" >> "$log_file" 2>&1
 
     # check the exit code of the rsync command and update the counters of successes and fails
     if [ $? -eq 0 ]; then
@@ -50,6 +57,9 @@ copy() {
     elps_cp_time=$((SECONDS - ini_cp_time))
     d_echo "$spaces(time: $((elps_cp_time / 60)) minutes and $((elps_cp_time % 60)) seconds)" && d_echo
 }
+
+# interrupted by user (ChatGPT)
+trap 'd_echo "Backup interrupted by user."; exit 130' INT
 
 # gets the folder name from the argument, if any
 dest_folder=$1
@@ -107,7 +117,7 @@ echo "---------------------------------------------------" >> "$log_file" && ech
 
 copy "/home/jacknpoe/Documentos"
 
-if [[ "$r_dropbox" == "y" ]]; then
+if [[ "$r_dropbox" =~ ^[yY]$ ]]; then
     copy "/home/jacknpoe/do dropbox"
 fi
 
@@ -123,13 +133,13 @@ copy "/home/jacknpoe/Imagens"
 
 copy "/home/jacknpoe/Juros"
 
-if [[ "$r_linguagens" == "y" ]]; then
+if [[ "$r_linguagens" =~ ^[yY]$ ]]; then
     copy "/home/jacknpoe/Linguagens"
 fi
 
 copy "/home/jacknpoe/Vídeos/locais"
 
-if [[ "$r_musicas" == "y" ]]; then
+if [[ "$r_musicas" =~ ^[yY]$ ]]; then
     copy "/home/jacknpoe/Músicas"
 fi
 
