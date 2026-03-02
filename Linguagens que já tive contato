@@ -218,6 +218,11 @@ APDL
 Suneido
 TCC (Take Command)
 Elvish
+AngelScript
+Ape
+lox (jlox Ahmad-Faraj implementation)
+Falcon
+Nushell
 
 EQUIVALENTES
 
@@ -249,10 +254,10 @@ GNU Bourne-Again Shell = Bash
 GNU Octave = Octave
 Guile = Kawa/Scheme/Steel
 HashLink = Haxe
-IBM PC BASIC A = GW-BASIC 
+IBM PC BASIC A = GW-BASIC
 Intel Fortran Compiler = Fortran
 Iodine = Java
-IronPython - Python
+IronPython – Python
 JRuby = Ruby
 Korn Shell = ksh
 LibreOffice Basic = OpenOffice Basic
@@ -265,10 +270,14 @@ mksh = POSIX sh
 MMB4L = MMBasic
 Monkey X = Monkey 2
 nawk = awk
-NimScript / NimbleScript = Nim
+NimbleScript = Nim
+NimScript = Nim
 Oberon-07 = Oberon-2
 Objective Caml = OCaml
 oksh = POSIX sh
+OpenMP = Intel oneAPI DPC++
+OSH (Oil Shell) = bash
+Pascal ISO 7185 = MSX Turbo Pascal
 PC-BASIC = GW-BASIC
 Pizza = Java
 PoSh = Windows PowerShell
@@ -280,13 +289,14 @@ QBasic 1.1 = QB64
 QuickC = Turbo C
 QuickPascal = Turbo Pascal
 Reason = ReasonML
+Rebol/Core = Rebol|
 SCM = Scheme
 Scryer Prolog = Prolog
 SICP = DrScheme
 Squeak = Smalltalk
-STclos = Gauche/Kawa/Scheme/Steel}
+STklos = Gauche/Kawa/Scheme/Steel
 SWI-Prolog = Prolog
-SwiftForth = GForth/pForth
+SwiftForth = pForth
 SYCL = Intel oneAPI DPC++
 tcsh = csh
 TOM = Java
@@ -295,13 +305,7 @@ WPS Office Visual Basic for Applications = OpenOffice Basic
 XLISP = Common Lisp
 XLispStat = Common Lisp
 XOTcl = Tcl
-YLISP = Common Lisp
-G-Portugol
-AngelScript
-Ape
-lox (jlox Ahmad-Faraj implementation)
-Falcon
-Nushell
+YLISP = Common LispG-Portugol
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
