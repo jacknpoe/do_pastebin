@@ -231,6 +231,8 @@ K
 XL2
 x-lang
 X++
+11l
+Hare
 
 EQUIVALENTES
 
@@ -314,7 +316,6 @@ XLISP = Common Lisp
 XLispStat = Common Lisp
 XOTcl = Tcl
 YLISP = Common LispG-Portugol
-11l
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
