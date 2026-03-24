@@ -12,7 +12,7 @@ C (ANSI, Cilk, Embedded for ARM Cortex-M, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Ch, Embedded for ARM Cortex-M, Intel oneAPI DPC++, Turbo)@
 Fortran (90, Ratfor, Super)
-LISP (Arc, Auto, Cake, Common, Emacs, Eus, Frennel, ILOS, IS, New, Otus, Visual)
+LISP (Arc, Auto, Cake, Common, Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, Visual)
 Ada
 Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
