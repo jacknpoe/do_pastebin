@@ -120,7 +120,7 @@ Windows PowerShell
 CPL
 Pony
 PureScript
-Rebol (+ Red)
+Rebol (+ Red, Red/System)
 GameMaker Language
 Squint
 SuperCollider
@@ -237,6 +237,7 @@ Roc
 Koka
 ooc
 ferite
+Grain
 
 EQUIVALENTES
 
