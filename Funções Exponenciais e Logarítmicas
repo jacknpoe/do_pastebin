@@ -1,0 +1,102 @@
+// Funções Exponenciais e Logarítmicas (após muita otimização com o ChatGPT)
+
+#include <iostream>   // para cout
+using namespace std;
+
+// constantes:
+// MAXLN para laço de ln()
+// MAXEXP para laço de exp()
+// LN2 que é ln(2) pré-calculado para não precisar chamar a função ln(2)
+#define MAXLN 15
+#define MAXEXP 20
+#define LN2 0.6931471805599453094L
+
+// função base ^ expoente para expoentes inteiros (usada por exp)
+long double powint(long double base, long long expoente) {
+	if (expoente < 0) return powint(1.0L / base, -expoente);
+	if (expoente == 0) return 1.0L;
+	if (expoente % 2 == 0) return powint(base * base, expoente / 2);
+	return base * powint(base * base, (expoente - 1) / 2);
+}   
+
+// função ln() normalizada, de uso geral
+long double ln(long double x) {
+    int indice; long long divint = 0LL;
+    long double termo, soma = 0.0L, yy;
+
+    while (x >= 2.0L) { x /= 2.0L; divint++; }
+    while (x < 1.0L) { x *= 2.0L; divint--; }
+
+    termo = (x - 1.0L) / (x + 1.0L);
+    yy = termo * termo;
+
+    for (indice = 1; indice <= MAXLN; indice++) {
+        soma += termo / (2.0L * (long double)indice - 1.0L);
+        termo *= yy;
+        if (soma + termo == soma) break;
+    }
+
+    return 2.0L * soma + divint * LN2;
+}
+
+// função exp() normalizada, de uso geral
+long double exp(long double x) {
+    int indice; long long divint;
+    long double termo = 1.0L, soma = 1.0L;
+
+    divint = (long long)(x / LN2) - (x < 0.0L ? 1LL : 0LL);
+    x = x - divint * LN2;
+
+    for (indice = 1; indice <= MAXEXP; indice++) {
+        termo *= x / (long double)indice;
+        soma += termo;
+        if (soma + termo == soma) break;
+    }
+
+    return soma * powint(2.0L, divint);
+}
+
+// pow() é calculado pela clássica exp(ln(base) * expoente)
+long double pow(long double base, long double expoente) {
+    return exp(ln(base) * expoente);
+}
+
+int main() {
+    // precisão suficiente para exibir os dígitos
+    // significativos sem expor ruído numérico
+    cout.precision(16);
+
+    cout << "testes de ln()" << endl;
+    cout << "ln(1.0) = " << ln(1.0L) << endl;
+    cout << "ln(1.03) = " << ln(1.03L) << endl;
+    cout << "ln(10.0) = " << ln(10.0L) << endl;
+    cout << "ln(1000.0) = " << ln(1000.0L) << endl << endl;
+
+    cout << "testes positivos de exp()" << endl;
+    cout << "exp(0.0) = " << exp(0.0L) << endl;
+    cout << "exp(0.5) = " << exp(0.5L) << endl;
+    cout << "exp(10) = " << exp(10.0L) << endl << endl;
+
+    cout << "testes negativos de exp()" << endl;
+    cout << "exp(-1.0) = " << exp(-1.0L) << endl;
+    cout << "exp(-3.7) = " << exp(-3.7L) << endl;
+    cout << "exp(-10.0) = " << exp(-10.0L) << endl;
+    cout << "exp(-2 * LN2) = " << exp(-2.0L * LN2) << endl << endl;
+
+    cout << "testes de pow() quando o resultado é 1" << endl;
+    cout << "pow(1.0, 35.0) = " << pow(1.0L, 35.0L) << endl;
+    cout << "pow(10.0, 0.0) = " << pow(10.0L, 0.0L) << endl << endl;
+
+    cout << "testes de quatro formas de fazer 10⁻¹⁵" << endl;
+    cout << "powint(0.1, 15) = " << powint(0.1L, 15) << endl;
+    cout << "powint(10.0, -15) = " << powint(10.0L, -15) << endl;
+    cout << "pow(0.1, 15.0) = " << pow(0.1L, 15.0L) << endl;
+    cout << "pow(10.0, -15.0) = " << pow(10.0L, -15.0L) << endl << endl;
+
+    cout << "outros testes de pow()" << endl;
+    cout << "pow(1.03, 0.5) = " << pow(1.03L, 0.5L) << endl;
+    cout << "pow(1.03, 120.0) = " << pow(1.03L, 120.0L) << endl;
+    cout << "pow(1.03, 300000.0) = " << pow(1.03L, 300000.0L) << endl;
+    cout << "pow(1.1, 120.0) = " << pow(1.1L, 120.0L) << endl;
+    cout << "pow(1.1, 300000.0) = " << pow(1.1L, 300000.0L) << endl;
+}
