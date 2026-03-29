@@ -9,7 +9,7 @@ using namespace std;
 // LN2 que é ln(2) pré-calculado para não precisar chamar a função ln(2)
 #define MAXLN 15
 #define MAXEXP 20
-#define LN2 0.6931471805599453094L
+#define LN2     
 
 // função base ^ expoente para expoentes inteiros (usada por exp)
 long double powint(long double base, long long expoente) {
@@ -21,11 +21,11 @@ long double powint(long double base, long long expoente) {
 
 // função ln() normalizada, de uso geral
 long double ln(long double x) {
-    int indice; long long divint = 0LL;
+    int indice; long long ajuste = 0LL;
     long double termo, soma = 0.0L, yy;
 
-    while (x >= 2.0L) { x /= 2.0L; divint++; }
-    while (x < 1.0L) { x *= 2.0L; divint--; }
+    while (x >= 2.0L) { x /= 2.0L; ajuste++; }
+    while (x < 1.0L) { x *= 2.0L; ajuste--; }
 
     termo = (x - 1.0L) / (x + 1.0L);
     yy = termo * termo;
@@ -36,16 +36,16 @@ long double ln(long double x) {
         if (soma + termo == soma) break;
     }
 
-    return 2.0L * soma + divint * LN2;
+    return 2.0L * soma + ajuste * LN2;
 }
 
 // função exp() normalizada, de uso geral
 long double exp(long double x) {
-    int indice; long long divint;
+    int indice; long long ajuste;
     long double termo = 1.0L, soma = 1.0L;
 
-    divint = (long long)(x / LN2) - (x < 0.0L ? 1LL : 0LL);
-    x = x - divint * LN2;
+    ajuste = (long long)(x / LN2) - (x < 0.0L ? 1LL : 0LL);
+    x = x - ajuste * LN2;
 
     for (indice = 1; indice <= MAXEXP; indice++) {
         termo *= x / (long double)indice;
@@ -53,7 +53,7 @@ long double exp(long double x) {
         if (soma + termo == soma) break;
     }
 
-    return soma * powint(2.0L, divint);
+    return soma * powint(2.0L, ajuste);
 }
 
 // pow() é calculado pela clássica exp(ln(base) * expoente)
