@@ -9,7 +9,7 @@ using namespace std;
 // LN2 que é ln(2) pré-calculado para não precisar chamar a função ln(2)
 #define MAXLN 15
 #define MAXEXP 20
-#define LN2     
+#define LN2 0.6931471805599453094L
 
 // função base ^ expoente para expoentes inteiros (usada por exp)
 long double powint(long double base, long long expoente) {
