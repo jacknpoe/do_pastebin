@@ -16,7 +16,7 @@ LISP (Arc, Auto, Cake, Common, Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, V
 Ada
 Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
-ML (Alice, Caml, OCaml, ReasonML, SML, SML/NJ) (exemplo no TCC)
+ML (Alice, Caml, OCaml, ReasonML, SML) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)@
 C# (+MAUI, Rhino, SnapDevelop)@
 Java (+ Judo)
@@ -311,6 +311,7 @@ Rebol/Core = Rebol|
 SCM = Scheme
 Scryer Prolog = Prolog
 SICP = DrScheme
+SML/NJ = Alice
 Squeak = Smalltalk
 STklos = Gauche/Kawa/Scheme/Steel
 SWI-Prolog = Prolog
