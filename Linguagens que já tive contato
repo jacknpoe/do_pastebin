@@ -18,7 +18,7 @@ Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
 ML (Alice, Caml, OCaml, ReasonML, SML) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)@
-C# (+MAUI, Rhino, SnapDevelop)@
+C# (+ MAUI, Rhino, SnapDevelop)@
 Java (+ Judo)
 JavaScript@ (+ Google Apps Script, JScript .NET, Node.js, React Native)
 PHP@ (+ Hack, Twig)
@@ -54,7 +54,7 @@ Simula
 Smalltalk
 Clojure
 Scala
-Racket
+Racket (+ Typed)
 Snap!
 D
 F#
