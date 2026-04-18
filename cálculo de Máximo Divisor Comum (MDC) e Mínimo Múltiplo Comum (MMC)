@@ -1,6 +1,8 @@
 // cálculo de Máximo Divisor Comum (MDC) e Mínimo Múltiplo Comum (MMC)
+// VERSÕES: 0.1: 18/04/2026: versão testada com sucesso com vários valores
 
 #include <cmath>	// sqrt
+#include <cstdint>  // int64_t
 #include <iostream>	// cout, endl
 #include <cstdlib>	// calloc, free
 #include <algorithm>  // min, max
