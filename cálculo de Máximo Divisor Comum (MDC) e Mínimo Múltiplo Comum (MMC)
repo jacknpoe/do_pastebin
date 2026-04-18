@@ -1,7 +1,6 @@
 // cálculo de Máximo Divisor Comum (MDC) e Mínimo Múltiplo Comum (MMC)
 
 #include <cmath>	// sqrt
-#include <cstdint>
 #include <iostream>	// cout, endl
 #include <cstdlib>	// calloc, free
 #include <algorithm>  // min, max
