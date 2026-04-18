@@ -1,0 +1,237 @@
+// cálculo de Máximo Divisor Comum (MDC) e Mínimo Múltiplo Comum (MMC)
+
+#include <cmath>	// sqrt
+#include <cstdint>
+#include <iostream>	// cout, endl
+#include <cstdlib>	// calloc, free
+#include <algorithm>  // min, max
+
+using namespace std;
+
+// função de expomnencial de inteiros (para uso no domínio do problema, base >= 0, expoente >= 0)
+int64_t powint(int64_t base, int64_t expoente) {
+    if (expoente < 0) return 0;
+    if (expoente == 0) return 1;
+    if (expoente % 2 == 0) return powint(base * base, expoente / 2);
+    return base * powint(base * base, (expoente - 1) / 2);
+}   
+
+// classe que encontra os fatores de um Produto e com as funções estáticas maximo, minimo, mdc e mmc
+class Fatores{
+    private:
+        int64_t Produto;
+        int64_t *AExpoentes;
+        bool Primo;
+        int64_t Maximo;
+        int64_t Ultimo;
+    public:
+        Fatores(int64_t produto);
+        Fatores(void);
+        ~Fatores();
+        bool setProduto(int64_t produto);
+        int64_t getProduto(void) const ;
+        int64_t getExpoente(int64_t indice) const ;
+        bool getPrimo(void) const ;
+        int64_t getMaximo(void) const ;
+        int64_t getUltimo(void) const ;
+        static int64_t maximo(const Fatores& num1, const Fatores& num2, int64_t indice);
+        static int64_t minimo(const Fatores& num1, const Fatores& num2, int64_t indice);
+        static int64_t mdc(const Fatores& num1, const Fatores& num2);
+        static int64_t mmc(const Fatores& num1, const Fatores& num2);
+};
+
+// muda o valor do produto, preenche os atributos, principalmente AExpoentes e Ultimo, que são fatores indexados e um excepcional
+// caso retorne false, não usar o objeto, pois irá se comportar como se tivesse o valor 1
+bool Fatores::setProduto(int64_t produto) {
+    Produto = produto;
+    Primo = true;
+    Ultimo = 1;
+
+    // se já houver array, libera
+    if(AExpoentes != NULL) {
+        free(AExpoentes);
+        AExpoentes = NULL;
+    }
+
+    // se produto == 1, não cria AExpoentes, Ultimo é 1 e não é primo
+    // se produto < 1, ele deixa os atributos equivalentes a 1, com a diferença que setProduto retorna falso (erro)
+    if(produto < 2) {
+        Maximo = 1;
+        Primo = false;
+        return produto == 1;
+    }
+
+    // cria AExpoentes depois de achar o maior número potencial a ter expoente guardado (√produto)
+    // se houver algum erro de alocação, será porque a memória não é capaz de guardar essa quantidade de int64_t
+    Maximo = (int64_t) sqrt(produto);
+    AExpoentes = (int64_t*) calloc(Maximo - 1, sizeof(int64_t));
+    if(AExpoentes == NULL && Maximo > 1) {
+        Maximo = 1;
+        Primo = false;
+        return false;
+    }
+
+    // encontra e guarda os expoentes para os números em AExpoentes
+    int64_t indice = 2;
+    while(indice <= Maximo) {
+        if(produto % indice == 0) {
+            AExpoentes[indice-2]++;
+            produto /= indice;
+            Primo = false;
+        } else {
+            indice = indice + 1;
+        }
+    }
+
+    // quando um dos fatores é um primo além de √produto, ele não é percorrido por laço, mas deduzido aqui
+    if(produto > 1) { Ultimo = produto; }
+    return true;
+}
+
+// retorna o número fatorado original, inválido se setProduto retornou false
+int64_t Fatores::getProduto(void) const { return Produto; }
+
+// retorna o expoente de um fator, na ordem:
+// • 1 se Ultimo = indice;
+// • 0 se fora do intervalo (entre 2 e Maximo);
+// • 0 se o array AExpoentes não estiver alocado;
+// • o expoente guardado no array AExpoentes por setProduto
+// como em toda fatoração, é sempre zero para um indice que não seja primo
+int64_t Fatores::getExpoente(int64_t indice) const {
+    if(indice < 2) return 0;
+    if(Ultimo == indice) return 1;
+    if(indice > Maximo) return 0;
+    if(AExpoentes == NULL) return 0;
+    return AExpoentes[indice-2];
+}
+
+// retorna se o número fatorado é primo, inválido se setProduto retornou false
+bool Fatores::getPrimo(void) const { return Primo; }
+
+// retorna o maior número potencial para qual um expoente pode ser guardado, inválido se setProduto retornou false
+// ele é a raiz quadrada do número fatorado, arredondado para baixo
+int64_t Fatores::getMaximo(void) const { return Maximo; }
+
+// retorna o valor do número primo excepcional restante acima do valor de Maximo (√Produto), se houver, ou 1 se não houver
+// além de Maximo, só pode haver um número primo extra, que é guardado nesse atributo escalar
+// inválido se setProduto retornou false
+int64_t Fatores::getUltimo(void) const { return Ultimo; }
+
+// retorna o maior exponente para um índice entre dois números fatorados; note que usa getExpoente(), não acessa direto AExpoente
+int64_t Fatores::maximo(const Fatores& num1, const Fatores& num2, int64_t indice) { return max(num1.getExpoente(indice), num2.getExpoente(indice)); }
+
+// retorna o menor exponente para um índice entre dois números fatorados; note que usa getExpoente(), não acessa direto AExpoente
+int64_t Fatores::minimo(const Fatores& num1, const Fatores& num2, int64_t indice) { return min(num1.getExpoente(indice), num2.getExpoente(indice)); }
+
+// retorna o Máximo Divisor Comum (MDC) entre dois números fatorados
+int64_t Fatores::mdc(const Fatores& num1, const Fatores& num2) {
+    int64_t produto = 1;
+    int64_t maximocomum = min(num1.getMaximo(), num2.getMaximo());
+    for(int64_t indice = 2; indice <= maximocomum; indice++)
+        produto *= powint(indice, Fatores::minimo(num1, num2, indice));
+    if(num1.getUltimo() == num2.getUltimo()) produto *= num1.getUltimo();
+    else {
+        if(num1.getMaximo() > num2.getMaximo() && num1.getExpoente(num2.getUltimo()) > 0) produto *= num2.getUltimo();
+        if(num1.getMaximo() < num2.getMaximo() && num2.getExpoente(num1.getUltimo()) > 0) produto *= num1.getUltimo();
+    }
+    return produto;
+}
+
+// retorna o Mínimo Múltiplo Comum (MMC) entre dois números fatorados
+int64_t Fatores::mmc(const Fatores& num1, const Fatores& num2) {
+    int64_t produto = 1;
+    int64_t maximocomum = max(num1.getMaximo(), num2.getMaximo());
+    for(int64_t indice = 2; indice <= maximocomum; indice++) {
+        produto *= powint(indice, Fatores::maximo(num1, num2, indice));
+    }
+    if(num1.getUltimo() == num2.getUltimo()) produto *= num1.getUltimo();
+    else {
+        if(num1.getUltimo() > maximocomum) produto *= num1.getUltimo();
+        if(num2.getUltimo() > maximocomum) produto *= num2.getUltimo();
+    }
+    return produto;
+}
+
+// construtor que recebe um valor para o produto fatorado e delega o fatoramento para SetProduto()
+Fatores::Fatores(int64_t produto) {
+    AExpoentes = NULL;
+    setProduto(produto);
+}
+
+// construtor que não recebe valor para o produto fatorado e preenche os atributos com valores zerados
+Fatores::Fatores(void) {
+    AExpoentes = NULL;
+    Produto = 0;
+    Primo = false;
+    Maximo = 1;
+    Ultimo = 1;
+}
+
+// destrutor, desaloca AExpoentes se ele não for NULL
+Fatores::~Fatores() {
+    if(AExpoentes != NULL) free(AExpoentes);
+}
+
+// testes
+int main() {
+    Fatores num1, num2;
+    int64_t val1, val2;
+
+    while(true) {
+        // pede o primeiro número, validando usando setProduto como avaliador de sucesso
+        while(true) {
+            cout << "Número 1: ";
+            cin >> val1;
+            if(val1 == 0) exit(0);
+            if(num1.setProduto(val1)) break;
+            cout << "Número muito pequeno ou muito grande!" << endl;
+        }
+
+        // pede o segundo número, validando usando setProduto como avaliador de sucesso
+        while(true) {
+            cout << "Número 2: ";
+            cin >> val2;
+            if(val2 == 0) exit (0);
+            if(num2.setProduto(val2)) break;
+            cout << "Número muito pequeno ou muito grande!" << endl;
+        }
+
+        // imprime o fatoramento do primeiro número, % para primos e # para o fator Ultimo
+        cout << endl << "NÚMERO 1:" << endl;
+
+        if(num1.getPrimo()) {
+            cout << "Fator " << num1.getUltimo() << " vezes 1%" << endl;
+        } else
+        {
+            for(int64_t indice = 2; indice <= num1.getMaximo(); indice++)
+                if(num1.getExpoente(indice) > 0)
+                    cout << "Fator " << indice << " vezes " << num1.getExpoente(indice) << endl;
+            if(num1.getUltimo() > 1) cout << "Fator " << num1.getUltimo() << " vezes 1#" << endl;
+        }
+
+        // imprime o fatoramento do segundo número, % para primos e # para o fator Ultimo
+        cout << endl << "NÚMERO 2:" << endl;
+
+        if(num2.getPrimo()) {
+            cout << "Fator " << num2.getUltimo() << " vezes 1%" << endl;
+        } else
+        {
+            for(int64_t indice = 2; indice <= num2.getMaximo(); indice++)
+                if(num2.getExpoente(indice) > 0)
+                    cout << "Fator " << indice << " vezes " << num2.getExpoente(indice) << endl;
+            if(num2.getUltimo() > 1) cout << "Fator " << num2.getUltimo()<< " vezes 1#" << endl;
+        }
+
+        cout << endl;
+
+        // imprime o Máximo Divisor Comum (MDC)
+        int64_t mdc = Fatores::mdc(num1, num2);
+        cout << "MDC = " << mdc << endl;
+
+        // imprime o Mínimo Múltiplo Comum (MMC)
+        int64_t mmc = Fatores::mmc(num1, num2);
+        cout << "MMC = " << mmc << endl;
+
+        cout << endl;
+    }
+}
