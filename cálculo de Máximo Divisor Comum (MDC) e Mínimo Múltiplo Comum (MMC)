@@ -1,184 +1,249 @@
-// cálculo de Máximo Divisor Comum (MDC) e Mínimo Múltiplo Comum (MMC)
+// Fatoração e Cálculo de Máximo Divisor Comum (MDC) e Mínimo Múltiplo Comum (MMC)
 // VERSÕES: 0.1: 18/04/2026: versão testada com sucesso com vários valores
+//          0.2: 19/04/2026: otimizações de todos os tipos, envolvendo CharGPT,
+//                           principalmente passando de array para vector, nisso excluindo Ultimo e Maximo
+//          0.3: 20/04/2026: retirada a necessidade de avaliar raiz de produto, tirado getExpemte() Primo e math.h
+//                           argumentos para número de testes, melhorias pelo ChatGPT
 
-#include <cmath>	// sqrt
+// ATENÇÃO
+// embora os tempos fiquem melhores com a opção de otimização -O3 ao compilar,
+// ela não faz as chamadas a setProduto(), mdc() e mmc() dentro das medições
+// de tempo, o que causa valores próximos ou iguais a zero
+// ATUALIZAÇÃO
+// volatile int64_t mdc, mmc, qtdeFatores parece ter resolvido o problema de compilar com -O3
+
 #include <cstdint>  // int64_t
 #include <iostream>	// cout, endl
 #include <cstdlib>	// calloc, free
 #include <algorithm>  // min, max
+#include <chrono>  // now(), time_point, milisecond
+#include <vector>  // vetores
 
 using namespace std;
 
 // função de expomnencial de inteiros (para uso no domínio do problema, base >= 0, expoente >= 0)
-int64_t powint(int64_t base, int64_t expoente) {
-    if (expoente < 0) return 0;
-    if (expoente == 0) return 1;
-    if (expoente % 2 == 0) return powint(base * base, expoente / 2);
-    return base * powint(base * base, (expoente - 1) / 2);
-}   
+int64_t powint(int64_t base, int64_t exp) {
+    int64_t r = 1;
+    while (exp > 0) {
+        if (exp & 1) r *= base;
+        base *= base;
+        exp >>= 1;
+    }
+    return r;
+}
 
-// classe que encontra os fatores de um Produto e com as funções estáticas maximo, minimo, mdc e mmc
-class Fatores{
+// #include <cstdint>
+// #include <cstdlib>
+
+// using namespace std;
+
+// using u64 = uint64_t;
+// using u128 = __uint128_t;
+
+// // ------------------------------
+// // MDC (algoritmo de Euclides)
+// // ------------------------------
+// u64 mdc(u64 a, u64 b) {
+//     while (b != 0) {
+//         u64 r = a % b;
+//         a = b;
+//         b = r;
+//     }
+//     return a;
+// }
+
+// // ------------------------------
+// // MMC seguro (evita overflow intermediário)
+// // ------------------------------
+// u64 mmc(u64 a, u64 b) {
+//     u64 g = mdc(a, b);
+//     // (a / g) * b evita overflow mais cedo
+//     return (u128)(a / g) * b;
+// }
+
+// classe que encontra os fatores de um Produto e com as funções estáticas mdc e mmc
+class Fatoracao{
     private:
         int64_t Produto;
-        int64_t *AExpoentes;
-        bool Primo;
-        int64_t Maximo;
-        int64_t Ultimo;
+        vector<std::pair<int64_t, int64_t>> VExpoentes;
     public:
-        Fatores(int64_t produto);
-        Fatores(void);
-        ~Fatores();
+        Fatoracao(int64_t produto);
+        Fatoracao(void);
         bool setProduto(int64_t produto);
-        int64_t getProduto(void) const ;
-        int64_t getExpoente(int64_t indice) const ;
-        bool getPrimo(void) const ;
-        int64_t getMaximo(void) const ;
-        int64_t getUltimo(void) const ;
-        static int64_t maximo(const Fatores& num1, const Fatores& num2, int64_t indice);
-        static int64_t minimo(const Fatores& num1, const Fatores& num2, int64_t indice);
-        static int64_t mdc(const Fatores& num1, const Fatores& num2);
-        static int64_t mmc(const Fatores& num1, const Fatores& num2);
+        inline int64_t getProduto(void) const ;
+        inline bool getPrimo(void) const ;
+        inline size_t getQuantidadeFatores() const ;
+        inline int64_t getFatorPorIndice(size_t i) const ;
+        inline int64_t getExpoentePorIndice(size_t i) const ;
+        static int64_t mdc(const Fatoracao& num1, const Fatoracao& num2);
+        static int64_t mmc(const Fatoracao& num1, const Fatoracao& num2);
+        Fatoracao(const Fatoracao&) = delete;
+        Fatoracao& operator=(const Fatoracao&) = delete;
 };
 
-// muda o valor do produto, preenche os atributos, principalmente AExpoentes e Ultimo, que são fatores indexados e um excepcional
+// muda o valor do produto, preenche os atributos, principalmente VExpoentes, que são fatores indexados
 // caso retorne false, não usar o objeto, pois irá se comportar como se tivesse o valor 1
-bool Fatores::setProduto(int64_t produto) {
+bool Fatoracao::setProduto(int64_t produto) {
     Produto = produto;
-    Primo = true;
-    Ultimo = 1;
 
-    // se já houver array, libera
-    if(AExpoentes != NULL) {
-        free(AExpoentes);
-        AExpoentes = NULL;
-    }
+    // limpa VExpoentes para poder reutilizar o mesmo objeto para várias fatorações
+    VExpoentes.clear();
 
-    // se produto == 1, não cria AExpoentes, Ultimo é 1 e não é primo
-    // se produto < 1, ele deixa os atributos equivalentes a 1, com a diferença que setProduto retorna falso (erro)
+    // se produto == 1, não preenche VExpoentes
+    // se produto < 1, equivalente a 1, com a diferença que setProduto retorna falso (erro)
     if(produto < 2) {
-        Maximo = 1;
-        Primo = false;
         return produto == 1;
     }
 
-    // cria AExpoentes depois de achar o maior número potencial a ter expoente guardado (√produto)
-    // se houver algum erro de alocação, será porque a memória não é capaz de guardar essa quantidade de int64_t
-    Maximo = (int64_t) sqrt(produto);
-    AExpoentes = (int64_t*) calloc(Maximo - 1, sizeof(int64_t));
-    if(AExpoentes == NULL && Maximo > 1) {
-        Maximo = 1;
-        Primo = false;
-        return false;
-    }
+    // encontra e guarda os expoentes para os números em VExpoentes
+    int64_t indice = 3, atual = 0;
 
-    // encontra e guarda os expoentes para os números em AExpoentes
-    int64_t indice = 2;
-    while(indice <= Maximo) {
+    // primeiro, o fator 2
+    while(produto % 2 == 0) {
+        if(atual == 2) VExpoentes.back().second++;
+        else { VExpoentes.push_back({2, 1}); atual = 2; }
+
+        produto /= 2;
+    }
+    
+    // depois, os fatores ímpares
+    while(indice * indice <= produto) {
         if(produto % indice == 0) {
-            AExpoentes[indice-2]++;
+            if(indice == atual) VExpoentes.back().second++;
+            else { VExpoentes.push_back({indice, 1}); atual = indice; }
+
             produto /= indice;
-            Primo = false;
         } else {
-            indice = indice + 1;
+            indice += 2;
         }
     }
 
-    // quando um dos fatores é um primo além de √produto, ele não é percorrido por laço, mas deduzido aqui
-    if(produto > 1) { Ultimo = produto; }
+    // o produto que sobra
+    if(produto > 1) { if(produto == atual) VExpoentes.back().second++;
+                      else VExpoentes.push_back({produto, 1}); }
+
     return true;
 }
 
 // retorna o número fatorado original, inválido se setProduto retornou false
-int64_t Fatores::getProduto(void) const { return Produto; }
+inline int64_t Fatoracao::getProduto(void) const { return Produto; }
 
-// retorna o expoente de um fator, na ordem:
-// • 1 se Ultimo = indice;
-// • 0 se fora do intervalo (entre 2 e Maximo);
-// • 0 se o array AExpoentes não estiver alocado;
-// • o expoente guardado no array AExpoentes por setProduto
-// como em toda fatoração, é sempre zero para um indice que não seja primo
-int64_t Fatores::getExpoente(int64_t indice) const {
-    if(indice < 2) return 0;
-    if(Ultimo == indice) return 1;
-    if(indice > Maximo) return 0;
-    if(AExpoentes == NULL) return 0;
-    return AExpoentes[indice-2];
-}
+// retorna a quantidade de fatores
+inline size_t Fatoracao::getQuantidadeFatores() const { return VExpoentes.size(); }
 
-// retorna se o número fatorado é primo, inválido se setProduto retornou false
-bool Fatores::getPrimo(void) const { return Primo; }
+// retorna qual é o fator do elemento indice do vetor de fatores
+inline int64_t Fatoracao::getFatorPorIndice(size_t indice) const { return (indice < VExpoentes.size()) ? VExpoentes[indice].first : 0; }
 
-// retorna o maior número potencial para qual um expoente pode ser guardado, inválido se setProduto retornou false
-// ele é a raiz quadrada do número fatorado, arredondado para baixo
-int64_t Fatores::getMaximo(void) const { return Maximo; }
-
-// retorna o valor do número primo excepcional restante acima do valor de Maximo (√Produto), se houver, ou 1 se não houver
-// além de Maximo, só pode haver um número primo extra, que é guardado nesse atributo escalar
-// inválido se setProduto retornou false
-int64_t Fatores::getUltimo(void) const { return Ultimo; }
-
-// retorna o maior exponente para um índice entre dois números fatorados; note que usa getExpoente(), não acessa direto AExpoente
-int64_t Fatores::maximo(const Fatores& num1, const Fatores& num2, int64_t indice) { return max(num1.getExpoente(indice), num2.getExpoente(indice)); }
-
-// retorna o menor exponente para um índice entre dois números fatorados; note que usa getExpoente(), não acessa direto AExpoente
-int64_t Fatores::minimo(const Fatores& num1, const Fatores& num2, int64_t indice) { return min(num1.getExpoente(indice), num2.getExpoente(indice)); }
+// retorna qual é o expoente do elemento indice do vetor de fatores
+inline int64_t Fatoracao::getExpoentePorIndice(size_t indice) const { return (indice < VExpoentes.size()) ? VExpoentes[indice].second : 0; }
 
 // retorna o Máximo Divisor Comum (MDC) entre dois números fatorados
-int64_t Fatores::mdc(const Fatores& num1, const Fatores& num2) {
-    int64_t produto = 1;
-    int64_t maximocomum = min(num1.getMaximo(), num2.getMaximo());
-    for(int64_t indice = 2; indice <= maximocomum; indice++)
-        produto *= powint(indice, Fatores::minimo(num1, num2, indice));
-    if(num1.getUltimo() == num2.getUltimo()) produto *= num1.getUltimo();
-    else {
-        if(num1.getMaximo() > num2.getMaximo() && num1.getExpoente(num2.getUltimo()) > 0) produto *= num2.getUltimo();
-        if(num1.getMaximo() < num2.getMaximo() && num2.getExpoente(num1.getUltimo()) > 0) produto *= num1.getUltimo();
+int64_t Fatoracao::mdc(const Fatoracao& num1, const Fatoracao& num2) {
+    int64_t produto = 1, indice1 = 0, indice2 = 0, multiplicador;
+    size_t qtdFatores1 = num1.getQuantidadeFatores(); size_t qtdFatores2 = num2.getQuantidadeFatores();
+    int64_t fator1 = num1.getFatorPorIndice(0); int64_t fator2 = num2.getFatorPorIndice(0);
+    
+    while(true) {
+        if(indice1 == qtdFatores1 || indice2 == qtdFatores2) break;
+
+        if(fator2 > fator1) {
+            indice1++;
+            if(indice1 < qtdFatores1) fator1 = num1.getFatorPorIndice(indice1);
+            continue;
+        }
+
+        if(fator1 > fator2) {
+            indice2++;
+            if(indice2 < qtdFatores2) fator2 = num2.getFatorPorIndice(indice2);
+            continue;
+        }
+
+        multiplicador = powint(fator1, min(num1.getExpoentePorIndice(indice1), num2.getExpoentePorIndice(indice2)));
+        if(produto > INT64_MAX / multiplicador) return 0;
+        produto *= multiplicador;
+
+        indice1++;
+        if(indice1 < qtdFatores1) fator1 = num1.getFatorPorIndice(indice1);
+        indice2++;
+        if(indice2 < qtdFatores2) fator2 = num2.getFatorPorIndice(indice2);
     }
     return produto;
 }
 
 // retorna o Mínimo Múltiplo Comum (MMC) entre dois números fatorados
-int64_t Fatores::mmc(const Fatores& num1, const Fatores& num2) {
-    int64_t produto = 1;
-    int64_t maximocomum = max(num1.getMaximo(), num2.getMaximo());
-    for(int64_t indice = 2; indice <= maximocomum; indice++) {
-        produto *= powint(indice, Fatores::maximo(num1, num2, indice));
-    }
-    if(num1.getUltimo() == num2.getUltimo()) produto *= num1.getUltimo();
-    else {
-        if(num1.getUltimo() > maximocomum) produto *= num1.getUltimo();
-        if(num2.getUltimo() > maximocomum) produto *= num2.getUltimo();
+int64_t Fatoracao::mmc(const Fatoracao& num1, const Fatoracao& num2) {
+    int64_t produto = 1, indice1 = 0, indice2 = 0, multiplicador;
+    size_t qtdFatores1 = num1.getQuantidadeFatores(); size_t qtdFatores2 = num2.getQuantidadeFatores();
+    int64_t fator1 = num1.getFatorPorIndice(0); int64_t fator2 = num2.getFatorPorIndice(0);
+    
+    while(true) {
+        if(indice1 == qtdFatores1 && indice2 == qtdFatores2) break;
+
+        if(indice1 < qtdFatores1 && (indice2 == qtdFatores2 || fator2 > fator1)) {
+            multiplicador = powint(fator1, num1.getExpoentePorIndice(indice1));
+            if(produto > INT64_MAX / multiplicador) return 0;
+            produto *= multiplicador;
+
+            indice1++;
+            if(indice1 < qtdFatores1) fator1 = num1.getFatorPorIndice(indice1);
+            continue;
+        }
+
+        if(indice2 < qtdFatores2 && (indice1 == qtdFatores1 || fator1 > fator2)) {
+            multiplicador = powint(fator2, num2.getExpoentePorIndice(indice2));
+            if(produto > INT64_MAX / multiplicador) return 0;
+            produto *= multiplicador;
+
+            indice2++;
+            if(indice2 < qtdFatores2) fator2 = num2.getFatorPorIndice(indice2);
+            continue;
+        }
+
+        multiplicador = powint(fator1,max(num1.getExpoentePorIndice(indice1), num2.getExpoentePorIndice(indice2)));
+        if(produto > INT64_MAX / multiplicador) return 0;
+        produto *= multiplicador;
+
+        indice1++;
+        if(indice1 < qtdFatores1) fator1 = num1.getFatorPorIndice(indice1);
+        indice2++;
+        if(indice2 < qtdFatores2) fator2 = num2.getFatorPorIndice(indice2);
     }
     return produto;
 }
 
 // construtor que recebe um valor para o produto fatorado e delega o fatoramento para SetProduto()
-Fatores::Fatores(int64_t produto) {
-    AExpoentes = NULL;
+Fatoracao::Fatoracao(int64_t produto) {
     setProduto(produto);
 }
 
 // construtor que não recebe valor para o produto fatorado e preenche os atributos com valores zerados
-Fatores::Fatores(void) {
-    AExpoentes = NULL;
+Fatoracao::Fatoracao(void) {
     Produto = 0;
-    Primo = false;
-    Maximo = 1;
-    Ultimo = 1;
 }
 
-// destrutor, desaloca AExpoentes se ele não for NULL
-Fatores::~Fatores() {
-    if(AExpoentes != NULL) free(AExpoentes);
+// imprime os fatores de um produto num1, de número numero
+void imprimeFatores(const Fatoracao& fat, int numero) {
+    // imprime o fatoramento do número
+    cout << endl << "NÚMERO " << numero << ":" << endl;
+
+    size_t quantidade = fat.getQuantidadeFatores();
+    for(size_t indice = 0; indice < quantidade; indice++)
+        cout << "Fator " << fat.getFatorPorIndice(indice) << " vezes " << fat.getExpoentePorIndice(indice) << endl;
 }
 
 // testes
-int main() {
-    Fatores num1, num2;
-    int64_t val1, val2;
+int main(int argc, char* argv[]) {
+    Fatoracao num1, num2; long xFatorar = 1000, xMdcMmc = 1000;
+    int64_t val1, val2; volatile int64_t mdc, mmc, qtdeFatores = 0;
+
+    chrono::steady_clock::time_point inicio, fim;
+    chrono::milliseconds duracao;
+
+    if(argc > 1) xFatorar = strtol(argv[1], nullptr, 10);
+    if(argc > 2) xMdcMmc = strtol(argv[2], nullptr, 10);
 
     while(true) {
+
         // pede o primeiro número, validando usando setProduto como avaliador de sucesso
         while(true) {
             cout << "Número 1: ";
@@ -187,6 +252,7 @@ int main() {
             if(num1.setProduto(val1)) break;
             cout << "Número muito pequeno ou muito grande!" << endl;
         }
+
 
         // pede o segundo número, validando usando setProduto como avaliador de sucesso
         while(true) {
@@ -197,42 +263,46 @@ int main() {
             cout << "Número muito pequeno ou muito grande!" << endl;
         }
 
-        // imprime o fatoramento do primeiro número, % para primos e # para o fator Ultimo
-        cout << endl << "NÚMERO 1:" << endl;
 
-        if(num1.getPrimo()) {
-            cout << "Fator " << num1.getUltimo() << " vezes 1%" << endl;
-        } else
-        {
-            for(int64_t indice = 2; indice <= num1.getMaximo(); indice++)
-                if(num1.getExpoente(indice) > 0)
-                    cout << "Fator " << indice << " vezes " << num1.getExpoente(indice) << endl;
-            if(num1.getUltimo() > 1) cout << "Fator " << num1.getUltimo() << " vezes 1#" << endl;
-        }
-
-        // imprime o fatoramento do segundo número, % para primos e # para o fator Ultimo
-        cout << endl << "NÚMERO 2:" << endl;
-
-        if(num2.getPrimo()) {
-            cout << "Fator " << num2.getUltimo() << " vezes 1%" << endl;
-        } else
-        {
-            for(int64_t indice = 2; indice <= num2.getMaximo(); indice++)
-                if(num2.getExpoente(indice) > 0)
-                    cout << "Fator " << indice << " vezes " << num2.getExpoente(indice) << endl;
-            if(num2.getUltimo() > 1) cout << "Fator " << num2.getUltimo()<< " vezes 1#" << endl;
-        }
+        // imprime os fatoramentos dos números
+        imprimeFatores(num1, 1);
+        imprimeFatores(num2, 2);
 
         cout << endl;
 
+
         // imprime o Máximo Divisor Comum (MDC)
-        int64_t mdc = Fatores::mdc(num1, num2);
+        mdc = Fatoracao::mdc(num1, num2);
         cout << "MDC = " << mdc << endl;
 
         // imprime o Mínimo Múltiplo Comum (MMC)
-        int64_t mmc = Fatores::mmc(num1, num2);
-        cout << "MMC = " << mmc << endl;
+        mmc = Fatoracao::mmc(num1, num2);
+        cout << "MMC = " << mmc << endl << endl;
 
-        cout << endl;
+
+        // mede o tempo de fatorar num1 e num2 1000 vezes
+        inicio = chrono::steady_clock::now();
+        for(long indice = 0; indice < xFatorar; indice++) {
+            num1.setProduto(val1);
+            num2.setProduto(val2);
+            qtdeFatores += num1.getQuantidadeFatores() + num2.getQuantidadeFatores();
+        }
+        fim = chrono::steady_clock::now();
+
+        duracao = chrono::duration_cast<chrono::milliseconds>(fim - inicio);
+        cout << "Tempo decorrido fatoração (num1, num2) (" << xFatorar << " vezes): " << duracao.count() << " ms" << endl << endl;
+
+
+        // mede o tempo de calcular MDC + MMC 1000 vezes
+        inicio = chrono::steady_clock::now();
+        for(long indice = 0; indice < xMdcMmc; indice++) {
+            mdc = Fatoracao::mdc(num1, num2);
+            mmc = Fatoracao::mmc(num1, num2);
+        }
+        fim = chrono::steady_clock::now();
+
+        duracao = chrono::duration_cast<chrono::milliseconds>(fim - inicio);
+        cout << "Tempo decorrido MDC + MMC (" << xMdcMmc << " vezes): " << duracao.count() << " ms" << endl << endl;
     }
 }
+
