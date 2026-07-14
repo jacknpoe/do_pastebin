@@ -267,6 +267,7 @@ Nit
 Carp
 WLambda
 NumPy
+PyTorch
 
 EQUIVALENTES
 
