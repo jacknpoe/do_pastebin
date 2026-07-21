@@ -87,7 +87,6 @@ Crystal
 Zig
 Squirrel
 Ring
-Circle
 awk
 Lean
 Clean
@@ -183,7 +182,7 @@ Monkey C
 Langur
 Epsilon Object Language
 Z
-Forth (p, SP, VFX 64)
+Forth (G, SP, VFX 64)
 sh (Ba, Da, k, POSIX, z)
 Yorick
 Nickle
@@ -274,7 +273,6 @@ Rune (DataDraw)
 EQUIVALENTES
 
 Amstrad BASIC = Locomotive BASIC
-Archimedes BBC BASIC = MEMOTECH MTX 512 BBC BASIC
 BBC BASIC for SDL 2.0 = BBC BASIC
 Boa = Node.js
 Bourne shell = POSIX sh
@@ -284,6 +282,7 @@ Cerberus X = Monkey 2
 Ch = C
 Chez Scheme = Scheme
 CHICKEN = Scheme
+Circle = C
 ClosureScript = Squint
 Coffee = CoffeeScript
 ColdFusion Markup Language / CFML = CFScript
@@ -298,15 +297,14 @@ Gambit = Scheme
 gawk = awk
 Generic Java = Java
 Gerbil Scheme = Kawa/Steel
-GForth = pForth
 GNU Bourne-Again Shell = Bash
 GNU Octave = Octave
 Guile = Kawa/Scheme/Steel
 HashLink = Haxe
-IBM PC BASIC A = GW-BASIC
+IBM PC BASIC A = GW-BASIC 
 Intel Fortran Compiler = Fortran
 Iodine = Java
-IronPython – Python
+IronPython - Python
 JRuby = Ruby
 Korn Shell = ksh
 LibreOffice Basic = OpenOffice Basic
@@ -314,7 +312,7 @@ Linden Scripting Language = LSL
 MaPLe (MPL) = Alice
 MariaDB = MySQL
 Microsoft Office Visual Basic for Applications = OpenOffice Basic
-MinForth = pForth
+MinForth = Gforth
 MirBSD Korn Shell = ksh
 mksh = POSIX sh
 MLton = Alice
@@ -330,6 +328,7 @@ OpenMP = Intel oneAPI DPC++
 OSH (Oil Shell) = bash
 Pascal ISO 7185 = MSX Turbo Pascal
 PC-BASIC = GW-BASIC
+pForth = Gforth
 PicoC = C
 Pizza = Java
 PoSh = Windows PowerShell
@@ -343,7 +342,7 @@ QuickPascal = Turbo Pascal
 Racket Base = Racket
 Racket Lazy = Racket
 Reason = ReasonML
-Rebol/Core = Rebol|
+Rebol/Core = Rebol
 SCM = Scheme
 Scryer Prolog = Prolog
 SICP = DrScheme
@@ -352,7 +351,7 @@ SpiderBasic = PureBasic
 Squeak = Smalltalk
 STklos = Gauche/Kawa/Scheme/Steel
 SWI-Prolog = Prolog
-SwiftForth = pForth
+SwiftForth = Gforth
 SYCL = Intel oneAPI DPC++
 tcsh = csh
 TOM = Java
@@ -361,7 +360,7 @@ WPS Office Visual Basic for Applications = OpenOffice Basic
 XLISP = Common Lisp
 XLispStat = Common Lisp
 XOTcl = Tcl
-YLISP = Common LispG-Portugol
+YLISP = Common Lisp
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
