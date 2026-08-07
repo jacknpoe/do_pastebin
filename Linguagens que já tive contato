@@ -300,6 +300,7 @@ Gambit = Scheme
 gawk = awk
 Generic Java = Java
 Gerbil Scheme = Kawa/Steel
+gFortran = Fortran
 GNU Bourne-Again Shell = Bash
 GNU Octave = Octave
 Guile = Kawa/Scheme/Steel
