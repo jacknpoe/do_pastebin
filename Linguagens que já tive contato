@@ -305,7 +305,8 @@ GNU Bourne-Again Shell = Bash
 GNU Octave = Octave
 Guile = Kawa/Scheme/Steel
 HashLink = Haxe
-IBM PC BASIC A = GW-BASIC 
+IBM PC BASIC A = GW-BASIC
+Idris 2 = Idris
 Intel Fortran Compiler = Fortran
 Iodine = Java
 IronPython - Python
