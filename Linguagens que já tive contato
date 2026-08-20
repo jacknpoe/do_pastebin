@@ -276,6 +276,7 @@ EQUIVALENTES
 
 ACECode = Scratch
 Amstrad BASIC = Locomotive BASIC
+BASICA = GW-BASIC
 BBC BASIC for SDL 2.0 = BBC BASIC
 Boa = Node.js
 Bourne shell = POSIX sh
@@ -306,6 +307,7 @@ GNU Octave = Octave
 Guile = Kawa/Scheme/Steel
 HashLink = Haxe
 IBM PC BASIC A = GW-BASIC
+IBM Personal Computer BASIC = GW-BASIC
 Idris 2 = Idris
 Intel Fortran Compiler = Fortran
 Iodine = Java
