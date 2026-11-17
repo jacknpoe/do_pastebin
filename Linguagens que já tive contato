@@ -3,7 +3,7 @@ LINGUAGENS EM QUE PROGRAMEI (MAIS OU MENOS NA SEQUÊNCIA CORRETA, EXCETO DIALETO
 - com * as que foram pra só pra trabalhos de faculdade COMO O tcc
 - com @ as em que desenvolvi profissionalmente nos últimos anos
 
-BASIC (256, AMOS, AppGameKit, Apple Business, AppleSoft, Atari, B4X, bas (Michael Haardt), BBC, Blitz3D, BlitzMax, Bywater, Chipmunk, Colour Genie, Commodore 64, Dark, Decimal, End, Enterprise IS, Free, Gambas, GFA, GW, Just, K, Kaya, Liberty, Locomotive, Matrix Brandy, MEMOTECH MTX 512 BBC, micro(A), Mini, MM, Mobile, Monkey 2, MSX, MY, MZ-800, nu, Oric Extended, Oxygen, Pure, py, Py, QB64, Quite, RC, RemObjects Mercury, retro, Retro, RhinoScript, Script, sdl, Sinclair Super, Small¹, Small², Spec, thin, TI, TI Extended, Trek, TRS-80, True, Turbo, twin, ug, VBA, Vintage, Visual, Visual .NET, WWB-COM, www, wx, X, X11, XC=, Xojo, Ya, Z, ZX Spectrum 128, ZX81)
+BASIC (21, 256, AMOS, AppGameKit, Apple Business, AppleSoft, Atari, B4X, bas (Michael Haardt), Bazz, BBC, Blitz3D, BlitzMax, Bywater, Chipmunk, Colour Genie, Commodore 64, Dark, Decimal, End, Enterprise IS, Free, Gambas, GFA, GW, Just, K, Kaya, Liberty, Locomotive, Matrix Brandy, MEMOTECH MTX 512 BBC, micro(A), Mini, MM, Mobile, Monkey 2, MSX, MY, MZ-800, nu, Oric Extended, Oxygen, Pure, py, Py, QB64, Quite, RC, RemObjects Mercury, retro, Retro, RhinoScript, Script, sdl, Sinclair Super, Small¹, Small², Spec, thin, TI, TI Extended, Trek, TRS-80, True, Turbo, twin, ug, VBA, Vintage, Visual, Visual .NET, WWB-COM, www, wx, X, X11, XC=, Xojo, Ya, Z, ZX Spectrum 128, ZX81)
 binário (sim, binário, não assembly) Z-80
 Clipper
 Pascal (Component, Delphi, DelphiWebScript, ESPL, Free, Lazarus, MSX Turbo, Mystic, Oberon-2, Object, Oxygene, ABC .NET, Super, Turbo, UCSD (Apple /// implementation), zim)
@@ -16,7 +16,7 @@ LISP (Arc, Auto, Cake, Common, Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, V
 Ada
 Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
-ML (Alice, Caml, OCaml, ReasonML, SML) (exemplo no TCC)
+ML (Alice, Caml, OCaml, ReasonML, Moscow ML, SML/NJ) (exemplo no TCC)
 dBase (2019, Clipper, Harbour, Visual FoxPro, X#, xBase (III, IV, ...), Xbase++)@
 C# (+ MAUI, Rhino, SnapDevelop)@
 Java (+ Judo)
@@ -353,7 +353,6 @@ Rebol/Core = Rebol
 SCM = Scheme
 Scryer Prolog = Prolog
 SICP = DrScheme
-SML/NJ = Alice
 SpiderBasic = PureBasic
 Squeak = Smalltalk
 STklos = Gauche/Kawa/Scheme/Steel
