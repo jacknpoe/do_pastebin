@@ -12,7 +12,7 @@ C (ANSI, Cilk, Embedded for ARM Cortex-M, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Embedded for ARM Cortex-M, Intel oneAPI DPC++, GObject, Turbo)@
 Fortran (90, Ratfor, Super)
-LISP (Arc, Auto, Cake, Common (SBCL), Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, Visual)
+LISP (Arc, Auto, Cake, Common (SBCL), Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, Visual, XLISP-PLUS)
 Ada
 Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
@@ -363,7 +363,6 @@ tcsh = csh
 TOM = Java
 Turing+ = Turing
 WPS Office Visual Basic for Applications = OpenOffice Basic
-XLISP = Common Lisp
 XLispStat = Common Lisp
 XOTcl = Tcl
 YLISP = Common Lisp
