@@ -41,7 +41,7 @@ GDScript
 Portugol Studio
 Flutter
 Perl
-Scheme (+ Bigloo, DrScheme, Gauche, GOOPS, Kawa, Steel)
+Scheme (Bigloo, DrScheme, Gauche, GOOPS, Kawa, (MIT/GNU), Steel, XLISP 3.3)
 Elixir
 Erlang
 VisuALG
