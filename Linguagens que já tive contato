@@ -363,7 +363,7 @@ tcsh = csh
 TOM = Java
 Turing+ = Turing
 WPS Office Visual Basic for Applications = OpenOffice Basic
-XLispStat = Common Lisp
+XLispStat = XLISP-PLUS
 XOTcl = Tcl
 YLISP = Common Lisp
 
