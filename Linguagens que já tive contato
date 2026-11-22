@@ -12,7 +12,7 @@ C (ANSI, Cilk, Embedded for ARM Cortex-M, Turbo, Unified Parallel)@
 COBOL
 C++ (ANSI, Embedded for ARM Cortex-M, Intel oneAPI DPC++, GObject, Turbo)@
 Fortran (90, Ratfor, Super)
-LISP (Arc, Auto, Cake, Common (SBCL), Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, Visual, XLISP-PLUS)
+LISP (Arc, Auto, Cake, Common (SBCL), Emacs, Eus, Frennel, ILOS, IS, New, Otus, Pico, Visual, XLISP-PLUS, YLISP)
 Ada
 Object Pascal@
 SQL (Db2, Informix SPL, My, Lite, PL, Postgre, Firebird, Server)@
@@ -365,7 +365,6 @@ Turing+ = Turing
 WPS Office Visual Basic for Applications = OpenOffice Basic
 XLispStat = XLISP-PLUS
 XOTcl = Tcl
-YLISP = Common Lisp
 
 Não estão incluídas as de script menos completas ou de marcação como HTML, XML, CSS. Nem de aplicação restrita como scripts de RPG.
 
